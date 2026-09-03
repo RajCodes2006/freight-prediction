@@ -28,6 +28,7 @@ import {
   YAxis,
 } from "recharts";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
 
 const ORIGIN_COUNTRIES = [
@@ -974,6 +975,7 @@ function App() {
         </div>
       )}
       <SpeedInsights />
+      <Analytics />
     </div>
   );
 }
