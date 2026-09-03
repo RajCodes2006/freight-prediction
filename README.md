@@ -8,7 +8,7 @@ Bulk cargo chartering is often handled through repeated spot-market decisions ba
 
 **Freight Prediction** aims to move this process from reactive decision-making toward a predictive, data-driven approach.
 
-The system is being developed to forecast dry-bulk freight market conditions for different vessel classes and eventually combine those forecasts with vessel specifications, port constraints, congestion, market conditions, and contract economics.
+The system combines freight-market forecasting with vessel specifications, port constraints, congestion, voyage economics, and contract-risk analysis to support more informed chartering decisions.
 
 ## Objectives
 
@@ -78,23 +78,68 @@ Additional data sources will be integrated later for:
 - Economic indicators
 - Port infrastructure constraints
 
+## Current System
+
+The current prototype includes:
+
+- Multi-horizon freight forecasting
+- Model comparison and walk-forward evaluation
+- Forecast confidence scoring
+- Vessel feasibility analysis
+- Port and berth constraints
+- Congestion analysis
+- Voyage cost estimation
+- Contract optimization
+- Risk analysis
+- Master decision engine
+- FastAPI backend
+- React frontend
+
 ## Project Structure
 
 ```text
 freight-prediction/
 │
 ├── backend/
+│   ├── api/
+│   ├── schemas/
+│   └── main.py
 │
 ├── dashboard/
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
 │
 ├── data/
 │   ├── bdi_clean.csv
 │   ├── freight_rates.csv
 │   ├── model_dataset.csv
 │   ├── forecast_dataset.csv
-│   └── multihorizon_model_dataset.csv
+│   ├── multihorizon_model_dataset.csv
+│   ├── model_competition_results.csv
+│   ├── walk_forward_results.csv
+│   └── ports.csv
 │
 ├── models/
+│   ├── inference/
+│   │   ├── load_models.py
+│   │   └── predict.py
+│   │
+│   ├── optimization/
+│   │   ├── chartering_strategy.py
+│   │   ├── contract_optimizer.py
+│   │   ├── port_congestion.py
+│   │   ├── port_constraint.py
+│   │   ├── port_loader.py
+│   │   ├── port_time.py
+│   │   ├── risk_optimizer.py
+│   │   ├── vessel_cost.py
+│   │   ├── vessel_optimizer.py
+│   │   └── voyage_cost.py
+│   │
 │   ├── inspect_bdi.py
 │   ├── clean_bdi.py
 │   ├── analyze_bdi.py
@@ -104,7 +149,10 @@ freight-prediction/
 │   ├── train_models.py
 │   ├── train_multihorizon_models.py
 │   ├── train_arima_models.py
-│   └── evaluate_walk_forward.py
+│   ├── evaluate_walk_forward.py
+│   ├── forecast_confidence.py
+│   ├── model_registry.py
+│   └── decision_engine.py
 │
 ├── kaggle_datasets/
 │
