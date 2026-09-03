@@ -13,10 +13,6 @@ venv/
 *.xlsx
 *.zip
 
-# Generated data
-data/*.csv
-data/*.png
-
 # OS
 .DS_Store
 Thumbs.db
