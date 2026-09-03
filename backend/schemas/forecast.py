@@ -1,21 +1,43 @@
-from typing import Literal
-
 from pydantic import BaseModel, Field
 
 
 class ForecastRequest(BaseModel):
-    commodity: str
-    quantity_mt: float = Field(..., gt=0)
-    origin: str
-    destination: str
+    commodity: str = Field(..., min_length=1)
+
+    quantity_mt: float = Field(
+        ...,
+        gt=0,
+        description="Cargo quantity in metric tonnes",
+    )
+
+    origin_country: str = Field(
+        ...,
+        min_length=1,
+        description="International cargo origin country",
+    )
+
+    origin_port: str = Field(
+        ...,
+        min_length=1,
+        description="International cargo origin port",
+    )
+
+    destination_port: str = Field(
+        ...,
+        min_length=1,
+        description="Indian East Coast destination port",
+    )
+
     contract_duration_months: int = Field(
         ...,
         ge=1,
         le=12,
+        description="Contract duration in months",
     )
-    vessel_type: Literal[
-        "HSI",
-        "SI",
-        "PI",
-        "CI",
-    ]
+
+    planned_voyages: int = Field(
+        ...,
+        ge=1,
+        le=24,
+        description="Number of planned voyages",
+    )

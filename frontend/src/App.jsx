@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import {
   Anchor,
   ArrowDown,
   ArrowUp,
+  ArrowRight,
   BarChart3,
   CheckCircle2,
   ChevronDown,
@@ -27,9 +29,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 const ORIGIN_COUNTRIES = [
   "Australia",
@@ -80,66 +83,128 @@ const DESTINATION_PORTS = [
   "Haldia",
 ];
 
-const FORECAST_DATA = [
-  { horizon: "Current", value: 1189, change: 0 },
-  { horizon: "7D", value: 1186.79, change: -0.19 },
-  { horizon: "30D", value: 1328.4, change: 11.72 },
-  { horizon: "60D", value: 1280.71, change: 7.71 },
-  { horizon: "90D", value: 1921.14, change: 61.58 },
-];
-
-const VESSEL_DATA = [
+const DEFAULT_FORECAST = [
   {
-    vessel: "Handysize",
-    status: "Not Feasible",
-    cost: null,
-    costMt: null,
-    reason: "Insufficient cargo capacity",
+    horizon: "Current",
+    value: 1189,
+    change: 0,
   },
   {
-    vessel: "Supramax",
-    status: "Feasible",
-    cost: 1382200,
-    costMt: 23.04,
-    reason: "Higher estimated voyage cost",
+    horizon: "7D",
+    value: 1186.79,
+    change: -0.19,
   },
   {
-    vessel: "Panamax",
-    status: "Recommended",
-    cost: 1309000,
-    costMt: 21.82,
-    reason: "Lowest estimated feasible voyage cost",
+    horizon: "30D",
+    value: 1328.4,
+    change: 11.72,
   },
   {
-    vessel: "Capesize",
-    status: "Not Feasible",
-    cost: null,
-    costMt: null,
-    reason: "Loading berth constraint",
+    horizon: "60D",
+    value: 1280.71,
+    change: 7.71,
+  },
+  {
+    horizon: "90D",
+    value: 1921.14,
+    change: 61.58,
   },
 ];
 
 function formatMoney(value) {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) {
+    return "—";
+  }
+
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
-  }).format(value);
+  }).format(Number(value));
 }
 
 function formatCompactMoney(value) {
-  if (value >= 1_000_000) {
-    return `$${(value / 1_000_000).toFixed(2)}M`;
+  if (
+    value === null ||
+    value === undefined ||
+    Number.isNaN(Number(value))
+  ) {
+    return "—";
   }
 
-  if (value >= 1_000) {
-    return `$${(value / 1_000).toFixed(0)}K`;
+  const amount = Number(value);
+
+  if (amount >= 1_000_000) {
+    return `$${(amount / 1_000_000).toFixed(2)}M`;
   }
 
-  return formatMoney(value);
+  if (amount >= 1_000) {
+    return `$${(amount / 1_000).toFixed(0)}K`;
+  }
+
+  return formatMoney(amount);
 }
 
-function StatCard({ icon: Icon, label, value, subtext, positive }) {
+function formatNumber(value, digits = 0) {
+  if (
+    value === null ||
+    value === undefined ||
+    Number.isNaN(Number(value))
+  ) {
+    return "—";
+  }
+
+  return Number(value).toLocaleString("en-US", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+function formatPercentage(value) {
+  if (
+    value === null ||
+    value === undefined ||
+    Number.isNaN(Number(value))
+  ) {
+    return "—";
+  }
+
+  const number = Number(value);
+
+  return `${number >= 0 ? "+" : ""}${number.toFixed(2)}%`;
+}
+
+
+function formatDecisionText(value) {
+  if (!value) return "—";
+
+  const labels = {
+    FIX_CONTRACT: "Fix Contract",
+    CONSIDER_CONTRACT: "Consider Contract",
+    MONITOR: "Monitor",
+    SPOT_OR_WAIT: "Spot / Wait",
+    CHANGE_DESTINATION_OR_CARGO_OR_REVIEW_VESSEL_CONSTRAINTS:
+      "Change destination, cargo, or review vessel constraints",
+    NO_ECONOMICALLY_FEASIBLE_VESSEL:
+      "No economically feasible vessel",
+  };
+
+  return (
+    labels[value] ||
+    String(value)
+      .replaceAll("_", " ")
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+  );
+}
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  subtext,
+  positive,
+}) {
   return (
     <div className="stat-card">
       <div className="stat-icon">
@@ -188,31 +253,283 @@ function SelectField({
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [commodity, setCommodity] = useState("Coal");
   const [cargo, setCargo] = useState("60000");
+
   const [originCountry, setOriginCountry] = useState("Australia");
-  const [originPort, setOriginPort] = useState(ORIGIN_PORTS.Australia[0]);
-  const [destinationPort, setDestinationPort] = useState("Paradip");
+  const [originPort, setOriginPort] = useState(
+    ORIGIN_PORTS.Australia[0]
+  );
+
+  const [destinationPort, setDestinationPort] =
+    useState("Paradip");
+
   const [duration, setDuration] = useState("6");
   const [voyages, setVoyages] = useState("6");
+
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
+  const [error, setError] = useState("");
 
   const availableOriginPorts = ORIGIN_PORTS[originCountry];
+
+  useEffect(() => {
+    if (!availableOriginPorts.includes(originPort)) {
+      setOriginPort(availableOriginPorts[0]);
+    }
+  }, [originCountry, availableOriginPorts, originPort]);
+
+  const forecast = result?.forecast;
+  const vesselDecision = result?.vessel_decision;
+  const contractDecision = result?.contract_decision;
+  const riskAnalysis = contractDecision?.risk_analysis;
+  const recommendation = result?.final_recommendation;
+  const congestion = result?.congestion;
+  const noFeasibleVessel =
+    result?.status === "NO_ECONOMICALLY_FEASIBLE_VESSEL";
+  const diagnosticAction =
+    result?.diagnostic?.recommended_action;
+
+  const forecastData = useMemo(() => {
+    const horizons = forecast?.all_horizons;
+
+    if (!horizons) {
+      return result ? [] : DEFAULT_FORECAST;
+    }
+
+    const currentIndex =
+      forecast.current_index ??
+      horizons["30"]?.current_index ??
+      1189;
+
+    return [
+      {
+        horizon: "Current",
+        value: Number(currentIndex),
+        change: 0,
+      },
+      ...["7", "30", "60", "90"].map((key) => ({
+        horizon: `${key}D`,
+        value: Number(
+          horizons[key]?.predicted_index ?? currentIndex
+        ),
+        change: Number(
+          horizons[key]?.change_percent ?? 0
+        ),
+      })),
+    ];
+  }, [forecast, result]);
+
+  const vesselComparison = useMemo(() => {
+    if (result?.vessel_comparison) {
+      return result.vessel_comparison;
+    }
+
+    return [
+      {
+        vessel_type: "Handysize",
+        feasible: false,
+        reason: "No result available",
+      },
+      {
+        vessel_type: "Supramax",
+        feasible: false,
+        reason: "No result available",
+      },
+      {
+        vessel_type: "Panamax",
+        feasible: false,
+        reason: "No result available",
+      },
+      {
+        vessel_type: "Capesize",
+        feasible: false,
+        reason: "No result available",
+      },
+    ];
+  }, [result]);
+
+  const currentIndex =
+    forecast?.current_index ??
+    (result ? null : forecastData[0]?.value ?? 1189);
+
+  const predicted30 =
+    forecast?.predicted_30d_index ??
+    forecastData.find((item) => item.horizon === "30D")?.value ??
+    null;
+
+  const change30 =
+    forecast?.change_percent_30d ??
+    (result
+      ? null
+      : forecastData.find((item) => item.horizon === "30D")?.change ?? 0);
+
+  const confidence30 =
+    forecast?.confidence_30d ??
+    "—";
+
+  const selectedVessel =
+    vesselDecision?.recommended_vessel ??
+    recommendation?.recommended_vessel ??
+    "—";
+
+  const action =
+    recommendation?.action ??
+    "—";
+
+  const displayAction = noFeasibleVessel
+    ? formatDecisionText(
+        diagnosticAction || "REVIEW_SCENARIO_CONSTRAINTS"
+      )
+    : formatDecisionText(action);
+
+  const voyageCost =
+    vesselDecision?.recommended_voyage_cost_usd ??
+    null;
+
+  const costPerMt =
+    vesselDecision?.cost_per_mt_usd ??
+    null;
+
+  const currentRate =
+    contractDecision?.current_rate_usd_per_mt ??
+    null;
+
+  const forecastRate =
+    contractDecision?.forecast_rate_usd_per_mt ??
+    null;
+
+  const contractRate =
+    contractDecision?.contract_rate_usd_per_mt ??
+    null;
+
+  const expectedSavings =
+    riskAnalysis?.expected_savings_from_contract_usd ??
+    null;
+
+  const expectedSavingsPercent =
+    riskAnalysis?.expected_savings_percent ??
+    null;
+
+  const loadingQueue =
+    congestion?.loading?.queue_days ?? null;
+
+  const dischargeQueue =
+    congestion?.discharge?.queue_days ?? null;
+
+  const totalQueue =
+    congestion?.total_queue_days ?? null;
+
+  const riskLevel =
+    congestion?.risk_level ?? "—";
+
+  const realDataUsed =
+    congestion?.real_data_used ?? false;
+
+  const selected30Forecast =
+    forecast?.all_horizons?.["30"];
 
   const handleCountryChange = (country) => {
     setOriginCountry(country);
     setOriginPort(ORIGIN_PORTS[country][0]);
+    setResult(null);
+    setAnalyzed(false);
+    setError("");
   };
 
-  const handleAnalyze = () => {
-    setAnalyzed(true);
-
-    setTimeout(() => {
-      document
-        .getElementById("results")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 50);
+  const handleAnalyze = async () => {
+    if (loading) return;
+  
+    setLoading(true);
+    setError("");
+    setResult(null);
+    setAnalyzed(false);
+  
+    try {
+      const payload = {
+        commodity: commodity.trim() || "Bulk Cargo",
+        quantity_mt: Number(cargo),
+        origin_country: originCountry,
+        origin_port: originPort,
+        destination_port: destinationPort,
+        contract_duration_months: Number(duration),
+        planned_voyages: Number(voyages),
+      };
+  
+      if (!payload.quantity_mt || payload.quantity_mt <= 0) {
+        throw new Error("Cargo quantity must be greater than 0.");
+      }
+  
+      if (!payload.contract_duration_months || payload.contract_duration_months <= 0) {
+        throw new Error("Contract duration must be at least 1 month.");
+      }
+  
+      if (!payload.planned_voyages || payload.planned_voyages <= 0) {
+        throw new Error("Planned voyages must be at least 1.");
+      }
+  
+      const response = await axios.post(
+        `${API_BASE_URL}/api/forecast`,
+        payload,
+        {
+          timeout: 120000,
+        }
+      );
+  
+      console.log("FULL API RESPONSE:", response.data);
+  
+      const apiResult = response.data;
+  
+      setResult(apiResult);
+  
+      if (apiResult?.status === "SUCCESS") {
+        setAnalyzed(true);
+  
+        setTimeout(() => {
+          document.getElementById("results")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      } else {
+        setAnalyzed(false);
+  
+        setTimeout(() => {
+          document.getElementById("results")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }
+    } catch (err) {
+      console.error("Analysis error:", err);
+  
+      const message =
+        err?.response?.data?.detail ||
+        err?.message ||
+        "Unable to complete analysis.";
+  
+      setError(message);
+      setResult(null);
+      setAnalyzed(false);
+    } finally {
+      setLoading(false);
+    }
   };
+  
+  const scenarioOrigin =
+    result?.trade_context?.origin_port ??
+    originPort;
+
+  const scenarioDestination =
+    result?.trade_context?.destination_port ??
+    destinationPort;
+
+  const scenarioCountry =
+    result?.trade_context?.origin_country ??
+    originCountry;
 
   return (
     <div className="app-shell">
@@ -302,13 +619,16 @@ function App() {
           </button>
 
           <div className="topbar-title">
-            <span className="eyebrow">GLOBAL ORIGIN → EAST COAST INDIA</span>
+            <span className="eyebrow">
+              GLOBAL ORIGIN → EAST COAST INDIA
+            </span>
+
             <h2>Freight Intelligence Dashboard</h2>
           </div>
 
           <div className="system-status">
             <span className="status-dot" />
-            <span>SYSTEM READY</span>
+            <span>{loading ? "ANALYZING" : "SYSTEM READY"}</span>
           </div>
         </header>
 
@@ -326,9 +646,9 @@ function App() {
             </h3>
 
             <p>
-              Forecast dry-bulk market conditions, compare vessel economics,
-              evaluate port constraints and assess contract risk before fixing
-              your next voyage.
+              Forecast dry-bulk market conditions, compare vessel
+              economics, evaluate port constraints and assess
+              contract risk before fixing your next voyage.
             </p>
 
             <div className="hero-route">
@@ -367,13 +687,16 @@ function App() {
         <section className="scenario-card">
           <div className="section-heading-row">
             <div>
-              <span className="section-kicker">VOYAGE SCENARIO</span>
+              <span className="section-kicker">
+                VOYAGE SCENARIO
+              </span>
+
               <h3>Build your procurement scenario</h3>
             </div>
 
             <div className="scenario-status">
               <span className="status-dot" />
-              Prototype model ready
+              {loading ? "Analyzing scenario..." : "API decision engine"}
             </div>
           </div>
 
@@ -400,6 +723,7 @@ function App() {
                   value={cargo}
                   onChange={(e) => setCargo(e.target.value)}
                 />
+
                 <span>MT</span>
               </div>
             </label>
@@ -415,7 +739,11 @@ function App() {
             <SelectField
               label="Origin Port"
               value={originPort}
-              onChange={setOriginPort}
+              onChange={(value) => {
+                setOriginPort(value);
+                setResult(null);
+                setAnalyzed(false);
+              }}
               options={availableOriginPorts}
               icon={Navigation}
             />
@@ -423,13 +751,19 @@ function App() {
             <SelectField
               label="Indian Destination"
               value={destinationPort}
-              onChange={setDestinationPort}
+              onChange={(value) => {
+                setDestinationPort(value);
+                setResult(null);
+                setAnalyzed(false);
+              }}
               options={DESTINATION_PORTS}
               icon={MapPin}
             />
 
             <label className="field">
-              <span className="field-label">Contract Duration</span>
+              <span className="field-label">
+                Contract Duration
+              </span>
 
               <div className="input-control">
                 <input
@@ -439,12 +773,15 @@ function App() {
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                 />
+
                 <span>MONTHS</span>
               </div>
             </label>
 
             <label className="field">
-              <span className="field-label">Planned Voyages</span>
+              <span className="field-label">
+                Planned Voyages
+              </span>
 
               <div className="input-control">
                 <input
@@ -454,15 +791,40 @@ function App() {
                   value={voyages}
                   onChange={(e) => setVoyages(e.target.value)}
                 />
+
                 <span>VOYAGES</span>
               </div>
             </label>
 
-            <button className="analyze-btn" onClick={handleAnalyze}>
-              <Sparkles size={16} />
-              Analyze Strategy
+            <button
+              type="button"
+              className="analyze-btn"
+              onClick={handleAnalyze}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Gauge size={16} />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Sparkles size={16} />
+                  Analyze Strategy
+                </>
+              )}
             </button>
           </div>
+
+          {error && (
+            <div className="warning-box api-error">
+              <X size={16} />
+
+              <p>
+                <strong>Analysis error:</strong> {error}
+              </p>
+            </div>
+          )}
         </section>
 
         <section id="results" className="decision-layout">
@@ -475,32 +837,44 @@ function App() {
 
                 <span className="recommendation-status">
                   <CheckCircle2 size={13} />
-                  Analysis complete
+                  {result ? "Analysis complete" : "Awaiting analysis"}
                 </span>
               </div>
 
               <span className="confidence-pill">
                 <span />
-                MEDIUM CONFIDENCE
+                {confidence30 !== "—"
+                  ? `${confidence30} CONFIDENCE`
+                  : "NO RESULT"}
               </span>
             </div>
 
             <div className="decision-main">
               <div>
-                <span className="label-small">RECOMMENDED VESSEL</span>
-                <h3>Panamax</h3>
+                <span className="label-small">
+                  RECOMMENDED VESSEL
+                </span>
+
+                <h3>
+                  {noFeasibleVessel
+                    ? "No feasible vessel"
+                    : selectedVessel}
+                </h3>
 
                 <div className="route-summary">
-                  <span>{originCountry}</span>
+                  <span>{scenarioCountry}</span>
                   <ArrowRight />
-                  <span>{originPort}</span>
+                  <span>{scenarioOrigin}</span>
                   <ArrowRight />
-                  <span>{destinationPort}</span>
+                  <span>{scenarioDestination}</span>
                 </div>
 
                 <p>
-                  Panamax provides the lowest estimated feasible voyage cost
-                  under the current prototype assumptions.
+                  {noFeasibleVessel
+                    ? result?.message ||
+                      "No vessel can complete the voyage under the current assumptions."
+                    : recommendation?.reason ||
+                      "Run the analysis to receive the vessel, market and contract recommendation from the decision engine."}
                 </p>
               </div>
 
@@ -512,24 +886,38 @@ function App() {
             <div className="decision-metrics">
               <div>
                 <span>VOYAGE COST</span>
-                <strong>$1.309M</strong>
+                <strong>
+                  {formatCompactMoney(voyageCost)}
+                </strong>
               </div>
 
               <div>
                 <span>COST / MT</span>
-                <strong>$21.82</strong>
+                <strong>
+                  {costPerMt !== null
+                    ? `$${Number(costPerMt).toFixed(2)}`
+                    : "—"}
+                </strong>
               </div>
 
               <div>
                 <span>30D OUTLOOK</span>
-                <strong className="lime">+11.72%</strong>
+                <strong
+                  className={
+                    Number(change30) >= 0
+                      ? "lime"
+                      : "negative"
+                  }
+                >
+                  {formatPercentage(change30)}
+                </strong>
               </div>
             </div>
 
             <div className="action-banner">
               <div>
-                <span>RECOMMENDED ACTION</span>
-                <strong>CONSIDER CONTRACT</strong>
+                <span>{noFeasibleVessel ? "NEXT BEST ACTION" : "RECOMMENDED ACTION"}</span>
+                <strong>{displayAction}</strong>
               </div>
 
               <Navigation size={18} />
@@ -540,32 +928,54 @@ function App() {
             <StatCard
               icon={TrendingUp}
               label="Current PI Index"
-              value="1,189"
-              subtext="+11.72% projected in 30D"
-              positive
+              value={formatNumber(currentIndex, 0)}
+              subtext={
+                forecast
+                  ? `${formatPercentage(change30)} projected in 30D`
+                  : result
+                    ? "Not generated for this scenario"
+                    : "Awaiting API result"
+              }
+              positive={Number(change30) >= 0}
             />
 
             <StatCard
               icon={BarChart3}
               label="Forecast Rate"
-              value="$20.11/MT"
+              value={
+                forecastRate !== null
+                  ? `$${Number(forecastRate).toFixed(2)}/MT`
+                  : "—"
+              }
               subtext="30-day market scenario"
-              positive
+              positive={Number(change30) >= 0}
             />
 
             <StatCard
               icon={Clock3}
               label="Port Queue"
-              value="2.5 days"
-              subtext="Medium congestion"
+              value={
+                totalQueue !== null
+                  ? `${Number(totalQueue).toFixed(1)} days`
+                  : "—"
+              }
+              subtext={
+                riskLevel !== "—"
+                  ? `${riskLevel} congestion`
+                  : "Awaiting API result"
+              }
             />
 
             <StatCard
               icon={ShieldCheck}
               label="Expected Savings"
-              value="$639K"
-              subtext="9.32% vs expected spot"
-              positive
+              value={formatCompactMoney(expectedSavings)}
+              subtext={
+                expectedSavingsPercent !== null
+                  ? `${Number(expectedSavingsPercent).toFixed(2)}% vs expected spot`
+                  : "Awaiting contract analysis"
+              }
+              positive={Number(expectedSavings) > 0}
             />
           </div>
         </section>
@@ -574,19 +984,29 @@ function App() {
           <div className="panel chart-panel">
             <div className="panel-header">
               <div>
-                <span className="section-kicker">MARKET FORECAST</span>
-                <h3>Panamax Index Outlook</h3>
+                <span className="section-kicker">
+                  MARKET FORECAST
+                </span>
+
+                <h3>
+                  {forecast?.vessel_class
+                    ? `${forecast.vessel_class} Index Outlook`
+                    : "Vessel-Class Index Outlook"}
+                </h3>
+
                 <p className="panel-description">
                   Model-based vessel-class market projection
                 </p>
               </div>
 
-              <span className="chart-tag">PI · BALTIC INDEX</span>
+              <span className="chart-tag">
+                {forecast?.vessel_class || "BALTIC"} · INDEX
+              </span>
             </div>
 
             <div className="chart-area">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={FORECAST_DATA}>
+                <AreaChart data={forecastData}>
                   <defs>
                     <linearGradient
                       id="forecastFill"
@@ -595,8 +1015,14 @@ function App() {
                       x2="0"
                       y2="1"
                     >
-                      <stop offset="0%" stopOpacity={0.3} />
-                      <stop offset="100%" stopOpacity={0} />
+                      <stop
+                        offset="0%"
+                        stopOpacity={0.3}
+                      />
+                      <stop
+                        offset="100%"
+                        stopOpacity={0}
+                      />
                     </linearGradient>
                   </defs>
 
@@ -615,7 +1041,10 @@ function App() {
                     axisLine={false}
                     tickLine={false}
                     width={50}
-                    domain={["dataMin - 50", "dataMax + 100"]}
+                    domain={[
+                      "dataMin - 50",
+                      "dataMax + 100",
+                    ]}
                   />
 
                   <Tooltip
@@ -623,7 +1052,9 @@ function App() {
                       Number(value).toFixed(2),
                       "Index",
                     ]}
-                    labelFormatter={(label) => `${label} outlook`}
+                    labelFormatter={(label) =>
+                      `${label} outlook`
+                    }
                   />
 
                   <Area
@@ -639,43 +1070,70 @@ function App() {
             </div>
 
             <div className="forecast-cards">
-              {FORECAST_DATA.slice(1).map((point) => (
-                <div className="forecast-item" key={point.horizon}>
-                  <span>{point.horizon}</span>
-                  <strong>{point.value.toFixed(2)}</strong>
+              {forecastData.slice(1).map((point) => {
+                const horizonKey = point.horizon.replace(
+                  "D",
+                  ""
+                );
 
-                  <small
-                    className={
-                      point.change >= 0
-                        ? "change positive"
-                        : "change negative"
-                    }
+                const horizonResult =
+                  forecast?.all_horizons?.[horizonKey];
+
+                return (
+                  <div
+                    className="forecast-item"
+                    key={point.horizon}
                   >
-                    {point.change >= 0 ? (
-                      <ArrowUp size={11} />
-                    ) : (
-                      <ArrowDown size={11} />
-                    )}
+                    <span>{point.horizon}</span>
 
-                    {point.change >= 0 ? "+" : ""}
-                    {point.change.toFixed(2)}%
-                  </small>
-                </div>
-              ))}
+                    <strong>
+                      {Number(point.value).toFixed(2)}
+                    </strong>
+
+                    <small
+                      className={
+                        point.change >= 0
+                          ? "change positive"
+                          : "change negative"
+                      }
+                    >
+                      {point.change >= 0 ? (
+                        <ArrowUp size={11} />
+                      ) : (
+                        <ArrowDown size={11} />
+                      )}
+
+                      {formatPercentage(point.change)}
+                    </small>
+
+                    {horizonResult?.confidence && (
+                      <span className="forecast-confidence">
+                        {horizonResult.confidence}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           <div id="ports" className="panel port-panel">
             <div className="panel-header">
               <div>
-                <span className="section-kicker">PORT INTELLIGENCE</span>
+                <span className="section-kicker">
+                  PORT INTELLIGENCE
+                </span>
+
                 <h3>Destination risk</h3>
+
                 <p className="panel-description">
                   Current prototype queue assessment
                 </p>
               </div>
 
-              <span className="risk-badge">MEDIUM</span>
+              <span className="risk-badge">
+                {riskLevel}
+              </span>
             </div>
 
             <div className="port-route-card">
@@ -686,8 +1144,8 @@ function App() {
 
                 <div>
                   <span>ORIGIN</span>
-                  <strong>{originPort}</strong>
-                  <small>{originCountry}</small>
+                  <strong>{scenarioOrigin}</strong>
+                  <small>{scenarioCountry}</small>
                 </div>
               </div>
 
@@ -703,7 +1161,7 @@ function App() {
 
                 <div>
                   <span>DESTINATION</span>
-                  <strong>{destinationPort}</strong>
+                  <strong>{scenarioDestination}</strong>
                   <small>East Coast India</small>
                 </div>
               </div>
@@ -712,48 +1170,72 @@ function App() {
             <div className="queue-list">
               <div>
                 <span>Loading / origin queue</span>
-                <strong>1.0 day</strong>
+                <strong>
+                  {loadingQueue !== null
+                    ? `${Number(loadingQueue).toFixed(1)} day`
+                    : "—"}
+                </strong>
               </div>
 
               <div>
                 <span>Destination queue</span>
-                <strong>1.5 days</strong>
+                <strong>
+                  {dischargeQueue !== null
+                    ? `${Number(dischargeQueue).toFixed(1)} days`
+                    : "—"}
+                </strong>
               </div>
 
               <div>
                 <span>Total queue exposure</span>
-                <strong>2.5 days</strong>
+                <strong>
+                  {totalQueue !== null
+                    ? `${Number(totalQueue).toFixed(1)} days`
+                    : "—"}
+                </strong>
               </div>
 
               <div>
                 <span>Data source</span>
-                <strong className="muted-value">Prototype fallback</strong>
+                <strong className="muted-value">
+                  {realDataUsed
+                    ? "Real observations"
+                    : "Prototype fallback"}
+                </strong>
               </div>
             </div>
 
-            <div className="warning-box">
-              <Clock3 size={16} />
+            {!realDataUsed && (
+              <div className="warning-box">
+                <Clock3 size={16} />
 
-              <p>
-                Real port congestion observations are not connected yet.
-                Current queue figures remain prototype assumptions.
-              </p>
-            </div>
+                <p>
+                  Real port congestion observations are not
+                  connected yet. Current queue figures remain
+                  prototype assumptions.
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
         <section id="vessels" className="panel vessel-panel">
           <div className="panel-header">
             <div>
-              <span className="section-kicker">VESSEL ECONOMICS</span>
+              <span className="section-kicker">
+                VESSEL ECONOMICS
+              </span>
+
               <h3>Feasibility & cost comparison</h3>
+
               <p className="panel-description">
-                Prototype voyage economics for the selected cargo scenario
+                Results returned by the vessel optimization engine
               </p>
             </div>
 
             <span className="table-route">
-              {cargo || "60,000"} MT · {destinationPort}
+              {formatNumber(Number(cargo) || 0, 0)} MT ·{" "}
+              {destinationPort}
             </span>
           </div>
 
@@ -770,91 +1252,148 @@ function App() {
               </thead>
 
               <tbody>
-                {VESSEL_DATA.map((row) => (
-                  <tr
-                    key={row.vessel}
-                    className={
-                      row.status === "Recommended"
-                        ? "selected-row"
-                        : ""
-                    }
-                  >
-                    <td>
-                      <div className="vessel-name">
-                        <div className="mini-vessel">
-                          <Container size={15} />
+                {vesselComparison.map((row) => {
+                  const isRecommended =
+                    row.vessel_type === selectedVessel;
+
+                  const isFeasible =
+                    row.feasible === true;
+
+                  const hasCost =
+                    row.total_voyage_cost_usd !==
+                      null &&
+                    row.total_voyage_cost_usd !==
+                      undefined;
+
+                  return (
+                    <tr
+                      key={row.vessel_type}
+                      className={
+                        isRecommended
+                          ? "selected-row"
+                          : ""
+                      }
+                    >
+                      <td>
+                        <div className="vessel-name">
+                          <div className="mini-vessel">
+                            <Container size={15} />
+                          </div>
+
+                          <strong>
+                            {row.vessel_type}
+                          </strong>
                         </div>
+                      </td>
 
-                        <strong>{row.vessel}</strong>
-                      </div>
-                    </td>
+                      <td>
+                        <span
+                          className={`table-status ${
+                            isRecommended
+                              ? "recommended"
+                              : isFeasible
+                              ? "feasible"
+                              : "not-feasible"
+                          }`}
+                        >
+                          {isRecommended
+                            ? "Recommended"
+                            : isFeasible
+                            ? "Feasible"
+                            : "Not Feasible"}
+                        </span>
+                      </td>
 
-                    <td>
-                      <span
-                        className={`table-status ${
-                          row.status === "Recommended"
-                            ? "recommended"
-                            : row.status === "Feasible"
-                            ? "feasible"
-                            : "not-feasible"
-                        }`}
-                      >
-                        {row.status}
-                      </span>
-                    </td>
+                      <td>
+                        {hasCost
+                          ? formatCompactMoney(
+                              row.total_voyage_cost_usd
+                            )
+                          : "—"}
+                      </td>
 
-                    <td>
-                      {row.cost
-                        ? formatCompactMoney(row.cost)
-                        : "—"}
-                    </td>
+                      <td>
+                        {row.cost_per_mt_usd !==
+                          undefined &&
+                        row.cost_per_mt_usd !==
+                          null
+                          ? `$${Number(
+                              row.cost_per_mt_usd
+                            ).toFixed(2)}`
+                          : "—"}
+                      </td>
 
-                    <td>
-                      {row.costMt
-                        ? `$${row.costMt.toFixed(2)}`
-                        : "—"}
-                    </td>
-
-                    <td className="analysis-cell">
-                      {row.reason}
-                    </td>
-                  </tr>
-                ))}
+                      <td className="analysis-cell">
+                        {row.reason ||
+                          row.reasons?.join(", ") ||
+                          (isFeasible
+                            ? "Feasible under current assumptions"
+                            : "Not feasible")}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </section>
 
-        <section id="contract" className="content-grid bottom-grid">
+        <section
+          id="contract"
+          className="content-grid bottom-grid"
+        >
           <div className="panel contract-panel">
             <div className="panel-header">
               <div>
-                <span className="section-kicker">CONTRACT STRATEGY</span>
+                <span className="section-kicker">
+                  CONTRACT STRATEGY
+                </span>
+
                 <h3>Spot vs fixed contract</h3>
+
                 <p className="panel-description">
-                  Six-month procurement scenario
+                  {duration}-month procurement scenario ·{" "}
+                  {voyages} planned voyages
                 </p>
               </div>
 
-              <span className="savings-pill">9.32% SAVINGS</span>
+              <span className="savings-pill">
+                {expectedSavingsPercent !== null
+                  ? `${Number(
+                      expectedSavingsPercent
+                    ).toFixed(2)}% SAVINGS`
+                  : "NO RESULT"}
+              </span>
             </div>
 
             <div className="contract-grid">
               <div className="contract-item">
                 <span>CURRENT SPOT</span>
-                <strong>$18.00</strong>
+                <strong>
+                  {currentRate !== null
+                    ? `$${Number(currentRate).toFixed(2)}`
+                    : "—"}
+                </strong>
                 <small>/MT</small>
               </div>
 
               <div className="contract-item forecast-price">
                 <span>FORECAST</span>
-                <strong>$20.11</strong>
+                <strong>
+                  {forecastRate !== null
+                    ? `$${Number(forecastRate).toFixed(2)}`
+                    : "—"}
+                </strong>
                 <small>/MT</small>
               </div>
 
               <div className="contract-item fixed-price">
                 <span>FIXED CONTRACT</span>
-                <strong>$17.28</strong>
+                <strong>
+                  {contractRate !== null
+                    ? `$${Number(contractRate).toFixed(2)}`
+                    : "—"}
+                </strong>
                 <small>/MT</small>
               </div>
             </div>
@@ -862,15 +1401,29 @@ function App() {
             <div className="savings-panel">
               <div>
                 <span>EXPECTED CONTRACT SAVINGS</span>
-                <strong>$639,000</strong>
+
+                <strong>
+                  {formatMoney(expectedSavings)}
+                </strong>
               </div>
 
               <div className="savings-progress">
-                <div />
+                <div
+                  style={{
+                    width: `${Math.min(
+                      Math.max(
+                        Number(expectedSavingsPercent) || 0,
+                        0
+                      ),
+                      100
+                    )}%`,
+                  }}
+                />
               </div>
 
               <small>
-                Based on current prototype contract assumptions
+                Based on the decision engine's current contract
+                and risk assumptions
               </small>
             </div>
           </div>
@@ -878,7 +1431,10 @@ function App() {
           <div className="panel risk-panel">
             <div className="panel-header">
               <div>
-                <span className="section-kicker">RISK ANALYSIS</span>
+                <span className="section-kicker">
+                  RISK ANALYSIS
+                </span>
+
                 <h3>Market scenarios</h3>
               </div>
             </div>
@@ -891,7 +1447,14 @@ function App() {
 
                 <div>
                   <span>Downside</span>
-                  <strong>$16.20 / MT</strong>
+                  <strong>
+                    {riskAnalysis?.downside_rate_usd_per_mt !==
+                    undefined
+                      ? `$${Number(
+                          riskAnalysis.downside_rate_usd_per_mt
+                        ).toFixed(2)} / MT`
+                      : "—"}
+                  </strong>
                 </div>
               </div>
 
@@ -902,7 +1465,13 @@ function App() {
 
                 <div>
                   <span>Current</span>
-                  <strong>$18.00 / MT</strong>
+                  <strong>
+                    {currentRate !== null
+                      ? `$${Number(
+                          currentRate
+                        ).toFixed(2)} / MT`
+                      : "—"}
+                  </strong>
                 </div>
               </div>
 
@@ -913,7 +1482,14 @@ function App() {
 
                 <div>
                   <span>Upside</span>
-                  <strong>$19.80 / MT</strong>
+                  <strong>
+                    {riskAnalysis?.upside_rate_usd_per_mt !==
+                    undefined
+                      ? `$${Number(
+                          riskAnalysis.upside_rate_usd_per_mt
+                        ).toFixed(2)} / MT`
+                      : "—"}
+                  </strong>
                 </div>
               </div>
             </div>
@@ -922,8 +1498,8 @@ function App() {
               <ShieldCheck size={16} />
 
               <p>
-                Positive market direction and a discounted fixed contract
-                currently support <strong>CONSIDER CONTRACT</strong>.
+                {recommendation?.reason ||
+                  "Run the analysis to receive the decision engine's risk-aware recommendation."}
               </p>
             </div>
           </div>
@@ -938,10 +1514,11 @@ function App() {
             <strong>Prototype data transparency</strong>
 
             <p>
-              The ML layer currently forecasts a Baltic vessel-class market
-              index. Freight USD/MT, bunker costs, port charges, sailing time,
-              and queue time shown in this prototype are assumptions and are
-              not live route-specific commercial quotations.
+              The ML layer currently forecasts a Baltic vessel-class
+              market index. Freight USD/MT, bunker costs, port
+              charges, sailing time and queue time shown in this
+              prototype are assumptions and are not live
+              route-specific commercial quotations.
             </p>
           </div>
         </section>
@@ -949,7 +1526,9 @@ function App() {
         <footer className="footer">
           <div>
             <strong>Freight Prediction</strong>
-            <span>AI-powered bulk chartering decision support</span>
+            <span>
+              AI-powered bulk chartering decision support
+            </span>
           </div>
 
           <span>
@@ -968,20 +1547,14 @@ function App() {
         </button>
       )}
 
-      {analyzed && (
+      {analyzed && !error && (
         <div className="toast">
           <CheckCircle2 size={15} />
-          Scenario analyzed successfully
+          Strategy analyzed successfully
         </div>
       )}
-      <SpeedInsights />
-      <Analytics />
     </div>
   );
-}
-
-function ArrowRight() {
-  return <span className="route-arrow">→</span>;
 }
 
 export default App;

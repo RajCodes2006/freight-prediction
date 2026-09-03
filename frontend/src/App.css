@@ -1602,3 +1602,30 @@ tbody tr:last-child td {
     display: none;
   }
 }
+
+.analyze-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none;
+  box-shadow: none;
+}
+
+.api-error {
+  margin-top: 16px;
+  border-color: #efc9c4;
+  background: #fbefed;
+  color: #8d5149;
+}
+
+.api-error p {
+  margin: 0;
+}
+
+.forecast-confidence {
+  display: inline-block;
+  margin-top: 6px;
+  color: #87939b !important;
+  font-family: "DM Mono", monospace;
+  font-size: 7px !important;
+  text-transform: uppercase;
+}

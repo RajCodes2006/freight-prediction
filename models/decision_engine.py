@@ -458,29 +458,74 @@ def build_decision(
 
     if not economic_candidates:
 
+        # Build a frontend-friendly response even when the scenario
+        # cannot support a complete vessel voyage. This keeps the
+        # diagnostic information visible instead of returning a
+        # sparse error-shaped payload that the UI cannot render well.
+        vessel_comparison = []
+
+        for candidate in candidates:
+            comparison = {
+                "vessel_type": candidate.get("vessel_type"),
+                "feasible": candidate.get("feasible", False),
+            }
+
+            if candidate.get("dwt") is not None:
+                comparison["dwt"] = candidate["dwt"]
+
+            if candidate.get("voyage_cost_error"):
+                comparison["voyage_cost_error"] = candidate[
+                    "voyage_cost_error"
+                ]
+
+            if candidate.get("reason"):
+                comparison["reason"] = candidate["reason"]
+
+            if candidate.get("reasons"):
+                comparison["reasons"] = candidate["reasons"]
+
+            if candidate.get("loading_berths") is not None:
+                comparison["loading_berths"] = candidate.get(
+                    "loading_berths", []
+                )
+
+            if candidate.get("discharge_berths") is not None:
+                comparison["discharge_berths"] = candidate.get(
+                    "discharge_berths", []
+                )
+
+            vessel_comparison.append(comparison)
+
         return {
-            "status": (
-                "NO_ECONOMICALLY_FEASIBLE_VESSEL"
-            ),
-
-            "cargo_quantity_mt": (
-                cargo_quantity_mt
-            ),
-
-            "origin_port": (
-                origin_port
-            ),
-
-            "destination_port": (
-                destination_port
-            ),
-
+            "status": "NO_ECONOMICALLY_FEASIBLE_VESSEL",
+            "input": {
+                "cargo_quantity_mt": cargo_quantity_mt,
+                "origin_port": origin_port,
+                "destination_port": destination_port,
+                "contract_duration_months": contract_duration_months,
+                "planned_voyages": planned_voyages,
+            },
             "message": (
-                "No vessel has a complete feasible "
-                "voyage cost under the current assumptions."
+                "No vessel has a complete feasible voyage cost under "
+                "the current assumptions. Review vessel capacity, "
+                "berth constraints, or choose another destination."
             ),
-
             "candidates": candidates,
+            "vessel_comparison": vessel_comparison,
+            "congestion": congestion_summary,
+            "diagnostic": {
+                "type": "VESSEL_FEASIBILITY",
+                "recommended_action": (
+                    "CHANGE_DESTINATION_OR_CARGO_OR_REVIEW_VESSEL_CONSTRAINTS"
+                ),
+            },
+            "data_note": (
+                "No economically feasible vessel was found under the "
+                "current prototype vessel, berth, cost, and queue-time "
+                "assumptions. Market forecast and contract economics "
+                "are not generated because no vessel class can be "
+                "selected reliably for this scenario."
+            ),
         }
 
     # ========================================================
