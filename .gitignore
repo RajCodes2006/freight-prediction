@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# VS Code
+.vscode/
+
+# Raw/source datasets
+*.xls
+*.xlsx
+*.zip
+
+# Generated data
+data/*.csv
+data/*.png
+
+# Trained models
+models/saved/
+models/saved_multihorizon/
+models/saved_arima/
+
+# OS
+.DS_Store
+Thumbs.db
