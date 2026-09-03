@@ -17,11 +17,6 @@ venv/
 data/*.csv
 data/*.png
 
-# Trained models
-models/saved/
-models/saved_multihorizon/
-models/saved_arima/
-
 # OS
 .DS_Store
 Thumbs.db
