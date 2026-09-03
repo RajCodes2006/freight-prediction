@@ -1,0 +1,23 @@
+port,berth,commodity,max_loa_m,max_beam_m,max_draft_m,max_dwt_mt,handling_rate_mt_day,operational_notes,data_status,source
+Paradip,Berth 03 New Coal Import Berth,Coal,300,46,16.0,,48000,Coal handling berth,VERIFIED,Paradip Port Authority
+Paradip,Berth 05,Coal,280,46,16.0,,48000,Coal handling berth,VERIFIED,Paradip Port Authority
+Paradip,Berth 06,Coal,280,46,16.0,,48000,Coal handling berth,VERIFIED,Paradip Port Authority
+Paradip,Berth 07,Coal,280,46,16.0,,48000,Coal handling berth,VERIFIED,Paradip Port Authority
+Paradip,Berth 08,Coal,280,46,16.0,,48000,Coal handling berth,VERIFIED,Paradip Port Authority
+Paradip,New Coal Berth,KICTPPL Coal,,46,16.0,,48000,Gross berth output norm 48000 tonnes/day,VERIFIED,Paradip Port Authority
+Visakhapatnam,EQ1,Coal,300,45,18.1,,50000,Outer harbour bulk berth,VERIFIED,Visakhapatnam Port Authority
+Visakhapatnam,VGCB,Bulk,290,45,18.1,,50000,Bulk cargo handling berth,VERIFIED,Visakhapatnam Port Authority
+Gangavaram,Berth 1,Coal,300,45,18.0,,50000,Deep draft bulk berth,PARTIAL,Gangavaram Port
+Gangavaram,Berth 2,Coal,300,45,18.0,,50000,Deep draft bulk berth,PARTIAL,Gangavaram Port
+Gangavaram,Berth 3,Bulk,300,45,18.0,,50000,Deep draft bulk berth,PARTIAL,Gangavaram Port
+Gopalpur,Berth 1,Bulk,230,32,12.5,,30000,Bulk cargo berth,PARTIAL,Gopalpur Ports Limited
+Gopalpur,Berth 2,Bulk,230,32,12.5,,30000,Bulk cargo berth,PARTIAL,Gopalpur Ports Limited
+Gopalpur,Berth 3,Bulk,230,32,12.5,,30000,Bulk cargo berth,PARTIAL,Gopalpur Ports Limited
+Dhamra,Coal Berth,Bulk,300,45,18.0,,50000,Coal and bulk cargo facility,PARTIAL,Adani Dhamra Port
+Dhamra,Multipurpose Berth,Bulk,300,45,18.0,,50000,Multipurpose bulk handling,PARTIAL,Adani Dhamra Port
+Haldia,MWB 1,Bulk,230,32,10.5,,25000,Mechanised bulk berth,PARTIAL,Syama Prasad Mookerjee Port
+Haldia,MWB 2,Bulk,230,32,10.5,,25000,Mechanised bulk berth,PARTIAL,Syama Prasad Mookerjee Port
+Haldia,MWB 3,Bulk,230,32,10.5,,25000,Mechanised bulk berth,PARTIAL,Syama Prasad Mookerjee Port
+Haldia,Impounded Dock,Bulk,200,30,10.0,,20000,Bulk cargo facility,PARTIAL,Syama Prasad Mookerjee Port
+Sagar,Sagar Anchorage,Bulk,,,,,,Anchorage and lighterage operations,PARTIAL,MoPSW / PIB
+Sandheads,Sandheads Anchorage,Bulk,,,,,,Anchorage and lighterage operations,PARTIAL,MoPSW / PIB
