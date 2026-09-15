@@ -49,23 +49,32 @@ def _fetch_index(code: str) -> dict[str, Any]:
         response.raise_for_status()
         payload = response.json()
 
-        value = payload.get("price")
+        # Current OilPriceAPI responses use a nested `data` object.
+        # Keep compatibility with the older flat shape as well.
+        data = payload.get("data") if isinstance(payload, dict) else None
+        if not isinstance(data, dict):
+            data = payload if isinstance(payload, dict) else {}
+
+        value = data.get("price")
         if value is None:
             raise LiveMarketDataError(f"Provider returned no price for {code}")
 
         record = {
-            "code": code,
+            "code": data.get("code", code),
             "value": float(value),
-            "currency": payload.get("currency"),
-            "unit": payload.get("unit"),
-            "source": payload.get("source", "OilPriceAPI"),
-            "as_of": payload.get("as_of") or payload.get("updated_at"),
-            "updated_at": payload.get("updated_at"),
-            "stale": bool(payload.get("stale", False)),
-            "age_days": payload.get("age_days"),
+            "currency": data.get("currency"),
+            "unit": data.get("unit"),
+            "source": data.get("source", "OilPriceAPI"),
+            "as_of": data.get("as_of") or data.get("updated_at"),
+            "updated_at": data.get("updated_at"),
+            "created_at": data.get("created_at"),
+            "stale": bool(data.get("stale", False)),
+            "age_days": data.get("age_days"),
         }
         _cache[code] = (now, record)
         return record
+    except LiveMarketDataError:
+        raise
     except (requests.RequestException, ValueError, TypeError) as exc:
         raise LiveMarketDataError(f"Live market request failed for {code}") from exc
 
