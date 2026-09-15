@@ -43,7 +43,8 @@
     });
   };
 
-  document.title = "Freight AI — Chartering Intelligence";
+  // Keep the browser tab title aligned with the product name.
+  document.title = "Freight Predictor";
 
   new MutationObserver(refresh).observe(document.documentElement, {
     subtree: true,
