@@ -1629,3 +1629,509 @@ tbody tr:last-child td {
   font-size: 7px !important;
   text-transform: uppercase;
 }
+/* =========================================================
+   FREIGHT AI — SIH POLISH PASS
+   Visual-only overrides. React structure and API logic unchanged.
+   ========================================================= */
+
+:root {
+  --ink: #17212b;
+  --ink-2: #25323b;
+  --muted: #75828b;
+  --muted-2: #98a3aa;
+  --line: #dfe5e8;
+  --surface: #ffffff;
+  --surface-soft: #f7f9fa;
+  --navy: #0f171d;
+  --navy-2: #172129;
+  --lime: #d9e92f;
+  --good: #5f9a6a;
+  --warn: #9a7f3f;
+  --bad: #aa625b;
+}
+
+body {
+  background: #eef2f3;
+}
+
+.app-shell {
+  background: linear-gradient(180deg, #f4f6f7 0%, #eef2f3 100%);
+}
+
+.sidebar {
+  width: 238px;
+  padding: 23px 14px 17px;
+  background: #0d151b;
+  border-right: 1px solid #25323a;
+}
+
+.brand {
+  padding: 0 9px;
+  margin-bottom: 34px;
+}
+
+.brand-mark {
+  width: 39px;
+  height: 39px;
+  border-radius: 10px;
+  background: var(--lime);
+}
+
+.brand h1 {
+  font-size: 16px;
+  letter-spacing: -0.045em;
+}
+
+.brand span {
+  margin-top: 4px;
+  font-size: 8px;
+  color: #82909a;
+}
+
+.sidebar nav {
+  gap: 3px;
+}
+
+.sidebar nav a {
+  min-height: 41px;
+  padding: 10px 11px;
+  border-radius: 8px;
+  color: #8897a1;
+  font-size: 11px;
+}
+
+.sidebar nav a:hover {
+  background: #162128;
+  transform: none;
+}
+
+.sidebar nav a.active {
+  background: #17242b;
+  box-shadow: inset 2px 0 0 var(--lime);
+  color: #f2f7f9;
+}
+
+.sidebar-note {
+  margin: 0 5px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #121c22;
+  border-color: #28353d;
+}
+
+.main-content {
+  width: calc(100% - 238px);
+  margin-left: 238px;
+  padding: 0 30px 30px;
+}
+
+.topbar {
+  height: 78px;
+}
+
+.topbar h2 {
+  font-size: 21px;
+  letter-spacing: -0.05em;
+}
+
+.hero-section {
+  min-height: 285px;
+  margin-bottom: 16px;
+  padding: 34px 36px;
+  border-radius: 16px;
+  background: #152028;
+  box-shadow: 0 14px 36px rgba(18, 29, 37, 0.08);
+}
+
+.hero-section::before,
+.hero-section::after {
+  opacity: 0.35;
+}
+
+.hero-section h3 {
+  margin: 12px 0 10px;
+  font-size: clamp(28px, 3vw, 41px);
+  letter-spacing: -0.07em;
+}
+
+.hero-section p {
+  max-width: 700px;
+  color: #aab6be;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.hero-route {
+  margin-top: 23px;
+}
+
+.hero-route span {
+  font-size: 7px;
+}
+
+.hero-stat {
+  padding: 12px 13px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.025);
+}
+
+.scenario-card,
+.panel,
+.stat-card {
+  border-color: var(--line);
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(27, 39, 47, 0.035);
+}
+
+.scenario-card {
+  margin-bottom: 16px;
+  padding: 18px;
+}
+
+.panel {
+  padding: 19px;
+}
+
+.section-heading-row h3,
+.panel-header h3 {
+  font-size: 16px;
+}
+
+.scenario-grid {
+  margin-top: 16px;
+  gap: 8px;
+}
+
+.field-label {
+  margin-bottom: 6px;
+  font-size: 7px;
+}
+
+.input-control,
+.select-control,
+.analyze-btn {
+  height: 43px;
+  border-radius: 8px;
+}
+
+.input-control,
+.select-control {
+  background: #f8fafb;
+  border-color: #d9e0e4;
+}
+
+.input-control input,
+.select-control select {
+  font-size: 10px;
+}
+
+.analyze-btn {
+  background: var(--lime);
+  font-size: 9px;
+  box-shadow: none;
+}
+
+.analyze-btn:hover {
+  box-shadow: 0 8px 18px rgba(150, 161, 35, 0.15);
+}
+
+.decision-layout {
+  margin-bottom: 16px;
+  gap: 14px;
+}
+
+.decision-card {
+  min-height: 286px;
+  padding: 20px;
+  border-radius: 14px;
+  background: #142027;
+  box-shadow: 0 12px 30px rgba(18, 29, 37, 0.08);
+}
+
+.decision-card::after {
+  opacity: 0.25;
+}
+
+.confidence-pill {
+  padding: 6px 8px;
+}
+
+.decision-main {
+  margin-top: 22px;
+}
+
+.decision-main h3 {
+  margin-top: 5px;
+  font-size: 32px;
+}
+
+.route-summary {
+  font-size: 7px;
+}
+
+.decision-main p {
+  font-size: 9px;
+}
+
+.decision-vessel-icon {
+  width: 66px;
+  height: 66px;
+  border-radius: 14px;
+}
+
+.decision-metrics {
+  margin-top: 18px;
+  padding-top: 13px;
+}
+
+.decision-metrics strong {
+  font-size: 15px;
+}
+
+.action-banner {
+  min-height: 44px;
+  margin-top: 13px;
+  border-radius: 8px;
+  background: var(--lime);
+}
+
+.quick-stats {
+  gap: 9px;
+}
+
+.stat-card {
+  min-height: 136px;
+  padding: 15px;
+  gap: 10px;
+}
+
+.stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f1f3d5;
+}
+
+.stat-card strong {
+  font-size: 18px;
+}
+
+.content-grid {
+  margin-bottom: 16px;
+  gap: 14px;
+}
+
+.panel-description {
+  font-size: 7px;
+}
+
+.chart-area {
+  height: 285px;
+  margin-top: 12px;
+}
+
+.chart-tag,
+.table-route,
+.savings-pill,
+.risk-badge {
+  padding: 6px 8px;
+  font-size: 7px;
+}
+
+.forecast-cards {
+  gap: 6px;
+}
+
+.forecast-item {
+  padding: 9px;
+  border-radius: 8px;
+}
+
+.forecast-item strong {
+  font-size: 13px;
+}
+
+.port-panel {
+  min-height: 395px;
+}
+
+.port-route-card {
+  margin: 19px 0 18px;
+  gap: 10px;
+}
+
+.route-marker {
+  width: 31px;
+  height: 31px;
+  border-radius: 8px;
+}
+
+.queue-list > div {
+  padding: 10px 0;
+}
+
+.warning-box {
+  margin-top: 13px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.vessel-panel {
+  margin-bottom: 16px;
+}
+
+.table-wrap {
+  margin-top: 13px;
+}
+
+thead th {
+  padding: 9px 8px;
+  font-size: 6px;
+}
+
+tbody td {
+  padding: 11px 8px;
+  font-size: 8px;
+}
+
+.selected-row {
+  background: #f6f8df;
+  box-shadow: inset 2px 0 0 var(--lime);
+}
+
+.mini-vessel {
+  width: 27px;
+  height: 27px;
+  border-radius: 7px;
+}
+
+.table-status {
+  padding: 4px 7px;
+  font-size: 6px;
+}
+
+.contract-panel,
+.risk-panel {
+  min-height: 245px;
+}
+
+.contract-grid {
+  margin-top: 20px;
+}
+
+.contract-item strong {
+  font-size: 20px;
+}
+
+.savings-panel {
+  margin-top: 14px;
+  padding: 11px;
+  border-radius: 8px;
+}
+
+.savings-progress {
+  height: 4px;
+}
+
+.scenario-list {
+  margin-top: 14px;
+  gap: 7px;
+}
+
+.scenario-row {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.risk-summary {
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.data-note {
+  margin-bottom: 15px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  border-color: #e2dfbe;
+  background: #faf8e9;
+}
+
+.data-note-icon {
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+}
+
+.footer {
+  padding: 15px 1px 3px;
+  border-top-color: #d9e0e3;
+}
+
+.status-dot {
+  background: #55b96a;
+  box-shadow: 0 0 0 3px rgba(85,185,106,0.12);
+}
+
+.input-control:focus-within,
+.select-control:focus-within {
+  border-color: #b7c34f;
+  box-shadow: 0 0 0 2px rgba(217,233,47,0.16);
+}
+
+.api-error {
+  border-radius: 9px;
+}
+
+@media (max-width: 1080px) {
+  .main-content {
+    padding: 0 18px 24px;
+  }
+
+  .hero-section {
+    padding: 30px;
+  }
+
+  .quick-stats {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 850px) {
+  .main-content {
+    padding: 0 16px 22px;
+  }
+
+  .topbar {
+    height: 70px;
+  }
+
+  .hero-section {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 620px) {
+  .main-content {
+    padding: 0 11px 18px;
+  }
+
+  .topbar {
+    height: 66px;
+  }
+
+  .hero-section {
+    padding: 21px 17px;
+    border-radius: 12px;
+  }
+
+  .scenario-card,
+  .panel {
+    padding: 15px;
+    border-radius: 11px;
+  }
+
+  .decision-card {
+    padding: 16px;
+    border-radius: 11px;
+  }
+}
