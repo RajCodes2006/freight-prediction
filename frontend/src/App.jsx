@@ -25,6 +25,7 @@ import {
   AreaChart,
   CartesianGrid,
   ResponsiveContainer,
+  ReferenceLine,
   Tooltip,
   XAxis,
   YAxis,
@@ -355,16 +356,17 @@ function App() {
     forecast?.current_index ??
     (result ? null : forecastData[0]?.value ?? 1189);
 
-  const predicted30 =
-    forecast?.predicted_30d_index ??
-    forecastData.find((item) => item.horizon === "30D")?.value ??
-    null;
-
   const change30 =
     forecast?.change_percent_30d ??
     (result
       ? null
       : forecastData.find((item) => item.horizon === "30D")?.change ?? 0);
+
+  const predicted30Value =
+    forecast?.predicted_30d_index ??
+    (result
+      ? null
+      : forecastData.find((item) => item.horizon === "30D")?.value ?? null);
 
   const confidence30 =
     forecast?.confidence_30d ??
@@ -427,9 +429,6 @@ function App() {
 
   const realDataUsed =
     congestion?.real_data_used ?? false;
-
-  const selected30Forecast =
-    forecast?.all_horizons?.["30"];
 
   const handleCountryChange = (country) => {
     setOriginCountry(country);
@@ -626,7 +625,13 @@ function App() {
 
           <div className="system-status">
             <span className="status-dot" />
-            <span>{loading ? "ANALYZING" : "SYSTEM READY"}</span>
+            <span>
+              {loading
+                ? "ANALYZING"
+                : result
+                  ? "BACKEND CONNECTED"
+                  : "SYSTEM READY"}
+            </span>
           </div>
         </header>
 
@@ -859,6 +864,12 @@ function App() {
                     : selectedVessel}
                 </h3>
 
+                {!noFeasibleVessel && (
+                  <span className="decision-action-label">
+                    {displayAction}
+                  </span>
+                )}
+
                 <div className="route-summary">
                   <span>{scenarioCountry}</span>
                   <ArrowRight />
@@ -1015,56 +1026,116 @@ function App() {
                     >
                       <stop
                         offset="0%"
-                        stopOpacity={0.3}
+                        stopColor="#dbe92f"
+                        stopOpacity={0.22}
                       />
                       <stop
                         offset="100%"
+                        stopColor="#dbe92f"
                         stopOpacity={0}
                       />
                     </linearGradient>
                   </defs>
 
                   <CartesianGrid
-                    strokeDasharray="3 3"
+                    strokeDasharray="3 4"
                     vertical={false}
+                    stroke="#2a3942"
                   />
 
                   <XAxis
                     dataKey="horizon"
                     axisLine={false}
                     tickLine={false}
+                    tick={{ fill: "#7f8e97", fontSize: 11 }}
+                    padding={{ left: 8, right: 8 }}
                   />
 
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    width={50}
-                    domain={[
-                      "dataMin - 50",
-                      "dataMax + 100",
-                    ]}
+                    width={58}
+                    tick={{ fill: "#7f8e97", fontSize: 10 }}
+                    domain={["auto", "auto"]}
+                    tickFormatter={(value) =>
+                      Number(value).toLocaleString("en-US", {
+                        maximumFractionDigits: 0,
+                      })
+                    }
+                  />
+
+                  <ReferenceLine
+                    x="Current"
+                    stroke="#5a6972"
+                    strokeDasharray="4 4"
                   />
 
                   <Tooltip
+                    cursor={{ stroke: "#6f7d85", strokeDasharray: "4 4" }}
                     formatter={(value) => [
                       Number(value).toFixed(2),
-                      "Index",
+                      "PI Index",
                     ]}
                     labelFormatter={(label) =>
                       `${label} outlook`
                     }
+                    contentStyle={{
+                      background: "#111c23",
+                      border: "1px solid #31424c",
+                      borderRadius: "8px",
+                      color: "#eef4f7",
+                    }}
+                    labelStyle={{
+                      color: "#98a7af",
+                      marginBottom: "4px",
+                    }}
+                    itemStyle={{
+                      color: "#dbe92f",
+                    }}
                   />
 
                   <Area
                     type="monotone"
                     dataKey="value"
-                    strokeWidth={3}
+                    stroke="#dbe92f"
+                    strokeWidth={2.5}
                     fill="url(#forecastFill)"
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
+                    dot={{
+                      r: 4,
+                      fill: "#dbe92f",
+                      stroke: "#0f171d",
+                      strokeWidth: 2,
+                    }}
+                    activeDot={{
+                      r: 6,
+                      fill: "#dbe92f",
+                      stroke: "#ffffff",
+                      strokeWidth: 2,
+                    }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
+            </div>
+
+            <div className="forecast-summary-strip">
+              <div>
+                <span>CURRENT INDEX</span>
+                <strong>{formatNumber(currentIndex, 0)}</strong>
+              </div>
+              <div>
+                <span>30D FORECAST</span>
+                <strong>
+                  {predicted30Value !== null
+                    ? Number(predicted30Value).toFixed(2)
+                    : "—"}
+                </strong>
+              </div>
+              <div>
+                <span>30D CHANGE</span>
+                <strong className={Number(change30) >= 0 ? "lime" : "negative"}>
+                  {formatPercentage(change30)}
+                </strong>
+              </div>
             </div>
 
             <div className="forecast-cards">
@@ -1202,6 +1273,22 @@ function App() {
                 </strong>
               </div>
             </div>
+
+            {congestion?.discharge?.source_name && (
+              <div className="port-source-meta">
+                <span>
+                  DESTINATION SOURCE
+                </span>
+                <strong>
+                  {congestion.discharge.source_name}
+                </strong>
+                {congestion.discharge.observation_date && (
+                  <small>
+                    Observed {congestion.discharge.observation_date}
+                  </small>
+                )}
+              </div>
+            )}
 
             {!realDataUsed && (
               <div className="warning-box">
@@ -1514,8 +1601,8 @@ function App() {
             <p>
               The ML layer currently forecasts a Baltic vessel-class
               market index. Freight USD/MT, bunker costs, port
-              charges, sailing time and queue time shown in this
-              prototype are assumptions and are not live
+              charges, sailing time and some queue inputs shown in
+              this prototype are assumptions and are not live
               route-specific commercial quotations.
             </p>
           </div>

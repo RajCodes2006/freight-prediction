@@ -1630,99 +1630,81 @@ tbody tr:last-child td {
   text-transform: uppercase;
 }
 /* =========================================================
-   FREIGHT AI — SIH POLISH PASS
-   Visual-only overrides. React structure and API logic unchanged.
+   FREIGHT AI — DARK MARITIME INTELLIGENCE PASS
+   Append after existing CSS. No React/API changes required.
    ========================================================= */
 
 :root {
-  --ink: #17212b;
-  --ink-2: #25323b;
-  --muted: #75828b;
-  --muted-2: #98a3aa;
-  --line: #dfe5e8;
-  --surface: #ffffff;
-  --surface-soft: #f7f9fa;
-  --navy: #0f171d;
-  --navy-2: #172129;
-  --lime: #d9e92f;
-  --good: #5f9a6a;
-  --warn: #9a7f3f;
-  --bad: #aa625b;
+  --ui-bg: #0b1217;
+  --ui-surface: #111b22;
+  --ui-surface-2: #142129;
+  --ui-surface-3: #182730;
+  --ui-line: #273640;
+  --ui-line-soft: #202d35;
+  --ui-text: #eef4f7;
+  --ui-text-2: #c4cfd5;
+  --ui-muted: #86949d;
+  --ui-muted-2: #65747e;
+  --ui-accent: #dbe92f;
+  --ui-accent-soft: rgba(219, 233, 47, 0.10);
+  --ui-good: #79b783;
+  --ui-warn: #d1ae61;
+  --ui-bad: #d07a70;
 }
 
 body {
-  background: #eef2f3;
+  background: var(--ui-bg);
+  color: var(--ui-text);
 }
 
 .app-shell {
-  background: linear-gradient(180deg, #f4f6f7 0%, #eef2f3 100%);
+  background:
+    radial-gradient(circle at 78% -10%, rgba(219,233,47,0.045), transparent 28%),
+    linear-gradient(180deg, #0b1217 0%, #0d151b 100%);
 }
 
 .sidebar {
-  width: 238px;
-  padding: 23px 14px 17px;
-  background: #0d151b;
-  border-right: 1px solid #25323a;
-}
-
-.brand {
-  padding: 0 9px;
-  margin-bottom: 34px;
+  width: 236px;
+  background: #0a1116;
+  border-right-color: #202d34;
 }
 
 .brand-mark {
-  width: 39px;
-  height: 39px;
-  border-radius: 10px;
-  background: var(--lime);
-}
-
-.brand h1 {
-  font-size: 16px;
-  letter-spacing: -0.045em;
-}
-
-.brand span {
-  margin-top: 4px;
-  font-size: 8px;
-  color: #82909a;
-}
-
-.sidebar nav {
-  gap: 3px;
+  background: var(--ui-accent);
 }
 
 .sidebar nav a {
-  min-height: 41px;
-  padding: 10px 11px;
-  border-radius: 8px;
-  color: #8897a1;
-  font-size: 11px;
+  color: #7e8e98;
 }
 
 .sidebar nav a:hover {
-  background: #162128;
-  transform: none;
+  color: #eef4f7;
+  background: #121d24;
 }
 
 .sidebar nav a.active {
-  background: #17242b;
-  box-shadow: inset 2px 0 0 var(--lime);
-  color: #f2f7f9;
+  color: #f4f8fa;
+  background: #142229;
+  box-shadow: inset 2px 0 0 var(--ui-accent);
 }
 
 .sidebar-note {
-  margin: 0 5px;
-  padding: 12px;
-  border-radius: 10px;
-  background: #121c22;
-  border-color: #28353d;
+  background: #101a21;
+  border-color: #26343d;
+}
+
+.sidebar-note strong {
+  color: #eaf1f4;
+}
+
+.sidebar-note span {
+  color: #73828c;
 }
 
 .main-content {
-  width: calc(100% - 238px);
-  margin-left: 238px;
-  padding: 0 30px 30px;
+  width: calc(100% - 236px);
+  margin-left: 236px;
+  padding: 0 28px 30px;
 }
 
 .topbar {
@@ -1730,383 +1712,552 @@ body {
 }
 
 .topbar h2 {
-  font-size: 21px;
-  letter-spacing: -0.05em;
+  color: var(--ui-text);
 }
 
+.eyebrow,
+.section-kicker {
+  color: #73838d;
+}
+
+.system-status {
+  border-color: #2a3841;
+  background: #111b22;
+  color: #9aa8b1;
+}
+
+.status-dot {
+  background: #69ba78;
+  box-shadow: 0 0 0 3px rgba(105,186,120,0.10);
+}
+
+/* Hero */
 .hero-section {
-  min-height: 285px;
-  margin-bottom: 16px;
-  padding: 34px 36px;
-  border-radius: 16px;
-  background: #152028;
-  box-shadow: 0 14px 36px rgba(18, 29, 37, 0.08);
+  border: 1px solid #23323a;
+  background: linear-gradient(135deg, #15222a 0%, #0f181e 100%);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.18);
 }
 
 .hero-section::before,
 .hero-section::after {
-  opacity: 0.35;
+  opacity: 0.18;
 }
 
 .hero-section h3 {
-  margin: 12px 0 10px;
-  font-size: clamp(28px, 3vw, 41px);
-  letter-spacing: -0.07em;
+  color: #f7fafb;
 }
 
 .hero-section p {
-  max-width: 700px;
-  color: #aab6be;
-  font-size: 11px;
-  line-height: 1.7;
-}
-
-.hero-route {
-  margin-top: 23px;
+  color: #9aa9b2;
 }
 
 .hero-route span {
-  font-size: 7px;
+  color: #aebbc2;
+}
+
+.hero-route-line {
+  background: linear-gradient(
+    90deg,
+    rgba(219,233,47,0.8),
+    rgba(255,255,255,0.12),
+    rgba(255,255,255,0.30)
+  );
 }
 
 .hero-stat {
-  padding: 12px 13px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.025);
+  border-color: #2b3b44;
+  background: rgba(255,255,255,0.018);
 }
 
+.hero-stat span {
+  color: #71818b;
+}
+
+.hero-stat strong {
+  color: #e6eef2;
+}
+
+/* Shared surfaces */
 .scenario-card,
 .panel,
 .stat-card {
-  border-color: var(--line);
-  border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(27, 39, 47, 0.035);
+  border-color: var(--ui-line);
+  background: var(--ui-surface);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
 }
 
 .scenario-card {
-  margin-bottom: 16px;
-  padding: 18px;
-}
-
-.panel {
-  padding: 19px;
+  background: #101a21;
 }
 
 .section-heading-row h3,
 .panel-header h3 {
-  font-size: 16px;
+  color: var(--ui-text);
 }
 
-.scenario-grid {
-  margin-top: 16px;
-  gap: 8px;
+.scenario-status {
+  border-color: #293740;
+  background: #121d24;
+  color: #84939c;
 }
 
 .field-label {
-  margin-bottom: 6px;
-  font-size: 7px;
-}
-
-.input-control,
-.select-control,
-.analyze-btn {
-  height: 43px;
-  border-radius: 8px;
+  color: #73828b;
 }
 
 .input-control,
 .select-control {
-  background: #f8fafb;
-  border-color: #d9e0e4;
+  background: #0d171d;
+  border-color: #2a3942;
 }
 
 .input-control input,
 .select-control select {
-  font-size: 10px;
+  color: #e7eef1;
 }
 
-.analyze-btn {
-  background: var(--lime);
-  font-size: 9px;
-  box-shadow: none;
+.input-control > span {
+  color: #667781;
 }
 
-.analyze-btn:hover {
-  box-shadow: 0 8px 18px rgba(150, 161, 35, 0.15);
-}
-
-.decision-layout {
-  margin-bottom: 16px;
-  gap: 14px;
-}
-
-.decision-card {
-  min-height: 286px;
-  padding: 20px;
-  border-radius: 14px;
-  background: #142027;
-  box-shadow: 0 12px 30px rgba(18, 29, 37, 0.08);
-}
-
-.decision-card::after {
-  opacity: 0.25;
-}
-
-.confidence-pill {
-  padding: 6px 8px;
-}
-
-.decision-main {
-  margin-top: 22px;
-}
-
-.decision-main h3 {
-  margin-top: 5px;
-  font-size: 32px;
-}
-
-.route-summary {
-  font-size: 7px;
-}
-
-.decision-main p {
-  font-size: 9px;
-}
-
-.decision-vessel-icon {
-  width: 66px;
-  height: 66px;
-  border-radius: 14px;
-}
-
-.decision-metrics {
-  margin-top: 18px;
-  padding-top: 13px;
-}
-
-.decision-metrics strong {
-  font-size: 15px;
-}
-
-.action-banner {
-  min-height: 44px;
-  margin-top: 13px;
-  border-radius: 8px;
-  background: var(--lime);
-}
-
-.quick-stats {
-  gap: 9px;
-}
-
-.stat-card {
-  min-height: 136px;
-  padding: 15px;
-  gap: 10px;
-}
-
-.stat-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #f1f3d5;
-}
-
-.stat-card strong {
-  font-size: 18px;
-}
-
-.content-grid {
-  margin-bottom: 16px;
-  gap: 14px;
-}
-
-.panel-description {
-  font-size: 7px;
-}
-
-.chart-area {
-  height: 285px;
-  margin-top: 12px;
-}
-
-.chart-tag,
-.table-route,
-.savings-pill,
-.risk-badge {
-  padding: 6px 8px;
-  font-size: 7px;
-}
-
-.forecast-cards {
-  gap: 6px;
-}
-
-.forecast-item {
-  padding: 9px;
-  border-radius: 8px;
-}
-
-.forecast-item strong {
-  font-size: 13px;
-}
-
-.port-panel {
-  min-height: 395px;
-}
-
-.port-route-card {
-  margin: 19px 0 18px;
-  gap: 10px;
-}
-
-.route-marker {
-  width: 31px;
-  height: 31px;
-  border-radius: 8px;
-}
-
-.queue-list > div {
-  padding: 10px 0;
-}
-
-.warning-box {
-  margin-top: 13px;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.vessel-panel {
-  margin-bottom: 16px;
-}
-
-.table-wrap {
-  margin-top: 13px;
-}
-
-thead th {
-  padding: 9px 8px;
-  font-size: 6px;
-}
-
-tbody td {
-  padding: 11px 8px;
-  font-size: 8px;
-}
-
-.selected-row {
-  background: #f6f8df;
-  box-shadow: inset 2px 0 0 var(--lime);
-}
-
-.mini-vessel {
-  width: 27px;
-  height: 27px;
-  border-radius: 7px;
-}
-
-.table-status {
-  padding: 4px 7px;
-  font-size: 6px;
-}
-
-.contract-panel,
-.risk-panel {
-  min-height: 245px;
-}
-
-.contract-grid {
-  margin-top: 20px;
-}
-
-.contract-item strong {
-  font-size: 20px;
-}
-
-.savings-panel {
-  margin-top: 14px;
-  padding: 11px;
-  border-radius: 8px;
-}
-
-.savings-progress {
-  height: 4px;
-}
-
-.scenario-list {
-  margin-top: 14px;
-  gap: 7px;
-}
-
-.scenario-row {
-  padding: 8px;
-  border-radius: 8px;
-}
-
-.risk-summary {
-  margin-top: 12px;
-  padding-top: 12px;
-}
-
-.data-note {
-  margin-bottom: 15px;
-  padding: 11px 12px;
-  border-radius: 9px;
-  border-color: #e2dfbe;
-  background: #faf8e9;
-}
-
-.data-note-icon {
-  width: 27px;
-  height: 27px;
-  border-radius: 8px;
-}
-
-.footer {
-  padding: 15px 1px 3px;
-  border-top-color: #d9e0e3;
-}
-
-.status-dot {
-  background: #55b96a;
-  box-shadow: 0 0 0 3px rgba(85,185,106,0.12);
+.select-control svg {
+  color: #77868f;
 }
 
 .input-control:focus-within,
 .select-control:focus-within {
-  border-color: #b7c34f;
-  box-shadow: 0 0 0 2px rgba(217,233,47,0.16);
+  border-color: #94a12a;
+  box-shadow: 0 0 0 2px rgba(219,233,47,0.10);
+}
+
+.analyze-btn {
+  background: var(--ui-accent);
+  color: #10171b;
+}
+
+.analyze-btn:hover {
+  box-shadow: 0 10px 22px rgba(219,233,47,0.12);
+}
+
+/* Recommendation */
+.decision-card {
+  border: 1px solid #263740;
+  background:
+    linear-gradient(145deg, #17262f 0%, #101920 100%);
+  box-shadow: 0 18px 42px rgba(0,0,0,0.20);
+}
+
+.confidence-pill {
+  border-color: rgba(219,233,47,0.20);
+  background: rgba(219,233,47,0.08);
+  color: #dbe783;
+}
+
+.decision-main h3 {
+  color: #f5f9fa;
+}
+
+.decision-main p {
+  color: #96a5ae;
+}
+
+.route-summary {
+  color: #aab6bd;
+}
+
+.route-arrow,
+.lime {
+  color: var(--ui-accent);
+}
+
+.decision-vessel-icon {
+  border-color: #32444e;
+  color: var(--ui-accent);
+}
+
+.decision-metrics {
+  border-top-color: #2b3a43;
+}
+
+.decision-metrics span {
+  color: #75848d;
+}
+
+.decision-metrics strong {
+  color: #eef3f5;
+}
+
+.action-banner {
+  background: var(--ui-accent);
+  color: #10171b;
+}
+
+/* KPI cards */
+.stat-card {
+  background: #111c23;
+}
+
+.stat-icon {
+  background: rgba(219,233,47,0.10);
+  color: #c9d65a;
+}
+
+.stat-label {
+  color: #7b8a93;
+}
+
+.stat-card strong {
+  color: #edf3f5;
+}
+
+.stat-subtext {
+  color: #75848e;
+}
+
+.positive {
+  color: #7bb583 !important;
+}
+
+/* Panels / charts */
+.panel-description {
+  color: #71808a;
+}
+
+.chart-tag,
+.table-route,
+.savings-pill {
+  border-color: #2a3942;
+  background: #121d24;
+  color: #8c9aa2;
+}
+
+/* Recharts dark-mode tuning */
+.recharts-cartesian-grid line {
+  stroke: #26343c;
+}
+
+.recharts-text,
+.recharts-xAxis .recharts-cartesian-axis-tick-value,
+.recharts-yAxis .recharts-cartesian-axis-tick-value {
+  fill: #778790;
+}
+
+.recharts-default-tooltip {
+  background: #111c23 !important;
+  border-color: #31424c !important;
+  color: #eef4f7 !important;
+}
+
+/* Forecast cards */
+.forecast-item {
+  border-color: #283740;
+  background: #0f191f;
+}
+
+.forecast-item > span {
+  color: #75858e;
+}
+
+.forecast-item strong {
+  color: #edf3f5;
+}
+
+.forecast-item small {
+  color: #93a1a9;
+}
+
+.negative {
+  color: #d17a71 !important;
+}
+
+/* Port intelligence */
+.risk-badge {
+  background: rgba(209,174,97,0.12);
+  color: #cfb26f;
+  border: 1px solid rgba(209,174,97,0.18);
+}
+
+.route-marker {
+  border: 1px solid #2a3942;
+}
+
+.origin-marker {
+  color: #cad75b;
+  background: rgba(219,233,47,0.09);
+}
+
+.destination-marker {
+  color: #a8b6be;
+  background: #18242b;
+}
+
+.route-place span {
+  color: #72828b;
+}
+
+.route-place strong {
+  color: #e7eef1;
+}
+
+.route-place small {
+  color: #77868f;
+}
+
+.route-connector {
+  border-left-color: #34434b;
+}
+
+.route-connector span {
+  color: #71818a;
+}
+
+.route-connector div {
+  background: linear-gradient(90deg, #34434b, transparent);
+}
+
+.queue-list {
+  border-top-color: #27353d;
+}
+
+.queue-list > div {
+  border-bottom-color: #27353d;
+}
+
+.queue-list span {
+  color: #82919a;
+}
+
+.queue-list strong {
+  color: #d9e1e5;
+}
+
+.muted-value {
+  color: #667680 !important;
+}
+
+.warning-box {
+  border-color: rgba(209,174,97,0.22);
+  background: rgba(209,174,97,0.07);
+  color: #bca568;
+}
+
+/* Vessel comparison */
+thead th {
+  border-bottom-color: #2b3942;
+  color: #71818a;
+}
+
+tbody td {
+  border-bottom-color: #202d35;
+  color: #bec9ce;
+}
+
+.selected-row {
+  background: rgba(219,233,47,0.06);
+  box-shadow: inset 2px 0 0 var(--ui-accent);
+}
+
+.mini-vessel {
+  background: #18242b;
+  color: #98a7af;
+}
+
+.vessel-name strong {
+  color: #e3ebee;
+}
+
+.table-status.recommended {
+  background: rgba(219,233,47,0.16);
+  color: #d9e56b;
+}
+
+.table-status.feasible {
+  background: rgba(109,176,120,0.12);
+  color: #82bd8a;
+}
+
+.table-status.not-feasible {
+  background: rgba(208,122,112,0.12);
+  color: #d08980;
+}
+
+/* Contract / risk */
+.savings-pill {
+  background: rgba(109,176,120,0.10);
+  border-color: rgba(109,176,120,0.17);
+  color: #82b98a;
+}
+
+.contract-grid {
+  border-bottom-color: #27353d;
+}
+
+.contract-item {
+  border-right-color: #27353d;
+}
+
+.contract-item span {
+  color: #71818a;
+}
+
+.contract-item strong {
+  color: #e7eef1;
+}
+
+.contract-item small {
+  color: #7b8992;
+}
+
+.forecast-price strong {
+  color: #d89a61;
+}
+
+.fixed-price strong {
+  color: #80b586;
+}
+
+.savings-panel {
+  background: #131e24;
+  border: 1px solid #27353d;
+}
+
+.savings-panel span {
+  color: #a5b352;
+}
+
+.savings-panel strong {
+  color: #e8eef0;
+}
+
+.savings-progress {
+  background: #27343a;
+}
+
+.savings-progress div {
+  background: var(--ui-accent);
+}
+
+.savings-panel > small {
+  color: #74838b;
+}
+
+.scenario-row {
+  border-color: #283740;
+  background: #111c23;
+}
+
+.scenario-icon.down {
+  color: #d17a71;
+  background: rgba(208,122,112,0.10);
+}
+
+.scenario-icon.current {
+  color: #8b9aa2;
+  background: #1a252c;
+}
+
+.scenario-icon.up {
+  color: #82b989;
+  background: rgba(109,176,120,0.10);
+}
+
+.scenario-row span:not(.scenario-icon) {
+  color: #7a8992;
+}
+
+.scenario-row strong {
+  color: #dce5e9;
+}
+
+.risk-summary {
+  border-top-color: #27353d;
+}
+
+.risk-summary svg {
+  color: #7eb584;
+}
+
+.risk-summary p {
+  color: #7c8b94;
+}
+
+.risk-summary strong {
+  color: #9fbd9f;
+}
+
+/* Transparency / errors */
+.data-note {
+  border-color: #3b3b2c;
+  background: #171a14;
+}
+
+.data-note-icon {
+  background: rgba(219,233,47,0.08);
+  color: #bfc84f;
+}
+
+.data-note strong {
+  color: #d3d98a;
+}
+
+.data-note p {
+  color: #9a9c75;
 }
 
 .api-error {
-  border-radius: 9px;
+  border-color: #5a3532;
+  background: #211615;
+  color: #d99088;
 }
 
+.footer {
+  border-top-color: #27343b;
+  color: #6d7c85;
+}
+
+.footer strong {
+  color: #a1afb6;
+}
+
+/* Toast */
+.toast {
+  background: #17242b;
+  border: 1px solid #2b3b44;
+}
+
+/* Compact widescreen layout */
+@media (min-width: 1281px) {
+  .main-content {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .decision-layout {
+    grid-template-columns: 1.5fr 0.85fr;
+  }
+}
+
+/* Tablet/mobile */
 @media (max-width: 1080px) {
   .main-content {
     padding: 0 18px 24px;
   }
-
-  .hero-section {
-    padding: 30px;
-  }
-
-  .quick-stats {
-    gap: 8px;
-  }
 }
 
 @media (max-width: 850px) {
-  .main-content {
-    padding: 0 16px 22px;
+  .sidebar {
+    background: #0a1116;
   }
 
-  .topbar {
-    height: 70px;
+  .menu-btn {
+    background: #111c23;
+    color: #eaf1f4;
+    border: 1px solid #283740;
   }
 
-  .hero-section {
-    padding: 25px;
+  .close-menu {
+    background: #18252c;
+    border: 1px solid #2a3a43;
   }
 }
 
@@ -2115,23 +2266,468 @@ tbody td {
     padding: 0 11px 18px;
   }
 
-  .topbar {
-    height: 66px;
+  .system-status {
+    display: none;
+  }
+}
+
+/* =========================================================
+   FREIGHT AI — CLEAN DARK FINAL PASS
+   Fixes density, hierarchy, summary strips, and native controls.
+   ========================================================= */
+
+:root {
+  --ui-bg: #0b1217;
+  --ui-surface: #101a21;
+  --ui-surface-2: #121e25;
+  --ui-line: #25343d;
+  --ui-line-soft: #1d2a32;
+  --ui-text: #edf3f5;
+  --ui-text-2: #bdc9cf;
+  --ui-muted: #7d8c95;
+  --ui-accent: #dce92f;
+}
+
+html,
+body {
+  background: var(--ui-bg);
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Keep the dashboard dense and intentional */
+.main-content {
+  padding-top: 0;
+  padding-bottom: 28px;
+}
+
+.topbar {
+  height: 72px;
+}
+
+.hero-section {
+  min-height: 245px;
+  padding: 29px 32px;
+  margin-bottom: 14px;
+  border-radius: 14px;
+}
+
+.hero-section h3 {
+  max-width: 760px;
+  margin: 10px 0 9px;
+  font-size: clamp(26px, 2.65vw, 38px);
+  line-height: 1.04;
+}
+
+.hero-section p {
+  max-width: 680px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.hero-route {
+  max-width: 560px;
+  margin-top: 19px;
+}
+
+.hero-side {
+  gap: 8px;
+}
+
+.hero-stat {
+  padding: 10px 12px;
+}
+
+.hero-stat span {
+  margin-bottom: 4px;
+  font-size: 7px;
+}
+
+.hero-stat strong {
+  font-size: 10px;
+}
+
+/* Scenario builder */
+.scenario-card {
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.section-heading-row h3,
+.panel-header h3 {
+  font-size: 15px;
+}
+
+.scenario-grid {
+  margin-top: 13px;
+  gap: 7px;
+}
+
+.input-control,
+.select-control,
+.analyze-btn {
+  height: 41px;
+}
+
+.input-control input,
+.select-control select {
+  font-size: 10px;
+}
+
+.select-control select {
+  color-scheme: dark;
+}
+
+.select-control select option {
+  background: #111c23;
+  color: #eef4f7;
+}
+
+.analyze-btn {
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+}
+
+/* Main decision area */
+.decision-layout {
+  gap: 12px;
+  margin-bottom: 14px;
+  grid-template-columns: 1.48fr .92fr;
+}
+
+.decision-card {
+  min-height: 260px;
+  padding: 18px;
+  border-radius: 13px;
+}
+
+.decision-card-header {
+  align-items: center;
+}
+
+.decision-main {
+  margin-top: 17px;
+}
+
+.decision-main h3 {
+  margin: 4px 0 6px;
+  font-size: 31px;
+  line-height: 1;
+}
+
+.decision-main p {
+  max-width: 640px;
+  margin-top: 9px;
+  font-size: 8.5px;
+}
+
+.decision-vessel-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+}
+
+.decision-metrics {
+  margin-top: 16px;
+  padding-top: 11px;
+  gap: 10px;
+}
+
+.decision-metrics strong {
+  font-size: 14px;
+}
+
+.action-banner {
+  min-height: 41px;
+  margin-top: 11px;
+  padding: 8px 11px;
+}
+
+.action-banner strong {
+  font-size: 10px;
+}
+
+/* Action label inside the decision card */
+.decision-action-label {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 2px;
+  color: var(--ui-accent);
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* KPI cards */
+.quick-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stat-card {
+  min-height: 124px;
+  padding: 14px;
+}
+
+.stat-card strong {
+  font-size: 17px;
+}
+
+.stat-label {
+  font-size: 7px;
+}
+
+.stat-subtext {
+  font-size: 7px;
+}
+
+/* Analytics section */
+.content-grid {
+  grid-template-columns: 1.5fr .9fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.panel {
+  padding: 17px;
+  border-radius: 12px;
+}
+
+.chart-panel {
+  min-height: 0;
+}
+
+.chart-area {
+  height: 255px;
+  margin-top: 10px;
+}
+
+/* Forecast summary — fix the previously jammed text */
+.forecast-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 9px;
+  padding: 8px;
+  border: 1px solid #26363f;
+  border-radius: 9px;
+  background: #0d171d;
+}
+
+.forecast-summary-strip > div {
+  min-width: 0;
+  padding: 8px 9px;
+  border-right: 1px solid #26363f;
+}
+
+.forecast-summary-strip > div:last-child {
+  border-right: 0;
+}
+
+.forecast-summary-strip span {
+  display: block;
+  margin-bottom: 4px;
+  color: #71818a;
+  font-family: "DM Mono", monospace;
+  font-size: 6.5px;
+  letter-spacing: 0.08em;
+}
+
+.forecast-summary-strip strong {
+  display: block;
+  color: #eaf1f4;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.forecast-summary-strip .lime {
+  color: var(--ui-accent);
+}
+
+/* Forecast cards */
+.forecast-cards {
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.forecast-item {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.forecast-item strong {
+  font-size: 12px;
+}
+
+/* Port source metadata — fix previously unstyled concatenated text */
+.port-source-meta {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #26353d;
+}
+
+.port-source-meta span {
+  color: #71818a;
+  font-family: "DM Mono", monospace;
+  font-size: 6.5px;
+  letter-spacing: 0.08em;
+}
+
+.port-source-meta strong {
+  color: #91a9b4;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.port-source-meta small {
+  color: #6f7d86;
+  font-family: "DM Mono", monospace;
+  font-size: 6.5px;
+  justify-self: end;
+}
+
+/* Vessel table */
+.vessel-panel {
+  margin-bottom: 14px;
+}
+
+.table-wrap {
+  margin-top: 10px;
+}
+
+thead th {
+  padding: 8px 8px;
+}
+
+tbody td {
+  padding: 10px 8px;
+}
+
+/* Contract / risk */
+.contract-panel,
+.risk-panel {
+  min-height: 225px;
+}
+
+.contract-grid {
+  margin-top: 16px;
+}
+
+.contract-item {
+  padding-bottom: 14px;
+}
+
+.contract-item strong {
+  font-size: 19px;
+}
+
+.scenario-list {
+  margin-top: 11px;
+}
+
+.scenario-row {
+  padding: 7px;
+}
+
+/* Transparency note */
+.data-note {
+  margin-bottom: 13px;
+  padding: 10px 11px;
+}
+
+/* Footer */
+.footer {
+  padding-top: 13px;
+}
+
+/* Toast: smaller and quieter */
+.toast {
+  right: 18px;
+  bottom: 17px;
+  padding: 9px 11px;
+  font-size: 8px;
+}
+
+/* Responsive */
+@media (max-width: 1080px) {
+  .main-content {
+    padding: 0 16px 22px;
   }
 
   .hero-section {
-    padding: 21px 17px;
-    border-radius: 12px;
+    grid-template-columns: 1fr;
+    min-height: 0;
   }
 
-  .scenario-card,
-  .panel {
-    padding: 15px;
-    border-radius: 11px;
+  .hero-side {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .decision-card {
-    padding: 16px;
-    border-radius: 11px;
+  .decision-layout,
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .quick-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-side {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .hero-section {
+    padding: 21px 16px;
+  }
+
+  .hero-side {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .forecast-summary-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .forecast-summary-strip > div {
+    border-right: 0;
+    border-bottom: 1px solid #26363f;
+  }
+
+  .forecast-summary-strip > div:last-child {
+    border-bottom: 0;
+  }
+
+  .port-source-meta {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .port-source-meta small {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 440px) {
+  .quick-stats {
+    grid-template-columns: 1fr;
   }
 }
