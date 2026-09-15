@@ -119,32 +119,39 @@ def get_latest_port_congestion(
 
     row = result.iloc[-1]
 
+    def _optional_text(column_name: str):
+        if column_name not in row.index:
+            return None
+        value = row[column_name]
+        if pd.isna(value):
+            return None
+        text = str(value).strip()
+        return text or None
+
     return {
         "port": row["port"],
         "congestion_index": (
             float(row["congestion_index"])
-            if pd.notna(
-                row["congestion_index"]
-            )
+            if pd.notna(row["congestion_index"])
             else None
         ),
         "average_waiting_days": (
             float(row["average_waiting_days"])
-            if pd.notna(
-                row["average_waiting_days"]
-            )
+            if pd.notna(row["average_waiting_days"])
             else None
         ),
         "observation_date": (
-            row["observation_date"]
-            .strftime("%Y-%m-%d")
-            if pd.notna(
-                row["observation_date"]
-            )
+            row["observation_date"].strftime("%Y-%m-%d")
+            if pd.notna(row["observation_date"])
             else None
         ),
         "data_status": row["data_status"],
-        "source": "port_congestion.csv",
+        "source": _optional_text("source") or "port_congestion.csv",
+        "source_type": _optional_text("source_type"),
+        "waiting_reason": _optional_text("waiting_reason"),
+        "metric_note": _optional_text("metric_note"),
+        "project_use": _optional_text("project_use"),
+        "source_url": _optional_text("source_url"),
     }
 
 
@@ -191,20 +198,16 @@ def estimate_port_queue_time(
             return {
                 "port": port_name,
                 "operation": operation,
-                "queue_days": round(
-                    waiting_days,
-                    2,
-                ),
+                "queue_days": round(waiting_days, 2),
                 "source": "DATA",
-                "data_status": congestion[
-                    "data_status"
-                ],
-                "observation_date": congestion[
-                    "observation_date"
-                ],
-                "congestion_index": congestion[
-                    "congestion_index"
-                ],
+                "data_status": congestion["data_status"],
+                "observation_date": congestion["observation_date"],
+                "congestion_index": congestion["congestion_index"],
+                "source_name": congestion.get("source"),
+                "source_type": congestion.get("source_type"),
+                "waiting_reason": congestion.get("waiting_reason"),
+                "metric_note": congestion.get("metric_note"),
+                "source_url": congestion.get("source_url"),
             }
 
     # --------------------------------------------------------
@@ -214,13 +217,16 @@ def estimate_port_queue_time(
     return {
         "port": port_name,
         "operation": operation,
-        "queue_days": DEFAULT_QUEUE_DAYS[
-            operation
-        ],
+        "queue_days": DEFAULT_QUEUE_DAYS[operation],
         "source": "PROTOTYPE_FALLBACK",
         "data_status": "ASSUMED",
         "observation_date": None,
         "congestion_index": None,
+        "source_name": None,
+        "source_type": None,
+        "waiting_reason": "No verified observation available",
+        "metric_note": "Prototype fallback; not observed port data",
+        "source_url": None,
     }
 
 
@@ -247,9 +253,22 @@ def calculate_route_congestion(
         + discharge["queue_days"]
     )
 
+    loading_data_used = loading["source"] == "DATA"
+    discharge_data_used = discharge["source"] == "DATA"
+
+    # For international trades, origin-side congestion may be unavailable
+    # while Indian destination-port data is still fully valid and relevant.
+    # Treat the route as data-backed when at least the modeled destination
+    # side is real, and expose the per-side flags so the UI cannot hide the
+    # fact that one side is still using a prototype fallback.
     real_data_used = (
-        loading["source"] == "DATA"
-        and discharge["source"] == "DATA"
+        loading_data_used
+        or discharge_data_used
+    )
+
+    all_ports_have_real_data = (
+        loading_data_used
+        and discharge_data_used
     )
 
     return {
@@ -262,6 +281,9 @@ def calculate_route_congestion(
             2,
         ),
         "real_data_used": real_data_used,
+        "loading_data_used": loading_data_used,
+        "discharge_data_used": discharge_data_used,
+        "all_ports_have_real_data": all_ports_have_real_data,
     }
 
 

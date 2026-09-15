@@ -11,7 +11,7 @@ def forecast(request: ForecastRequest):
     try:
         result = build_decision(
             cargo_quantity_mt=request.quantity_mt,
-            origin_port=request.destination_port,
+            origin_port=request.origin_port,
             destination_port=request.destination_port,
             contract_duration_months=request.contract_duration_months,
             planned_voyages=request.planned_voyages,

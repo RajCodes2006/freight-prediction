@@ -58,6 +58,14 @@ VESSEL_CLASSES = [
 ]
 
 
+# Generic origin-side cargo handling assumption used only when the
+# origin is outside the local port/berth database (e.g. Newcastle).
+# This does NOT assert a verified berth constraint; it only allows
+# voyage economics to be estimated without falsely rejecting the
+# vessel because an overseas loading berth is absent from ports.csv.
+DEFAULT_EXTERNAL_ORIGIN_HANDLING_RATE_MT_DAY = 50_000.0
+
+
 def get_port_berth_records(
     ports_df,
     port_name: str,
@@ -262,6 +270,16 @@ def optimize_vessel(
 
     ports_df = load_ports()
 
+    # The local ports.csv is an Indian berth/constraint database.
+    # For an international origin that is not present there, do not
+    # falsely reject the vessel for missing origin berth records.
+    origin_berth_records = get_port_berth_records(
+        ports_df=ports_df,
+        port_name=origin_port,
+        verified_only=verified_only,
+    )
+    external_origin = len(origin_berth_records) == 0
+
     # ------------------------------------------------------
     # Get congestion for route
     # ------------------------------------------------------
@@ -317,13 +335,21 @@ def optimize_vessel(
         # Loading berth
         # ==================================================
 
-        loading_berths = find_feasible_berths(
-            vessel=vessel,
-            ports_df=ports_df,
-            port_name=origin_port,
-            operation_name="Loading port",
-            verified_only=verified_only,
-        )
+        if external_origin:
+            # Origin is international / outside the local Indian
+            # berth database. Keep loading feasibility open instead
+            # of inventing a berth constraint.
+            loading_berths = []
+            loading_constraints_available = False
+        else:
+            loading_berths = find_feasible_berths(
+                vessel=vessel,
+                ports_df=ports_df,
+                port_name=origin_port,
+                operation_name="Loading port",
+                verified_only=verified_only,
+            )
+            loading_constraints_available = True
 
         # ==================================================
         # Discharge berth
@@ -339,7 +365,7 @@ def optimize_vessel(
 
         reasons = []
 
-        if not loading_berths:
+        if loading_constraints_available and not loading_berths:
 
             reasons.append(
                 f"No feasible loading berth found "
@@ -362,6 +388,16 @@ def optimize_vessel(
                 berth["berth"]
                 for berth in loading_berths
             ],
+            "loading_feasibility": (
+                "NOT_MODELED_IN_LOCAL_DATABASE"
+                if external_origin
+                else "CHECKED"
+            ),
+            "origin_data_scope": (
+                "INTERNATIONAL_ORIGIN"
+                if external_origin
+                else "LOCAL_PORT_DATABASE"
+            ),
             "discharge_berths": [
                 berth["berth"]
                 for berth in discharge_berths
@@ -385,15 +421,16 @@ def optimize_vessel(
                 congestion["total_queue_days"]
             ),
             "risk_level": congestion_risk,
-            "real_data_used": (
-                congestion["real_data_used"]
-            ),
-            "loading_source": (
-                congestion["loading"]["source"]
-            ),
-            "discharge_source": (
-                congestion["discharge"]["source"]
-            ),
+            "real_data_used": congestion["real_data_used"],
+            "loading_data_used": congestion["loading_data_used"],
+            "discharge_data_used": congestion["discharge_data_used"],
+            "all_ports_have_real_data": congestion["all_ports_have_real_data"],
+            "loading_source": congestion["loading"]["source"],
+            "discharge_source": congestion["discharge"]["source"],
+            "loading_source_name": congestion["loading"].get("source_name"),
+            "discharge_source_name": congestion["discharge"].get("source_name"),
+            "loading_observation_date": congestion["loading"].get("observation_date"),
+            "discharge_observation_date": congestion["discharge"].get("observation_date"),
         }
 
         # ==================================================
@@ -402,9 +439,14 @@ def optimize_vessel(
 
         if len(reasons) == 0:
 
-            loading_rate = get_best_handling_rate(
-                loading_berths
-            )
+            if external_origin:
+                loading_rate = DEFAULT_EXTERNAL_ORIGIN_HANDLING_RATE_MT_DAY
+                loading_rate_source = "PROTOTYPE_EXTERNAL_ORIGIN_ASSUMPTION"
+            else:
+                loading_rate = get_best_handling_rate(
+                    loading_berths
+                )
+                loading_rate_source = "PORT_DATABASE"
 
             discharge_rate = get_best_handling_rate(
                 discharge_berths
@@ -413,6 +455,10 @@ def optimize_vessel(
             candidate[
                 "loading_rate_mt_day"
             ] = loading_rate
+
+            candidate[
+                "loading_rate_source"
+            ] = loading_rate_source
 
             candidate[
                 "discharge_rate_mt_day"

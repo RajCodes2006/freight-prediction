@@ -1,0 +1,8 @@
+port,congestion_index,average_waiting_days,observation_date,data_status,source,source_type,waiting_reason,metric_note,project_use,source_url
+Paradip,,0.0,2026-09-12,VERIFIED_MEDIAN_WAITING,Portcast,Maritime analytics,Anchorage/berth waiting metric; official PPA reports should be used separately for vessel-level causes,"Portcast metric is MEDIAN waiting time, not an arithmetic average; week 06-12 Sep 2026",YES,https://www.portcast.io/port-congestion/paradip-port-32083
+Visakhapatnam,,0.08,2026-09-12,VERIFIED_MEDIAN_WAITING,Portcast,Maritime analytics,Vessel waiting time before berth,"Portcast metric is MEDIAN waiting time, not an arithmetic average; week 06-12 Sep 2026",YES,https://www.portcast.io/port-congestion/visakhapatnam
+Gangavaram,,,,NO_VERIFIED_CURRENT_DATA,,,,No current port-specific waiting-time figure verified from an official or reliable maritime source in this collection pass,NO,
+Gopalpur,,,,NO_VERIFIED_CURRENT_DATA,,,,No current port-specific waiting-time figure verified from an official or reliable maritime source in this collection pass,NO,
+Dhamra,,,,NO_VERIFIED_CURRENT_DATA,,,,No current port-specific waiting-time figure verified from an official or reliable maritime source in this collection pass,NO,
+Sagar/Sandheads,,,,NO_VERIFIED_CURRENT_DATA,,,,No current port-specific waiting-time figure verified from an official or reliable maritime source in this collection pass,NO,
+Haldia,,0.91,2026-09-12,VERIFIED_MEDIAN_WAITING,Portcast,Maritime analytics,Vessel waiting time before berth,"Portcast metric is MEDIAN waiting time, not an arithmetic average; week 06-12 Sep 2026",YES,https://www.portcast.io/port-congestion/haldia
