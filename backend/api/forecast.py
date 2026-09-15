@@ -4,6 +4,7 @@ from backend.schemas.forecast import ForecastRequest
 from models.decision_engine import build_decision
 from models.optimization.route_sailing import estimate_sailing_days
 from models.inference.live_market import get_live_market_snapshot
+from models.data_provenance import build_data_provenance
 
 router = APIRouter(prefix="/api", tags=["Forecast"])
 
@@ -39,10 +40,8 @@ def forecast(request: ForecastRequest):
         result["input"]["contract_duration_months"] = request.contract_duration_months
         result["input"]["planned_voyages"] = request.planned_voyages
 
-        # Live market benchmarks are exposed as context only. They do not
-        # silently overwrite the trained model's historical feature row.
-        # This keeps the forecast methodologically transparent while making
-        # current benchmark conditions available to the UI.
+        # Expose current market benchmarks as context. The forecasting
+        # engine separately applies the live calibration when available.
         result["market_context"] = get_live_market_snapshot()
 
         result["trade_context"] = {
@@ -57,6 +56,10 @@ def forecast(request: ForecastRequest):
                 "not a live vessel schedule."
             ),
         }
+
+        # Attach an explicit provenance map after all response sections are
+        # assembled so each important value is classified by data origin.
+        result["data_provenance"] = build_data_provenance(result)
 
         return result
 
