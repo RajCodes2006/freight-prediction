@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from backend.schemas.forecast import ForecastRequest
 from models.decision_engine import build_decision
 from models.optimization.route_sailing import estimate_sailing_days
+from models.inference.live_market import get_live_market_snapshot
 
 router = APIRouter(prefix="/api", tags=["Forecast"])
 
@@ -37,6 +38,12 @@ def forecast(request: ForecastRequest):
         result["input"]["destination_port"] = request.destination_port
         result["input"]["contract_duration_months"] = request.contract_duration_months
         result["input"]["planned_voyages"] = request.planned_voyages
+
+        # Live market benchmarks are exposed as context only. They do not
+        # silently overwrite the trained model's historical feature row.
+        # This keeps the forecast methodologically transparent while making
+        # current benchmark conditions available to the UI.
+        result["market_context"] = get_live_market_snapshot()
 
         result["trade_context"] = {
             "origin_country": request.origin_country,
