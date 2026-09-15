@@ -17,11 +17,18 @@ app = FastAPI(
 # --------------------------------------------------
 # CORS
 # --------------------------------------------------
+#
+# allow_origins=["*"] combined with allow_credentials=True is invalid
+# per the Fetch/CORS spec (browsers reject credentialed requests to a
+# wildcard origin). The frontend doesn't send credentials, so pin
+# allow_credentials to False and keep the wildcard for now; if
+# cookie/auth-based requests are added later, replace the wildcard
+# with an explicit list of allowed frontend origins instead.
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

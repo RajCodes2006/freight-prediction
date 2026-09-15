@@ -331,6 +331,27 @@ def optimize_vessel(
 
             continue
 
+        # A cargo well below a vessel class's minimum DWT is not a
+        # realistic fixture: owners set minimum stem sizes, and the
+        # fixed costs modeled in vessel_cost.py/voyage_cost.py make
+        # such a mismatch uneconomical in every case. Treat it the
+        # same as an oversized cargo rather than reporting a large
+        # vessel class as "feasible" for a small parcel.
+        if cargo_quantity_mt < vessel.min_dwt:
+
+            candidates.append(
+                {
+                    "vessel_type": vessel.name,
+                    "feasible": False,
+                    "reason": (
+                        "Cargo quantity is below this vessel "
+                        "class's minimum realistic stem size"
+                    ),
+                }
+            )
+
+            continue
+
         # ==================================================
         # Loading berth
         # ==================================================

@@ -60,9 +60,12 @@ def forecast(request: ForecastRequest):
         )
 
     except Exception as exc:
+        # Full detail stays server-side; the client only gets a
+        # generic message so internal paths/exception text are never
+        # exposed in the API response.
         print(f"FORECAST ERROR: {type(exc).__name__}: {exc}")
 
         raise HTTPException(
             status_code=500,
-            detail=f"Internal prediction error: {exc}"
+            detail="Internal prediction error. Please try again."
         )

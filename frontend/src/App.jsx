@@ -478,8 +478,6 @@ function App() {
         }
       );
   
-      console.log("FULL API RESPONSE:", response.data);
-  
       const apiResult = response.data;
   
       setResult(apiResult);

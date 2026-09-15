@@ -3,13 +3,48 @@ from typing import Dict, List
 
 # Prototype assumptions for development/testing.
 # These are NOT real market contract quotes.
-
+#
+# Only a few anchor durations have an explicit assumed discount.
+# The API/UI accept any integer 1-12, so intermediate durations are
+# linearly interpolated between the nearest anchors below rather than
+# raising an error.
 CONTRACT_DISCOUNTS = {
     1: 0.00,   # 1 month
     3: 0.02,   # 2% discount
     6: 0.04,   # 4% discount
     12: 0.06,  # 6% discount
 }
+
+_ANCHOR_MONTHS = sorted(CONTRACT_DISCOUNTS)
+
+
+def _interpolated_discount(contract_months: int) -> float:
+    """
+    Return the prototype discount for any 1-12 month duration.
+
+    Exact anchor durations (1, 3, 6, 12) use their defined discount.
+    Any other duration is linearly interpolated between the two
+    nearest anchors.
+    """
+
+    if contract_months in CONTRACT_DISCOUNTS:
+        return CONTRACT_DISCOUNTS[contract_months]
+
+    if contract_months <= _ANCHOR_MONTHS[0]:
+        return CONTRACT_DISCOUNTS[_ANCHOR_MONTHS[0]]
+
+    if contract_months >= _ANCHOR_MONTHS[-1]:
+        return CONTRACT_DISCOUNTS[_ANCHOR_MONTHS[-1]]
+
+    lower = max(m for m in _ANCHOR_MONTHS if m < contract_months)
+    upper = min(m for m in _ANCHOR_MONTHS if m > contract_months)
+
+    lower_discount = CONTRACT_DISCOUNTS[lower]
+    upper_discount = CONTRACT_DISCOUNTS[upper]
+
+    fraction = (contract_months - lower) / (upper - lower)
+
+    return lower_discount + fraction * (upper_discount - lower_discount)
 
 
 def calculate_spot_cost(
@@ -58,14 +93,12 @@ def calculate_contract_rate(
             "spot_rate_usd_per_mt cannot be negative"
         )
 
-    if contract_months not in CONTRACT_DISCOUNTS:
+    if not (1 <= contract_months <= 12):
         raise ValueError(
-            "contract_months must be 1, 3, 6, or 12"
+            "contract_months must be between 1 and 12"
         )
 
-    discount = CONTRACT_DISCOUNTS[
-        contract_months
-    ]
+    discount = _interpolated_discount(contract_months)
 
     return spot_rate_usd_per_mt * (1 - discount)
 

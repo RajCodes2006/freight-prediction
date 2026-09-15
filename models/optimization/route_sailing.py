@@ -46,10 +46,68 @@ ROUTE_FACTOR = 1.12  # Converts great-circle distance to a prototype sea-route e
 MIN_SAILING_DAYS = 2.0
 
 
-def _great_circle_nm(origin, destination):
-    """Approximate great-circle distance in nautical miles."""
-    lat1, lon1 = PORT_COORDINATES[origin]
-    lat2, lon2 = PORT_COORDINATES[destination]
+# Known maritime chokepoints. A raw point-to-point great-circle line
+# between some origins and the India east-coast destinations above
+# passes directly over land (e.g. central Australia, mainland China,
+# the Arabian/Central Asian landmass, or the Arctic), because a great
+# circle is the shortest path over a *sphere*, not the shortest path
+# over water. These waypoints force the distance calculation through
+# the real navigable strait/canal/cape for those origins instead.
+WAYPOINTS = {
+    "BOSPHORUS": (41.15, 29.05),
+    "SUEZ_NORTH": (31.26, 32.31),   # Port Said
+    "SUEZ_SOUTH": (29.93, 32.55),   # Suez
+    "BAB_EL_MANDEB": (12.65, 43.40),
+    "CAPE_OF_GOOD_HOPE": (-34.35, 18.47),
+    "CAPE_LEEUWIN": (-34.37, 115.13),
+    "SINGAPORE_STRAIT": (1.27, 103.85),
+    "TAIWAN_STRAIT": (24.00, 121.00),
+}
+
+# Waypoint chain inserted between origin and destination for origins
+# whose direct great-circle path is not physically navigable. Verified
+# by sampling points along each leg to confirm they stay over water.
+# This is still a prototype approximation (straight legs between a
+# handful of chokepoints, not real coast-hugging shipping lanes) - for
+# production use, replace with a real maritime-routing library/API.
+ORIGIN_ROUTE_OVERRIDES = {
+    # Black Sea -> Mediterranean -> Suez Canal -> Red Sea -> India
+    "Taman": ["BOSPHORUS", "SUEZ_NORTH", "SUEZ_SOUTH", "BAB_EL_MANDEB"],
+    "Novorossiysk": ["BOSPHORUS", "SUEZ_NORTH", "SUEZ_SOUTH", "BAB_EL_MANDEB"],
+
+    # Russia Pacific coast -> East/South China Sea -> Malacca -> India
+    "Vostochny": ["TAIWAN_STRAIT", "SINGAPORE_STRAIT"],
+
+    # US Gulf -> around the Cape of Good Hope -> India
+    "New Orleans": ["CAPE_OF_GOOD_HOPE"],
+    "Houston": ["CAPE_OF_GOOD_HOPE"],
+    "Mobile": ["CAPE_OF_GOOD_HOPE"],
+
+    # Australia east coast -> south of the continent -> Indian Ocean
+    "Newcastle": ["CAPE_LEEUWIN"],
+    "Hay Point": ["CAPE_LEEUWIN"],
+    "Gladstone": ["CAPE_LEEUWIN"],
+    "Abbot Point": ["CAPE_LEEUWIN"],
+
+    # Borneo/Makassar side of Indonesia -> Karimata Strait -> Malacca
+    "Samarinda": ["SINGAPORE_STRAIT"],
+    "Taboneo": ["SINGAPORE_STRAIT"],
+    "Balikpapan": ["SINGAPORE_STRAIT"],
+    "Muara Berau": ["SINGAPORE_STRAIT"],
+}
+
+
+def _coords(point_name):
+    """Resolve a port name or WAYPOINTS key to (lat, lon)."""
+    if point_name in PORT_COORDINATES:
+        return PORT_COORDINATES[point_name]
+    return WAYPOINTS[point_name]
+
+
+def _great_circle_nm_between(point_a, point_b):
+    """Great-circle distance in nautical miles between two named points."""
+    lat1, lon1 = _coords(point_a)
+    lat2, lon2 = _coords(point_b)
 
     earth_radius_nm = 3440.065
 
@@ -66,6 +124,20 @@ def _great_circle_nm(origin, destination):
     return 2 * earth_radius_nm * asin(sqrt(a))
 
 
+def _route_nm(origin_port, destination_port):
+    """
+    Total distance in nautical miles for the origin's route, following
+    any required chokepoint waypoints instead of a direct great circle.
+    """
+    waypoints = ORIGIN_ROUTE_OVERRIDES.get(origin_port, [])
+    chain = [origin_port, *waypoints, destination_port]
+
+    return sum(
+        _great_circle_nm_between(chain[i], chain[i + 1])
+        for i in range(len(chain) - 1)
+    )
+
+
 def estimate_sailing_days(
     origin_port: str,
     destination_port: str,
@@ -74,9 +146,11 @@ def estimate_sailing_days(
     """
     Estimate one-way sailing time for a port-to-port route.
 
-    This is a prototype estimate based on great-circle distance,
-    a configurable route factor, and average planning speed.
-    It is not a live vessel schedule.
+    This is a prototype estimate based on distance along known
+    navigable chokepoints (or a direct great circle where no landmass
+    obstructs it), a configurable route factor, and average planning
+    speed. It is not a live vessel schedule or a precise nautical-mile
+    routing quotation.
     """
     if origin_port not in PORT_COORDINATES:
         raise ValueError(
@@ -94,7 +168,7 @@ def estimate_sailing_days(
     if origin_port == destination_port:
         return 0.0
 
-    distance_nm = _great_circle_nm(
+    distance_nm = _route_nm(
         origin_port,
         destination_port,
     )
