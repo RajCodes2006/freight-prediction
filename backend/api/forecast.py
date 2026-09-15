@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from backend.schemas.forecast import ForecastRequest
 from models.decision_engine import build_decision
+from models.optimization.route_sailing import estimate_sailing_days
 
 router = APIRouter(prefix="/api", tags=["Forecast"])
 
@@ -9,17 +10,21 @@ router = APIRouter(prefix="/api", tags=["Forecast"])
 @router.post("/forecast")
 def forecast(request: ForecastRequest):
     try:
+        sailing_days = estimate_sailing_days(
+            origin_port=request.origin_port,
+            destination_port=request.destination_port,
+        )
+
         result = build_decision(
             cargo_quantity_mt=request.quantity_mt,
             origin_port=request.origin_port,
             destination_port=request.destination_port,
             contract_duration_months=request.contract_duration_months,
             planned_voyages=request.planned_voyages,
-            sailing_days=3.0,
+            sailing_days=sailing_days,
             verified_only=False,
         )
 
-        # Make sure the response always has the expected input structure.
         if not isinstance(result, dict):
             raise ValueError("Decision engine returned an invalid response.")
 
@@ -38,6 +43,12 @@ def forecast(request: ForecastRequest):
             "origin_port": request.origin_port,
             "destination_port": request.destination_port,
             "optimization_mode": "INDIAN_DESTINATION_PROTOTYPE",
+            "estimated_sailing_days": sailing_days,
+            "sailing_time_source": "ROUTE_ESTIMATE",
+            "sailing_time_note": (
+                "Prototype estimate from port coordinates and planning speed; "
+                "not a live vessel schedule."
+            ),
         }
 
         return result
