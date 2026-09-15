@@ -58,8 +58,6 @@ The current prototype uses historical Baltic dry-bulk index data containing:
 - SI — Supramax
 - PI — Panamax
 - CI — Capesize
-- DTI
-- CTI
 
 The current historical dataset covers:
 
