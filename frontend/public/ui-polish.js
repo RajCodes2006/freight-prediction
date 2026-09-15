@@ -1,10 +1,5 @@
 (() => {
   const MODEL_CLASSES = ["HSI", "SI", "PI", "CI"];
-  let refreshScheduled = false;
-  let navigationScheduled = false;
-  let observer;
-  let scrollHandler;
-
   const navMap = {
     overview: "#overview",
     forecast: "#forecast",
@@ -12,6 +7,9 @@
     ports: "#ports",
     contract: "#contract",
   };
+
+  let focusTimer = null;
+  let scrollRaf = null;
 
   const getModelClass = () => {
     const tag = document.querySelector(".chart-tag");
@@ -25,40 +23,33 @@
     return headingMatch ? headingMatch[1].toUpperCase() : null;
   };
 
-  const injectNavigationStyles = () => {
+  const injectStyles = () => {
     if (document.getElementById("freight-nav-polish")) return;
 
     const style = document.createElement("style");
     style.id = "freight-nav-polish";
     style.textContent = `
-      html {
-        scroll-behavior: smooth;
-      }
+      html { scroll-behavior: smooth; }
 
-      #overview,
-      #forecast,
-      #vessels,
-      #ports,
-      #contract {
-        scroll-margin-top: 22px;
-        transition:
-          transform 220ms ease,
-          box-shadow 220ms ease,
-          border-color 220ms ease;
+      #overview, #forecast, #vessels, #ports, #contract {
+        scroll-margin-top: 24px;
+        transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
         will-change: transform;
       }
 
-      .freight-nav-active {
+      .sidebar nav a.freight-nav-active {
         color: #f3f7f9 !important;
         background: #1a252d !important;
         box-shadow: inset 3px 0 0 #e4ef37, 0 6px 18px rgba(16, 23, 29, 0.08);
       }
 
-      .freight-nav-focus {
+      #overview.freight-nav-focus,
+      #forecast.freight-nav-focus,
+      #vessels.freight-nav-focus,
+      #ports.freight-nav-focus,
+      #contract.freight-nav-focus {
         transform: translateY(-5px);
-        box-shadow:
-          0 14px 34px rgba(16, 24, 30, 0.12),
-          0 0 0 1px rgba(228, 239, 55, 0.28);
+        box-shadow: 0 14px 34px rgba(16, 24, 30, 0.12), 0 0 0 1px rgba(228, 239, 55, 0.28);
       }
 
       .freight-nav-focus::before {
@@ -73,31 +64,32 @@
     document.head.appendChild(style);
   };
 
-  const setActive = (id, pulse = false) => {
-    document.querySelectorAll(".sidebar nav a[href]").forEach((link) => {
-      const target = link.getAttribute("href");
-      const isActive = target === `#${id}`;
+  const getLinks = () => Array.from(document.querySelectorAll(".sidebar nav a[href]"));
 
-      // Remove the React hard-coded `active` state so only one item can be selected.
+  const setActive = (id) => {
+    getLinks().forEach((link) => {
+      const active = link.getAttribute("href") === `#${id}`;
+
+      // The React markup historically included `active` on Overview.
+      // Navigation state is now owned entirely by this script.
       link.classList.remove("active");
-      link.classList.toggle("freight-nav-active", isActive);
+      link.classList.toggle("freight-nav-active", active);
 
-      if (isActive) {
-        link.setAttribute("aria-current", "page");
-      } else {
-        link.removeAttribute("aria-current");
-      }
+      if (active) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
     });
+  };
 
-    if (!pulse) return;
-
+  const focusSection = (id) => {
     const target = document.getElementById(id);
     if (!target) return;
 
+    if (focusTimer) window.clearTimeout(focusTimer);
     target.classList.remove("freight-nav-focus");
+
     requestAnimationFrame(() => {
       target.classList.add("freight-nav-focus");
-      window.setTimeout(() => {
+      focusTimer = window.setTimeout(() => {
         target.classList.remove("freight-nav-focus");
       }, 900);
     });
@@ -109,129 +101,104 @@
         id,
         element: document.querySelector(selector),
       }))
-      .filter((item) => item.element)
-      .sort((a, b) =>
-        a.element.getBoundingClientRect().top -
-        b.element.getBoundingClientRect().top
-      );
+      .filter(({ element }) => element);
 
   const updateActiveFromScroll = () => {
     const sections = getSections();
     if (!sections.length) return;
 
-    // The section whose top has most recently crossed this guide line is active.
-    // This handles the nested #ports section inside #forecast correctly.
-    const guideLine = window.innerHeight * 0.28;
+    // One guide line determines the single active section.
+    // If Ports is inside Forecast, Ports wins once its own top reaches the line.
+    const guideLine = Math.max(100, window.innerHeight * 0.30);
     let active = sections[0];
 
     for (const section of sections) {
-      if (section.element.getBoundingClientRect().top <= guideLine) {
-        active = section;
-      } else {
-        break;
-      }
+      const top = section.element.getBoundingClientRect().top;
+      if (top <= guideLine) active = section;
+      else break;
     }
 
     setActive(active.id);
   };
 
-  const scheduleScrollActiveUpdate = () => {
-    if (scrollHandler) return;
+  const scheduleScrollUpdate = () => {
+    if (scrollRaf) return;
 
-    scrollHandler = requestAnimationFrame(() => {
-      scrollHandler = null;
+    scrollRaf = requestAnimationFrame(() => {
+      scrollRaf = null;
       updateActiveFromScroll();
     });
   };
 
   const setupNavigation = () => {
-    if (navigationScheduled) return;
-    navigationScheduled = true;
+    injectStyles();
 
-    requestAnimationFrame(() => {
-      navigationScheduled = false;
-      injectNavigationStyles();
+    const navLinks = getLinks();
+    if (!navLinks.length) return;
 
-      const navLinks = document.querySelectorAll(".sidebar nav a[href]");
-      if (!navLinks.length) return;
+    // Always remove the legacy hard-coded active class, even after React rerenders.
+    navLinks.forEach((link) => link.classList.remove("active"));
 
-      navLinks.forEach((link) => {
-        if (link.dataset.freightNavReady === "true") return;
-        link.dataset.freightNavReady = "true";
+    navLinks.forEach((link) => {
+      if (link.dataset.freightNavReady === "true") return;
+      link.dataset.freightNavReady = "true";
 
-        link.addEventListener("click", (event) => {
-          const href = link.getAttribute("href");
-          if (!href || !href.startsWith("#")) return;
+      link.addEventListener("click", (event) => {
+        const href = link.getAttribute("href");
+        if (!href || !href.startsWith("#")) return;
 
-          const target = document.querySelector(href);
-          if (!target) return;
+        const target = document.querySelector(href);
+        if (!target) return;
 
-          event.preventDefault();
-          const id = href.slice(1);
+        event.preventDefault();
+        const id = href.slice(1);
 
-          setActive(id, true);
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        setActive(id);
+        focusSection(id);
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
 
-          if (window.history?.replaceState) {
-            window.history.replaceState(null, "", href);
-          }
+        if (window.history?.replaceState) {
+          window.history.replaceState(null, "", href);
+        }
 
-          link.blur();
-        });
+        link.blur();
       });
-
-      window.removeEventListener("scroll", scheduleScrollActiveUpdate);
-      window.addEventListener("scroll", scheduleScrollActiveUpdate, {
-        passive: true,
-      });
-      window.addEventListener("resize", scheduleScrollActiveUpdate, {
-        passive: true,
-      });
-
-      const hash = window.location.hash.slice(1);
-      if (hash && navMap[hash]) {
-        setActive(hash);
-      } else {
-        updateActiveFromScroll();
-      }
     });
+
+    const hash = window.location.hash.slice(1);
+    if (hash && navMap[hash]) setActive(hash);
+    else updateActiveFromScroll();
   };
 
   const refreshLabels = () => {
-    if (refreshScheduled) return;
-    refreshScheduled = true;
+    const modelClass = getModelClass();
+    if (!modelClass || !MODEL_CLASSES.includes(modelClass)) return;
 
-    requestAnimationFrame(() => {
-      refreshScheduled = false;
-      const modelClass = getModelClass();
-      if (!modelClass || !MODEL_CLASSES.includes(modelClass)) return;
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    let node;
 
-      const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_TEXT
-      );
-      const nodes = [];
-      let node;
+    while ((node = walker.nextNode())) {
+      const value = node.nodeValue?.trim();
+      if (value === "Current PI Index" || value === "PI Index") nodes.push(node);
+    }
 
-      while ((node = walker.nextNode())) {
-        const value = node.nodeValue?.trim();
-        if (value === "Current PI Index" || value === "PI Index") {
-          nodes.push(node);
-        }
-      }
-
-      nodes.forEach((textNode) => {
-        textNode.nodeValue = textNode.nodeValue.replace("PI", modelClass);
-      });
+    nodes.forEach((textNode) => {
+      textNode.nodeValue = textNode.nodeValue.replace("PI", modelClass);
     });
   };
 
   document.title = "Freight Predictor";
-  injectNavigationStyles();
+  injectStyles();
   setupNavigation();
   refreshLabels();
 
-  observer = new MutationObserver(() => {
+  window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
+  window.addEventListener("resize", scheduleScrollUpdate, { passive: true });
+
+  const observer = new MutationObserver(() => {
+    // React can recreate/update nav nodes and restore its original `active` class.
+    // Re-apply our single-source-of-truth state after every render.
     setupNavigation();
     refreshLabels();
   });
