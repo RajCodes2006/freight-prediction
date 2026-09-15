@@ -33,6 +33,21 @@ def build_data_provenance(result: Dict[str, Any]) -> Dict[str, Any]:
     forecast = result.get("forecast") or {}
     horizons = forecast.get("all_horizons") or {}
 
+    vessel_decision = result.get("vessel_decision") or {}
+    freight_rate_source = vessel_decision.get("freight_rate_source")
+
+    if freight_rate_source == "LIVE_CALIBRATED_INDEX":
+        freight_status = "MODELLED_ESTIMATE"
+        freight_source = "Live-calibrated vessel-class index"
+        freight_note = (
+            "Estimated from the live-calibrated vessel-class index and the prototype "
+            "baseline rate. It is not a route-specific charter quote."
+        )
+    else:
+        freight_status = "ASSUMED"
+        freight_source = "voyage_cost.py"
+        freight_note = "Fallback prototype freight rate; not a live route-specific charter quote."
+
     return {
         "methodology": "Each value is labelled as LIVE, VERIFIED, HISTORICAL, CALCULATED, MODELLED, or ASSUMED. Assumptions are not presented as market quotes.",
         "market_benchmarks": _source_record(
@@ -63,10 +78,10 @@ def build_data_provenance(result: Dict[str, Any]) -> Dict[str, Any]:
             },
         ),
         "freight_rate": _source_record(
-            "ASSUMED",
-            "PROTOTYPE_ASSUMPTION",
-            "voyage_cost.py",
-            "Prototype freight-rate values; not a live route-specific charter quote.",
+            freight_status,
+            "MARKET_CALIBRATED_ESTIMATE" if freight_status == "MODELLED_ESTIMATE" else "PROTOTYPE_ASSUMPTION",
+            freight_source,
+            freight_note,
         ),
         "bunker_cost": _source_record(
             "ASSUMED",
@@ -104,12 +119,12 @@ def build_data_provenance(result: Dict[str, Any]) -> Dict[str, Any]:
             "CALCULATED",
             "OPTIMIZATION_ENGINE",
             "Decision engine",
-            "Computed from cargo quantity, prototype freight rate, vessel time, prototype bunker cost, and prototype port charges.",
+            "Computed from cargo quantity, estimated/prototype freight rate, vessel time, prototype bunker cost, and prototype port charges.",
         ),
         "contract_economics": _source_record(
             "CALCULATED",
             "OPTIMIZATION_ENGINE",
             "Contract + risk model",
-            "Derived from prototype rate assumptions and the modelled market movement.",
+            "Derived from the estimated freight rate and modelled market movement.",
         ),
     }
