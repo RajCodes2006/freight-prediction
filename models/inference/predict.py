@@ -3,6 +3,8 @@ from pathlib import Path
 
 from models.model_registry import get_best_model
 from models.inference.load_models import load_model
+from models.inference.live_market import get_live_market_snapshot
+from models.inference.live_calibration import calibrate_live_vessel_indices
 
 # ============================================================
 # FREIGHT PREDICTION
@@ -63,6 +65,11 @@ def predict(
 ):
     """
     Generate a forecast for one vessel type and horizon.
+
+    The trained model still operates on its historical feature space. When
+    current BDI/BCI data is available, a historical calibration layer updates
+    the current level and applies the model's predicted percentage movement
+    to that live level. This avoids treating BDI/BCI as route-specific rates.
     """
 
     vessel_type = vessel_type.upper()
@@ -79,7 +86,7 @@ def predict(
 
     latest_row = get_latest_row()
 
-    current_index = float(
+    historical_current_index = float(
         latest_row[vessel_type]
     )
 
@@ -89,16 +96,12 @@ def predict(
     )
 
     # --------------------------------------------------------
-    # Naive forecast
+    # Historical-space prediction
     # --------------------------------------------------------
 
     if model_name == "Naive":
 
-        prediction = current_index
-
-    # --------------------------------------------------------
-    # ML forecast
-    # --------------------------------------------------------
+        historical_prediction = historical_current_index
 
     else:
 
@@ -124,19 +127,44 @@ def predict(
                 columns=feature_columns
             )
 
-            prediction = float(
+            historical_prediction = float(
                 model.predict(X)[0]
             )
 
         except FileNotFoundError:
 
-            # Temporary development fallback.
-            # We will remove this once all selected models
-            # have been trained and saved.
-
             model_name = f"{model_name} (fallback)"
 
-            prediction = current_index
+            historical_prediction = historical_current_index
+
+    # --------------------------------------------------------
+    # Live calibration
+    # --------------------------------------------------------
+
+    market_snapshot = get_live_market_snapshot()
+    calibration = calibrate_live_vessel_indices(market_snapshot)
+
+    live_current_index = calibration.get(
+        "vessel_indices", {}
+    ).get(vessel_type)
+
+    if (
+        calibration.get("available")
+        and live_current_index is not None
+        and historical_current_index != 0
+    ):
+        # Preserve the trained model's relative movement while replacing the
+        # stale historical level with the current calibrated market level.
+        relative_multiplier = (
+            historical_prediction / historical_current_index
+        )
+        prediction = float(live_current_index) * relative_multiplier
+        current_index = float(live_current_index)
+        current_level_source = "LIVE_CALIBRATED"
+    else:
+        prediction = historical_prediction
+        current_index = historical_current_index
+        current_level_source = "HISTORICAL_MODEL_DATA"
 
     # --------------------------------------------------------
     # Change
@@ -190,5 +218,15 @@ def predict(
             change_percent,
             2
         ),
-        "trend": trend
+        "trend": trend,
+        "historical_model_index": round(
+            historical_current_index,
+            2
+        ),
+        "historical_model_prediction": round(
+            historical_prediction,
+            2
+        ),
+        "current_level_source": current_level_source,
+        "live_market_calibration": calibration,
     }
