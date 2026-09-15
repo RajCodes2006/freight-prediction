@@ -1,29 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0b1720"/>
-      <stop offset="100%" stop-color="#152934"/>
-    </linearGradient>
-    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#39aef7"/>
-      <stop offset="100%" stop-color="#4be0b2"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
-  <circle cx="32" cy="27" r="19" fill="none" stroke="#2b78ba" stroke-width="1.4" opacity=".45"/>
-  <path d="M22 18h16l-2.5 8H24.5z" fill="#eef5f8"/>
-  <rect x="27" y="14" width="6" height="4" rx="1" fill="#eef5f8"/>
-  <rect x="16" y="26" width="26" height="13" rx="2" fill="#2279c9"/>
-  <path d="M12 39h34l-5 7H17z" fill="#f2f7fa"/>
-  <g fill="#42c9f4">
-    <rect x="19" y="29" width="6" height="5" rx=".7"/>
-    <rect x="27" y="29" width="6" height="5" rx=".7"/>
-    <rect x="35" y="29" width="4" height="5" rx=".7"/>
-  </g>
-  <path d="M35 20c7 1 11 4 14 9" fill="none" stroke="#56e2a8" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M47 29l4-1-1-4" fill="none" stroke="#56e2a8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="43" y="39" width="4" height="6" rx=".8" fill="#56e2a8"/>
-  <rect x="49" y="35" width="4" height="10" rx=".8" fill="#56e2a8"/>
-  <path d="M8 49c5-4 10-4 15 0s10 4 15 0 10-4 18 0" fill="none" stroke="url(#sea)" stroke-width="3" stroke-linecap="round"/>
-  <path d="M11 54c4-3 8-3 12 0s8 3 12 0 8-3 18 0" fill="none" stroke="#36aef4" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#10171d"/>
+  <text x="32" y="47" text-anchor="middle" font-size="48" font-family="" sans-serif>⚓</text>
 </svg>
