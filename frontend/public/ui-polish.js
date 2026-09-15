@@ -3,7 +3,7 @@
   let refreshScheduled = false;
   let navigationScheduled = false;
   let observer;
-  let intersectionObserver;
+  let scrollHandler;
 
   const navMap = {
     overview: "#overview",
@@ -76,8 +76,13 @@
   const setActive = (id, pulse = false) => {
     document.querySelectorAll(".sidebar nav a[href]").forEach((link) => {
       const target = link.getAttribute("href");
-      link.classList.toggle("freight-nav-active", target === `#${id}`);
-      if (target === `#${id}`) {
+      const isActive = target === `#${id}`;
+
+      // Remove the React hard-coded `active` state so only one item can be selected.
+      link.classList.remove("active");
+      link.classList.toggle("freight-nav-active", isActive);
+
+      if (isActive) {
         link.setAttribute("aria-current", "page");
       } else {
         link.removeAttribute("aria-current");
@@ -98,32 +103,45 @@
     });
   };
 
-  const setupIntersectionObserver = () => {
-    const sections = Object.entries(navMap)
-      .map(([id, selector]) => ({ id, element: document.querySelector(selector) }))
-      .filter((item) => item.element);
+  const getSections = () =>
+    Object.entries(navMap)
+      .map(([id, selector]) => ({
+        id,
+        element: document.querySelector(selector),
+      }))
+      .filter((item) => item.element)
+      .sort((a, b) =>
+        a.element.getBoundingClientRect().top -
+        b.element.getBoundingClientRect().top
+      );
 
-    if (!sections.length || typeof IntersectionObserver === "undefined") return;
+  const updateActiveFromScroll = () => {
+    const sections = getSections();
+    if (!sections.length) return;
 
-    intersectionObserver?.disconnect();
-    intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    // The section whose top has most recently crossed this guide line is active.
+    // This handles the nested #ports section inside #forecast correctly.
+    const guideLine = window.innerHeight * 0.28;
+    let active = sections[0];
 
-        if (visible[0]) {
-          setActive(visible[0].target.id);
-        }
-      },
-      {
-        root: null,
-        rootMargin: "-18% 0px -62% 0px",
-        threshold: [0.08, 0.2, 0.45],
+    for (const section of sections) {
+      if (section.element.getBoundingClientRect().top <= guideLine) {
+        active = section;
+      } else {
+        break;
       }
-    );
+    }
 
-    sections.forEach(({ element }) => intersectionObserver.observe(element));
+    setActive(active.id);
+  };
+
+  const scheduleScrollActiveUpdate = () => {
+    if (scrollHandler) return;
+
+    scrollHandler = requestAnimationFrame(() => {
+      scrollHandler = null;
+      updateActiveFromScroll();
+    });
   };
 
   const setupNavigation = () => {
@@ -133,7 +151,6 @@
     requestAnimationFrame(() => {
       navigationScheduled = false;
       injectNavigationStyles();
-      setupIntersectionObserver();
 
       const navLinks = document.querySelectorAll(".sidebar nav a[href]");
       if (!navLinks.length) return;
@@ -150,7 +167,9 @@
           if (!target) return;
 
           event.preventDefault();
-          setActive(href.slice(1), true);
+          const id = href.slice(1);
+
+          setActive(id, true);
           target.scrollIntoView({ behavior: "smooth", block: "start" });
 
           if (window.history?.replaceState) {
@@ -161,9 +180,20 @@
         });
       });
 
+      window.removeEventListener("scroll", scheduleScrollActiveUpdate);
+      window.addEventListener("scroll", scheduleScrollActiveUpdate, {
+        passive: true,
+      });
+      window.addEventListener("resize", scheduleScrollActiveUpdate, {
+        passive: true,
+      });
+
       const hash = window.location.hash.slice(1);
-      if (hash && navMap[hash]) setActive(hash);
-      else setActive("overview");
+      if (hash && navMap[hash]) {
+        setActive(hash);
+      } else {
+        updateActiveFromScroll();
+      }
     });
   };
 
