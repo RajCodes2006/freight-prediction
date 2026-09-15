@@ -37,6 +37,15 @@
         will-change: transform;
       }
 
+      /* React keeps a legacy .active on Overview. Neutralize it unless that
+         same link is the JS-selected navigation target, so two items can never
+         look selected at once. */
+      .sidebar nav a.active:not(.freight-nav-active) {
+        color: #96a3ad !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
       .sidebar nav a.freight-nav-active {
         color: #f3f7f9 !important;
         background: #1a252d !important;
@@ -70,8 +79,6 @@
     getLinks().forEach((link) => {
       const active = link.getAttribute("href") === `#${id}`;
 
-      // The React markup historically included `active` on Overview.
-      // Navigation state is now owned entirely by this script.
       link.classList.remove("active");
       link.classList.toggle("freight-nav-active", active);
 
@@ -104,18 +111,16 @@
       .filter(({ element }) => element);
 
   const updateActiveFromScroll = () => {
-    const sections = getSections();
+    const sections = getSections().sort(
+      (a, b) => a.element.getBoundingClientRect().top - b.element.getBoundingClientRect().top
+    );
     if (!sections.length) return;
 
-    // One guide line determines the single active section.
-    // If Ports is inside Forecast, Ports wins once its own top reaches the line.
     const guideLine = Math.max(100, window.innerHeight * 0.30);
     let active = sections[0];
 
     for (const section of sections) {
-      const top = section.element.getBoundingClientRect().top;
-      if (top <= guideLine) active = section;
-      else break;
+      if (section.element.getBoundingClientRect().top <= guideLine) active = section;
     }
 
     setActive(active.id);
@@ -135,9 +140,6 @@
 
     const navLinks = getLinks();
     if (!navLinks.length) return;
-
-    // Always remove the legacy hard-coded active class, even after React rerenders.
-    navLinks.forEach((link) => link.classList.remove("active"));
 
     navLinks.forEach((link) => {
       if (link.dataset.freightNavReady === "true") return;
@@ -197,8 +199,6 @@
   window.addEventListener("resize", scheduleScrollUpdate, { passive: true });
 
   const observer = new MutationObserver(() => {
-    // React can recreate/update nav nodes and restore its original `active` class.
-    // Re-apply our single-source-of-truth state after every render.
     setupNavigation();
     refreshLabels();
   });
