@@ -44,7 +44,7 @@
   };
 
   // Keep the browser tab title aligned with the product name.
-  document.title = "Freight Predictor";
+  document.title = "Freight Predictor AI";
 
   new MutationObserver(refresh).observe(document.documentElement, {
     subtree: true,
