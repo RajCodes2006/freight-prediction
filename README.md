@@ -2,6 +2,16 @@
 
 AI-powered freight forecasting and chartering decision-support system for bulk cargo procurement to India's East Coast ports.
 
+## 🚀 Live Deployments
+
+| Service                  | Link                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| 🌐 **Frontend / Vercel** | https://freight-prediction.vercel.app/                                         |
+| 💻 **GitHub Repository** | https://github.com/RajCodes2006/freight-prediction                             |
+| ⚙️ **Backend / Render**  | [Render Deployment](https://dashboard.render.com/web/srv-dacncu7qj5pc73dh01sg) |
+
+> **Note:** The Render link is the deployment dashboard for the backend service. The public API URL should be used for external API access if configured.
+
 ## Overview
 
 Bulk cargo chartering is often handled through repeated spot-market decisions based on current freight rates. This reactive approach makes it difficult to identify favorable market-entry windows, select the most suitable vessel, manage port constraints, and decide when short-term or medium-term multiple-voyage contracts are economically preferable.
@@ -12,86 +22,146 @@ The system combines freight-market forecasting with vessel specifications, port 
 
 ## Objectives
 
-- Forecast future freight-market conditions for different vessel classes.
-- Estimate 7, 30, 60, and 90-day market movements.
-- Identify favorable charter-entry windows.
-- Support vessel-type selection.
-- Account for Indian East Coast port constraints.
-- Estimate idle-time and operational risks.
-- Compare spot chartering with short-term and medium-term multiple-voyage strategies.
-- Provide actionable recommendations through a dashboard.
+* Forecast future freight-market conditions for different vessel classes.
+* Estimate 7, 30, 60, and 90-day market movements.
+* Identify favorable charter-entry windows.
+* Support vessel-type selection.
+* Account for Indian East Coast port constraints.
+* Estimate idle-time and operational risks.
+* Compare spot chartering with short-term and medium-term multiple-voyage strategies.
+* Provide actionable recommendations through a dashboard.
 
 ## Vessel Classes
 
 The initial forecasting layer covers:
 
-- Handysize
-- Supramax
-- Panamax
-- Capesize
+* **Handysize**
+* **Supramax**
+* **Panamax**
+* **Capesize**
 
 ## Target Trade Network
 
 The intended system will eventually cover bulk-cargo movements from major origins such as:
 
-- Australia
-- Indonesia
-- United States
-- Mozambique
-- Russia
+* Australia
+* Indonesia
+* United States
+* Mozambique
+* Russia
 
 to East Coast Indian ports including:
 
-- Paradip
-- Visakhapatnam
-- Gangavaram
-- Gopalpur
-- Dhamra
-- Sagar/Sandheads
-- Haldia
+* Paradip
+* Visakhapatnam
+* Gangavaram
+* Gopalpur
+* Dhamra
+* Sagar / Sandheads
+* Haldia
 
 ## Current Data
 
 The current prototype uses historical Baltic dry-bulk index data containing:
 
-- HSI — Handysize
-- SI — Supramax
-- PI — Panamax
-- CI — Capesize
+* **HSI** — Handysize
+* **SI** — Supramax
+* **PI** — Panamax
+* **CI** — Capesize
 
-The current historical dataset covers:
+### Historical Dataset
 
 **1 August 2012 → 31 July 2019**
 
-The current dataset is used for model development and experimentation. It is an index dataset and should not be interpreted as route-specific USD/MT freight quotations.
+The current historical dataset is used for model development and experimentation. It is an index dataset and should **not** be interpreted as route-specific USD/MT freight quotations.
 
 Additional data sources will be integrated later for:
 
-- Route-level freight rates
-- Port activity
-- Port congestion
-- Vessel specifications
-- Bunker/fuel prices
-- Commodity prices
-- Economic indicators
-- Port infrastructure constraints
+* Route-level freight rates
+* Port activity
+* Port congestion
+* Vessel specifications
+* Bunker / fuel prices
+* Commodity prices
+* Economic indicators
+* Port infrastructure constraints
 
 ## Current System
 
 The current prototype includes:
 
-- Multi-horizon freight forecasting
-- Model comparison and walk-forward evaluation
-- Forecast confidence scoring
-- Vessel feasibility analysis
-- Port and berth constraints
-- Congestion analysis
-- Voyage cost estimation
-- Contract optimization
-- Risk analysis
-- Master decision engine
-- FastAPI backend
-- React frontend
+### 📈 Forecasting
+
+* Multi-horizon freight forecasting
+* Model comparison
+* Walk-forward evaluation
+* Forecast confidence scoring
+
+### 🚢 Vessel & Port Analysis
+
+* Vessel feasibility analysis
+* Port and berth constraints
+* Congestion analysis
+* Vessel suitability evaluation
+
+### 💰 Voyage Economics
+
+* Voyage cost estimation
+* Chartering strategy analysis
+* Contract optimization
+* Spot vs. multiple-voyage strategy comparison
+
+### ⚠️ Risk & Decision Support
+
+* Operational risk analysis
+* Idle-time estimation
+* Risk optimization
+* Master decision engine
+* Dashboard-based recommendations
+
+### 🧩 Architecture
+
+* **Frontend:** React + Vite
+* **Backend:** FastAPI
+* **Forecasting / ML:** Python
+* **Deployment:** Vercel + Render
+* **Version Control:** GitHub
+
+## System Architecture
+
+```text
+                    ┌─────────────────────┐
+                    │   Historical Data   │
+                    │  BDI / Port / etc.  │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   Feature Pipeline  │
+                    │  Cleaning + Features│
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   ML Forecasting    │
+                    │  7 / 30 / 60 / 90d  │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+             ┌─────────────────────────────────┐
+             │       Decision Engine            │
+             │                                 │
+             │ Vessel │ Port │ Cost │ Risk     │
+             │        │      │      │           │
+             └────────────────┬────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │   React Dashboard   │
+                    │ Recommendations &   │
+                    │ Decision Support    │
+                    └─────────────────────┘
+```
 
 ## Project Structure
 
@@ -156,3 +226,135 @@ freight-prediction/
 │
 ├── requirements.txt
 └── README.md
+```
+
+## Running Locally
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/RajCodes2006/freight-prediction.git
+cd freight-prediction
+```
+
+### 2. Backend Setup
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start the FastAPI backend:
+
+```bash
+uvicorn backend.main:app --reload
+```
+
+The API will normally be available at:
+
+```text
+http://127.0.0.1:8000
+```
+
+### 3. Frontend Setup
+
+Navigate to the frontend:
+
+```bash
+cd frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The Vite development server will provide the local dashboard URL in the terminal.
+
+## Deployment
+
+The project uses a split deployment architecture:
+
+```text
+                ┌──────────────────────┐
+                │     User Browser     │
+                └──────────┬───────────┘
+                           │
+                           ▼
+                ┌──────────────────────┐
+                │       Vercel         │
+                │   React + Vite UI    │
+                └──────────┬───────────┘
+                           │ API Requests
+                           ▼
+                ┌──────────────────────┐
+                │       Render         │
+                │     FastAPI API      │
+                └──────────────────────┘
+```
+
+### Production Links
+
+**Frontend**
+
+https://freight-prediction.vercel.app/
+
+**GitHub**
+
+https://github.com/RajCodes2006/freight-prediction
+
+**Render**
+
+The backend service is deployed through Render.
+
+## Future Development
+
+Planned improvements include:
+
+* Integration of live freight-rate data.
+* Route-specific freight prediction.
+* Real-time port congestion data.
+* AIS-based vessel tracking.
+* Live bunker-price integration.
+* Expanded vessel specifications.
+* More detailed berth and draft constraints.
+* Commodity-price integration.
+* Macroeconomic indicators.
+* Improved probabilistic forecasting.
+* Automated chartering alerts.
+* Historical backtesting of chartering strategies.
+* Production-grade authentication and user management.
+
+## Disclaimer
+
+This project is a **decision-support prototype** intended for research, experimentation, and demonstration.
+
+Forecasts and recommendations are model outputs and should not be treated as guaranteed future freight prices, commercial quotations, or financial advice.
+
+---
+
+## 👨‍💻 Project
+
+**Freight Prediction**
+
+AI-driven freight forecasting and chartering decision-support platform for bulk cargo procurement and maritime logistics.
