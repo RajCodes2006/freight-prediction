@@ -8,9 +8,7 @@ AI-powered freight forecasting and chartering decision-support system for bulk c
 | ------------------------ | ------------------------------------------------------------------------------ |
 | 🌐 **Frontend / Vercel** | https://freight-prediction.vercel.app/                                         |
 | 💻 **GitHub Repository** | https://github.com/RajCodes2006/freight-prediction                             |
-| ⚙️ **Backend / Render**  | [Render Deployment](https://dashboard.render.com/web/srv-dacncu7qj5pc73dh01sg) |
-
-> **Note:** The Render link is the deployment dashboard for the backend service. The public API URL should be used for external API access if configured.
+| ⚙️ **Backend / Render**  | The backend service is deployed through Render                                 |
 
 ## Overview
 
