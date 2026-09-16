@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import NotFound from "./NotFound";
 import axios from "axios";
 import {
   Anchor,
@@ -1642,4 +1643,12 @@ function App() {
   );
 }
 
-export default App;
+function AppWithNotFound() {
+  if (window.location.pathname !== "/") {
+    return <NotFound />;
+  }
+
+  return <App />;
+}
+
+export default AppWithNotFound;
