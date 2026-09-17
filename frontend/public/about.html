@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Freight Prediction — Technical and product brief for the AI-powered bulk chartering decision-support system." />
+  <title>Freight Prediction — About</title>
+  <script>
+    const savedTheme = localStorage.getItem("freight-theme");
+    if (savedTheme === "light" || savedTheme === "dark") {
+      document.documentElement.dataset.theme = savedTheme;
+    }
+  </script>
+  <style>
+    :root {
+      --paper: #eceee4;
+      --panel: #f7f8f2;
+      --panel-2: #e1e3d6;
+      --ink: #10222a;
+      --ink-soft: #45585d;
+      --ink-faint: #7c8c8a;
+      --line: rgba(16,34,42,0.16);
+      --accent: #b23a2e;
+      --accent-dim: rgba(178,58,46,0.10);
+      --teal: #2e6e71;
+      --brass: #8c6d1e;
+      --brass-dim: rgba(140,109,30,0.12);
+      --shadow: 0 12px 34px rgba(16,34,42,0.06);
+    }
+    :root[data-theme="dark"] {
+      --paper: #0c1a20;
+      --panel: #12262f;
+      --panel-2: #173039;
+      --ink: #ecefe6;
+      --ink-soft: #adc0bb;
+      --ink-faint: #7c9490;
+      --line: rgba(236,239,230,0.16);
+      --accent: #e1806f;
+      --accent-dim: rgba(225,128,111,0.14);
+      --teal: #74b7ae;
+      --brass: #d9b65d;
+      --brass-dim: rgba(217,182,93,0.14);
+      --shadow: 0 16px 38px rgba(0,0,0,0.22);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    .mono { font-family: "IBM Plex Mono", Consolas, monospace; }
+    .shell { min-height: 100vh; display: grid; grid-template-columns: 250px minmax(0, 1fr); }
+    .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 22px 24px; background: var(--panel); border-right: 1px solid var(--line); }
+    .brand { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 8px; background: var(--ink); color: var(--paper); font-size: 16px; }
+    .brand strong { font-family: Georgia, serif; font-size: 17px; display: block; }
+    .brand span { font-size: 11px; color: var(--ink-faint); display: block; }
+    .rail-sub { font-size: 12px; color: var(--ink-faint); border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 16px; }
+    .rail-label { font-size: 10px; color: var(--ink-faint); letter-spacing: .08em; margin-bottom: 8px; }
+    .rail nav { display: grid; gap: 2px; }
+    .rail nav a { text-decoration: none; color: var(--ink-soft); padding: 8px; border-left: 2px solid transparent; border-radius: 6px; font-size: 13px; }
+    .rail nav a:hover { background: var(--panel-2); color: var(--ink); }
+    .back { display: inline-flex; margin-top: 22px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; text-decoration: none; color: var(--ink-soft); font-size: 12px; }
+    .back:hover { background: var(--panel-2); color: var(--ink); }
+    main { min-width: 0; }
+    .wrap { width: min(960px, calc(100% - 48px)); margin: 0 auto; }
+    .topline { display: flex; justify-content: flex-end; padding: 18px 0 0; }
+    .dashboard-link { text-decoration: none; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--ink-soft); background: var(--panel); }
+    .dashboard-link:hover { border-color: var(--accent); color: var(--accent); }
+    .cover { padding: 40px 0 44px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; }
+    h1,h2,h3 { font-family: Georgia, "Times New Roman", serif; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; }
+    h1 { font-size: clamp(38px, 6vw, 62px); margin: 12px 0 14px; }
+    h2 { font-size: clamp(28px, 4vw, 38px); margin: 0 0 18px; }
+    .lede { max-width: 70ch; color: var(--ink-soft); font-size: 18px; }
+    .manifest { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 28px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
+    .manifest div { padding: 13px 15px; border-right: 1px solid var(--line); }
+    .manifest div:last-child { border-right: 0; }
+    .manifest .k { display: block; color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
+    .manifest .v { display: block; margin-top: 3px; font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600; }
+    section { padding: 54px 0; border-bottom: 1px solid var(--line); }
+    .section-kicker { display: flex; align-items: center; gap: 12px; color: var(--accent); font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600; letter-spacing: .05em; }
+    .section-kicker::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .lead { font-family: Georgia, serif; font-size: 18px; color: var(--ink); max-width: 66ch; }
+    p { color: var(--ink-soft); max-width: 72ch; }
+    ul { padding-left: 22px; max-width: 72ch; }
+    li { color: var(--ink-soft); margin: 9px 0; }
+    li strong { color: var(--ink); }
+    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--panel); box-shadow: var(--shadow); }
+    .card .tag { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
+    .card strong { display: block; margin: 8px 0 5px; font-size: 17px; }
+    .card span { color: var(--ink-soft); font-size: 13px; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
+    .step { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 14px; }
+    .step .n { color: var(--accent); font-family: "IBM Plex Mono", monospace; font-size: 11px; }
+    .step strong { display: block; margin-top: 6px; }
+    .step p { margin: 7px 0 0; font-size: 12px; }
+    .arch { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: center; margin-top: 22px; }
+    .arch-box { min-height: 92px; display: grid; place-items: center; text-align: center; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); padding: 14px; }
+    .arch-box.accent { background: var(--accent-dim); border-color: var(--accent); }
+    .arrow { text-align: center; color: var(--ink-faint); font-size: 20px; }
+    .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 24px 0; }
+    .facts div { background: var(--panel); padding: 16px; }
+    .facts strong { display: block; font-family: "IBM Plex Mono", monospace; font-size: 21px; }
+    .facts span { color: var(--ink-faint); font-size: 11px; }
+    .note { margin-top: 22px; padding: 16px 18px; border: 1px solid var(--brass); border-radius: 10px; background: var(--brass-dim); color: var(--ink-soft); }
+    footer { padding: 34px 0 70px; color: var(--ink-faint); font-size: 12px; }
+    @media (max-width: 860px) {
+      .shell { display: block; }
+      .rail { display: none; }
+      .wrap { width: min(100% - 32px, 760px); }
+      .manifest, .facts { grid-template-columns: repeat(2, 1fr); }
+      .manifest div:nth-child(2), .facts div:nth-child(2) { border-right: 0; }
+      .manifest div, .facts div { border-bottom: 1px solid var(--line); }
+      .card-grid, .pipeline, .arch { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+    }
+    @media (max-width: 500px) {
+      .manifest, .facts { grid-template-columns: 1fr; }
+      .manifest div, .facts div { border-right: 0; }
+      .manifest div:last-child, .facts div:last-child { border-bottom: 0; }
+      .topline { padding-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail">
+      <div class="brand">
+        <div class="brand-mark">⚓</div>
+        <div><strong>Freight Prediction</strong><span>Technical &amp; product brief</span></div>
+      </div>
+      <div class="rail-sub">SIH Problem Statement 26006 — AI-powered bulk chartering decision support for India's East Coast.</div>
+      <div class="rail-label">CONTENTS</div>
+      <nav>
+        <a href="#summary">01 · Executive summary</a>
+        <a href="#problem">02 · Problem statement</a>
+        <a href="#solution">03 · Solution &amp; UVP</a>
+        <a href="#architecture">04 · Architecture</a>
+        <a href="#features">05 · Features &amp; pipeline</a>
+        <a href="#data">06 · Data &amp; forecasting</a>
+        <a href="#roadmap">07 · Feasibility &amp; roadmap</a>
+      </nav>
+      <a class="back" href="/">← Back to dashboard</a>
+    </aside>
+    <main>
+      <div class="wrap">
+        <div class="topline"><a class="dashboard-link" href="/">← DASHBOARD</a></div>
+        <header class="cover">
+          <div class="eyebrow">SMART INDIA HACKATHON · PROBLEM STATEMENT 26006</div>
+          <h1>Freight Prediction</h1>
+          <p class="lede">An AI-powered decision-support system for bulk-cargo chartering to India's East Coast — turning reactive spot-market decisions into a forecast-driven, physically-grounded strategy.</p>
+          <div class="manifest">
+            <div><span class="k">Organization</span><span class="v">Ministry of Steel</span></div>
+            <div><span class="k">Department</span><span class="v">SAIL</span></div>
+            <div><span class="k">Category</span><span class="v">Software</span></div>
+            <div><span class="k">Theme</span><span class="v">Transport &amp; Logistics</span></div>
+          </div>
+        </header>
+        <section id="summary">
+          <div class="section-kicker">01 · EXECUTIVE SUMMARY</div>
+          <h2>From daily spot-checking the market to one graded recommendation</h2>
+          <p class="lead">Freight Prediction connects forecasting, vessel/port feasibility, voyage economics, contract strategy and risk into one decision flow. A cargo scenario goes in; the system returns a recommendation with the underlying assumptions and data provenance exposed.</p>
+          <div class="facts">
+            <div><strong>5</strong><span>Origin countries</span></div>
+            <div><strong>4</strong><span>Vessel classes</span></div>
+            <div><strong>4</strong><span>Forecast horizons</span></div>
+            <div><strong>16</strong><span>Forecast targets</span></div>
+          </div>
+          <ul>
+            <li><strong>Validated multi-horizon forecasting:</strong> 7/30/60/90-day outlooks across Handysize, Supramax, Panamax and Capesize indices.</li>
+            <li><strong>Physical reality:</strong> candidate vessels are screened against port and berth constraints before economics are compared.</li>
+            <li><strong>Transparent provenance:</strong> meaningful figures can be distinguished as live, verified, historical, calculated, modelled or assumed.</li>
+          </ul>
+        </section>
+        <section id="problem">
+          <div class="section-kicker">02 · PROBLEM STATEMENT</div>
+          <h2>Chartering needs more than a market number</h2>
+          <p class="lead">The problem is not only forecasting freight rates. A useful procurement decision also needs to know whether the vessel physically fits, what the complete voyage costs, how much congestion risk is present, and whether a contract can improve the expected outcome versus continued spot-market exposure.</p>
+          <div class="card-grid">
+            <div class="card"><span class="tag">01</span><strong>Forecasting</strong><span>Identify entry windows and forward market direction instead of relying only on today's spot observation.</span></div>
+            <div class="card"><span class="tag">02</span><strong>Constraints</strong><span>Respect berth limits, vessel dimensions, cargo requirements and congestion at both ends of the voyage.</span></div>
+            <div class="card"><span class="tag">03</span><strong>Economics</strong><span>Compare voyage cost, spot exposure, contract pricing and risk-adjusted savings in one view.</span></div>
+          </div>
+        </section>
+        <section id="solution">
+          <div class="section-kicker">03 · SOLUTION &amp; UVP</div>
+          <h2>One integrated decision engine, not three disconnected tools</h2>
+          <p>Freight Prediction carries the same cargo scenario through every stage of the decision. The system first establishes a market outlook, then checks physical feasibility, prices the feasible options, evaluates contract economics and finally returns a confidence-aware recommendation.</p>
+          <ul>
+            <li><strong>Feasibility before price.</strong> A vessel that cannot physically serve the route is filtered out before voyage cost becomes a decision factor.</li>
+            <li><strong>Graded forecasts.</strong> Each horizon gets its own confidence assessment so short and long horizons are not treated as equally reliable by default.</li>
+            <li><strong>Visible economics.</strong> Freight, vessel time, bunker and port charges can be compared across feasible vessel classes.</li>
+            <li><strong>Contract math.</strong> Duration, discount assumptions and risk scenarios are combined into expected savings.</li>
+            <li><strong>Transparency.</strong> The response distinguishes validated output from prototype assumptions instead of hiding uncertainty behind a single confident number.</li>
+          </ul>
+        </section>
+        <section id="architecture">
+          <div class="section-kicker">04 · TECHNICAL ARCHITECTURE</div>
+          <h2>Frontend → API → models → decision engine</h2>
+          <p>The production stack mirrors the decision pipeline: React 19 on Vite forms the operator-facing dashboard; FastAPI exposes the prediction endpoint; Python models handle forecasting and optimization; and verified datasets plus optional live inputs feed the decision layer.</p>
+          <div class="arch">
+            <div class="arch-box"><strong>React Dashboard</strong><br><span class="mono">Vite · Vercel</span></div>
+            <div class="arrow">→</div>
+            <div class="arch-box"><strong>FastAPI Service</strong><br><span class="mono">/api/forecast · Render</span></div>
+            <div class="arrow">↓</div>
+            <div class="arch-box"><strong>Forecast Models</strong><br><span class="mono">XGBoost · LightGBM · RF</span></div>
+            <div class="arrow">→</div>
+            <div class="arch-box accent"><strong>Decision Engine</strong><br><span class="mono">vessel → economics → contract → risk</span></div>
+          </div>
+        </section>
+        <section id="features">
+          <div class="section-kicker">05 · FEATURES &amp; GOLDEN PATH</div>
+          <h2>Eight linked stages behind one recommendation</h2>
+          <div class="pipeline">
+            <div class="step"><span class="n">01</span><strong>Scenario</strong><p>Commodity, quantity, origin, destination, duration and voyages.</p></div>
+            <div class="step"><span class="n">02</span><strong>Forecast</strong><p>Generate market outlooks across four horizons.</p></div>
+            <div class="step"><span class="n">03</span><strong>Confidence</strong><p>Attach validation-based confidence to every horizon.</p></div>
+            <div class="step"><span class="n">04</span><strong>Vessel</strong><p>Screen vessel classes against route and berth constraints.</p></div>
+            <div class="step"><span class="n">05</span><strong>Economics</strong><p>Calculate complete voyage cost for feasible options.</p></div>
+            <div class="step"><span class="n">06</span><strong>Contract</strong><p>Compare spot, forecast and fixed-contract scenarios.</p></div>
+            <div class="step"><span class="n">07</span><strong>Risk</strong><p>Assess downside, current and upside scenarios plus congestion.</p></div>
+            <div class="step"><span class="n">08</span><strong>Recommend</strong><p>Return vessel, action and supporting rationale.</p></div>
+          </div>
+        </section>
+        <section id="data">
+          <div class="section-kicker">06 · DATA &amp; FORECASTING</div>
+          <h2>Validated models with explicit prototype boundaries</h2>
+          <p>The current forecasting layer uses historical Baltic dry-bulk data covering August 2012 to July 2019. Four vessel-class indices are forecast over four horizons, giving sixteen forecast targets in total.</p>
+          <ul>
+            <li>Candidate algorithms include <strong>XGBoost, LightGBM and Random Forest</strong>, benchmarked against a persistence baseline.</li>
+            <li>Validation uses chronological splits and walk-forward evaluation rather than random shuffling.</li>
+            <li>The model registry records the serving method per vessel class and horizon; where boosted models did not reliably beat persistence, the simpler baseline is used.</li>
+            <li>An optional live-market calibration layer can adjust the current index level when benchmark data is available, while keeping the trained model responsible for forecast shape.</li>
+          </ul>
+          <div class="note"><strong>Prototype data transparency:</strong> route-specific freight USD/MT, bunker costs, port charges, sailing time and some queue inputs may still be assumptions in the prototype. The interface is designed to label those values rather than present them as live commercial quotations.</div>
+        </section>
+        <section id="roadmap">
+          <div class="section-kicker">07 · FEASIBILITY &amp; ROADMAP</div>
+          <h2>Designed to move from prototype to operational decision support</h2>
+          <div class="card-grid">
+            <div class="card"><span class="tag">Now</span><strong>Prototype</strong><span>Integrated forecasting, vessel screening, economics, contract analysis, risk and dashboard presentation.</span></div>
+            <div class="card"><span class="tag">Next</span><strong>Live data</strong><span>Expand continuous market and port observations, improve route-specific operational inputs and strengthen monitoring.</span></div>
+            <div class="card"><span class="tag">Future</span><strong>Decision platform</strong><span>Prediction history, scenario simulation, alerts, reporting and model monitoring for day-to-day procurement workflows.</span></div>
+          </div>
+        </section>
+        <footer><strong>Freight Prediction</strong> · AI-powered bulk chartering decision support · International origins → India's East Coast</footer>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
