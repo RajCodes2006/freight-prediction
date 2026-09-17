@@ -1,7 +1,13 @@
+import { useEffect } from "react";
 import { Anchor, ArrowLeft, Home } from "lucide-react";
 import "./NotFound.css";
 
 function NotFound() {
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("freight-theme") || "dark";
+    document.documentElement.dataset.theme = savedTheme;
+  }, []);
+
   return (
     <div className="not-found-page">
       <div className="not-found-card">

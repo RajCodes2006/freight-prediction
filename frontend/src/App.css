@@ -2731,3 +2731,619 @@ tbody td {
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   FREIGHT PREDICTION — DARK / LIGHT MODE
+   Requires: document.documentElement.dataset.theme = "light"
+   or "dark" from App.jsx.
+   Dark mode remains the default.
+   ========================================================= */
+
+/* Theme variables used by charts and shared UI */
+:root {
+  --chart-grid: #26343c;
+  --chart-text: #778790;
+  --chart-reference: #5a6972;
+
+  --tooltip-bg: #111c23;
+  --tooltip-border: #31424c;
+  --tooltip-text: #eef4f7;
+  --tooltip-label: #98a7af;
+
+  --theme-page-bg: #0b1217;
+  --theme-surface: #111b22;
+  --theme-surface-2: #142129;
+  --theme-surface-3: #182730;
+  --theme-line: #273640;
+  --theme-line-soft: #202d35;
+  --theme-text: #eef4f7;
+  --theme-text-2: #c4cfd5;
+  --theme-muted: #86949d;
+}
+
+/* Theme toggle */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle {
+  min-width: 72px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid #2a3942;
+  border-radius: 999px;
+  background: #111c23;
+  color: #dce5e9;
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition:
+    border-color 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.theme-toggle:hover {
+  border-color: #dbe92f;
+  color: #dbe92f;
+  transform: translateY(-1px);
+}
+
+.theme-toggle svg {
+  flex: none;
+}
+
+/* =========================================================
+   LIGHT MODE
+   ========================================================= */
+
+html[data-theme="light"] {
+  --chart-grid: #dfe5e8;
+  --chart-text: #71818a;
+  --chart-reference: #9aa7b0;
+
+  --tooltip-bg: #ffffff;
+  --tooltip-border: #dce2e5;
+  --tooltip-text: #17212b;
+  --tooltip-label: #71818a;
+
+  --theme-page-bg: #f3f5f6;
+  --theme-surface: #ffffff;
+  --theme-surface-2: #f8fafb;
+  --theme-surface-3: #eef2f4;
+  --theme-line: #dfe5e8;
+  --theme-line-soft: #edf0f2;
+  --theme-text: #17212b;
+  --theme-text-2: #4e5d66;
+  --theme-muted: #71818a;
+}
+
+html[data-theme="light"] body {
+  background: var(--theme-page-bg);
+  color: var(--theme-text);
+}
+
+html[data-theme="light"] .app-shell {
+  background:
+    radial-gradient(
+      circle at 80% 5%,
+      rgba(228, 239, 55, 0.08),
+      transparent 24%
+    ),
+    var(--theme-page-bg);
+  color: var(--theme-text);
+}
+
+/* Sidebar intentionally remains dark */
+html[data-theme="light"] .sidebar {
+  background: #10171d;
+  color: #dce5eb;
+}
+
+html[data-theme="light"] .main-content {
+  color: #17212b;
+}
+
+html[data-theme="light"] .topbar h2 {
+  color: #152029;
+}
+
+html[data-theme="light"] .eyebrow,
+html[data-theme="light"] .section-kicker {
+  color: #7d8a93;
+}
+
+html[data-theme="light"] .system-status {
+  border-color: #dfe4e7;
+  background: #ffffff;
+  color: #63717a;
+}
+
+html[data-theme="light"] .theme-toggle {
+  border-color: #dfe4e7;
+  background: #ffffff;
+  color: #63717a;
+}
+
+html[data-theme="light"] .theme-toggle:hover {
+  border-color: #b4bd59;
+  color: #66701e;
+}
+
+/* Hero remains dark for visual hierarchy */
+html[data-theme="light"] .hero-section {
+  border-color: #23323a;
+  background:
+    radial-gradient(
+      circle at 85% 22%,
+      rgba(228, 239, 55, 0.14),
+      transparent 18%
+    ),
+    linear-gradient(135deg, #172129 0%, #111a21 100%);
+  color: #ffffff;
+}
+
+html[data-theme="light"] .hero-section h3 {
+  color: #f7fafb;
+}
+
+html[data-theme="light"] .hero-section p {
+  color: #a7b3bc;
+}
+
+html[data-theme="light"] .hero-route span {
+  color: #bac3c9;
+}
+
+html[data-theme="light"] .hero-stat {
+  border-color: #32404a;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+html[data-theme="light"] .hero-stat span {
+  color: #788793;
+}
+
+html[data-theme="light"] .hero-stat strong {
+  color: #edf2f5;
+}
+
+/* Shared light surfaces */
+html[data-theme="light"] .scenario-card,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .stat-card {
+  border-color: #e0e6e9;
+  background: #ffffff;
+  color: #17212b;
+  box-shadow: 0 6px 24px rgba(22, 31, 38, 0.045);
+}
+
+html[data-theme="light"] .scenario-card {
+  background: #ffffff;
+}
+
+html[data-theme="light"] .section-heading-row h3,
+html[data-theme="light"] .panel-header h3 {
+  color: #16212a;
+}
+
+html[data-theme="light"] .scenario-status {
+  border-color: #e4e8e9;
+  background: #ffffff;
+  color: #78848c;
+}
+
+html[data-theme="light"] .field-label {
+  color: #6f7b84;
+}
+
+html[data-theme="light"] .input-control,
+html[data-theme="light"] .select-control {
+  border-color: #dce2e5;
+  background: #fafbfb;
+}
+
+html[data-theme="light"] .input-control input,
+html[data-theme="light"] .select-control select {
+  color: #19242d;
+}
+
+html[data-theme="light"] .select-control select option {
+  background: #ffffff;
+  color: #19242d;
+}
+
+html[data-theme="light"] .input-control > span {
+  color: #89959d;
+}
+
+html[data-theme="light"] .select-control svg {
+  color: #7b8890;
+}
+
+/* Keep analysis button branding */
+html[data-theme="light"] .analyze-btn {
+  background: #e4ef37;
+  color: #151d22;
+}
+
+/* Decision card intentionally stays dark */
+html[data-theme="light"] .decision-card {
+  border-color: #263740;
+  background:
+    radial-gradient(circle at 90% 20%, rgba(228, 239, 55, 0.12), transparent 21%),
+    linear-gradient(145deg, #1b2730, #111a21);
+  color: #ffffff;
+}
+
+html[data-theme="light"] .decision-main h3 {
+  color: #ffffff;
+}
+
+html[data-theme="light"] .decision-main p {
+  color: #9aa7b0;
+}
+
+html[data-theme="light"] .route-summary {
+  color: #b0bbc2;
+}
+
+html[data-theme="light"] .decision-vessel-icon {
+  border-color: #33424d;
+  color: #e4ef37;
+}
+
+html[data-theme="light"] .decision-metrics {
+  border-top-color: #2d3a44;
+}
+
+html[data-theme="light"] .decision-metrics span {
+  color: #7e8b95;
+}
+
+html[data-theme="light"] .decision-metrics strong {
+  color: #eef3f5;
+}
+
+/* KPI cards */
+html[data-theme="light"] .stat-icon {
+  background: #f0f3d7;
+  color: #66701e;
+}
+
+html[data-theme="light"] .stat-label {
+  color: #8b969e;
+}
+
+html[data-theme="light"] .stat-card strong {
+  color: #16222a;
+}
+
+html[data-theme="light"] .stat-subtext {
+  color: #7a8790;
+}
+
+html[data-theme="light"] .positive {
+  color: #5d9c68 !important;
+}
+
+/* Panel details */
+html[data-theme="light"] .panel-description {
+  color: #89949c;
+}
+
+html[data-theme="light"] .chart-tag,
+html[data-theme="light"] .table-route,
+html[data-theme="light"] .savings-pill {
+  border-color: #e1e6e9;
+  background: #ffffff;
+  color: #6e7a83;
+}
+
+/* Recharts */
+html[data-theme="light"] .recharts-cartesian-grid line {
+  stroke: var(--chart-grid);
+}
+
+html[data-theme="light"] .recharts-text,
+html[data-theme="light"] .recharts-xAxis .recharts-cartesian-axis-tick-value,
+html[data-theme="light"] .recharts-yAxis .recharts-cartesian-axis-tick-value {
+  fill: var(--chart-text);
+}
+
+html[data-theme="light"] .recharts-default-tooltip {
+  background: var(--tooltip-bg) !important;
+  border-color: var(--tooltip-border) !important;
+  color: var(--tooltip-text) !important;
+}
+
+html[data-theme="light"] .recharts-tooltip-item-list,
+html[data-theme="light"] .recharts-tooltip-item,
+html[data-theme="light"] .recharts-tooltip-label {
+  color: var(--tooltip-text);
+}
+
+/* Forecast cards */
+html[data-theme="light"] .forecast-item {
+  border-color: #e7ebed;
+  background: #fcfdfd;
+}
+
+html[data-theme="light"] .forecast-item > span {
+  color: #8c979f;
+}
+
+html[data-theme="light"] .forecast-item strong {
+  color: #18242c;
+}
+
+html[data-theme="light"] .negative {
+  color: #ca756a !important;
+}
+
+/* Port intelligence */
+html[data-theme="light"] .risk-badge {
+  border: 1px solid #ece6bc;
+  background: #faf2d2;
+  color: #877d3c;
+}
+
+html[data-theme="light"] .route-marker {
+  border-color: #e0e6e9;
+}
+
+html[data-theme="light"] .origin-marker {
+  color: #70771f;
+  background: #f0f3d7;
+}
+
+html[data-theme="light"] .destination-marker {
+  color: #59656e;
+  background: #edf0f2;
+}
+
+html[data-theme="light"] .route-place span {
+  color: #8b979f;
+}
+
+html[data-theme="light"] .route-place strong {
+  color: #17222b;
+}
+
+html[data-theme="light"] .route-place small {
+  color: #8d989f;
+}
+
+html[data-theme="light"] .route-connector {
+  border-left-color: #cdd4d8;
+}
+
+html[data-theme="light"] .route-connector span {
+  color: #8c979e;
+}
+
+html[data-theme="light"] .route-connector div {
+  background: linear-gradient(90deg, #d8dde0, transparent);
+}
+
+html[data-theme="light"] .queue-list {
+  border-top-color: #e7ebed;
+}
+
+html[data-theme="light"] .queue-list > div {
+  border-bottom-color: #e7ebed;
+}
+
+html[data-theme="light"] .queue-list span {
+  color: #7b8790;
+}
+
+html[data-theme="light"] .queue-list strong {
+  color: #29343c;
+}
+
+html[data-theme="light"] .muted-value {
+  color: #8b969e !important;
+}
+
+/* Warning and note boxes */
+html[data-theme="light"] .warning-box {
+  border-color: #ece6bc;
+  background: #fbf8e7;
+  color: #756f36;
+}
+
+html[data-theme="light"] .data-note {
+  border-color: #e6e2c1;
+  background: #fbf8e8;
+}
+
+html[data-theme="light"] .data-note-icon {
+  background: #f2efcc;
+  color: #747239;
+}
+
+html[data-theme="light"] .data-note strong {
+  color: #5e5c2b;
+}
+
+html[data-theme="light"] .data-note p {
+  color: #7c7950;
+}
+
+/* Vessel table */
+html[data-theme="light"] thead th {
+  border-bottom-color: #e3e8ea;
+  color: #8a969e;
+}
+
+html[data-theme="light"] tbody td {
+  border-bottom-color: #edf0f2;
+  color: #2e3a42;
+}
+
+html[data-theme="light"] .selected-row {
+  background: #fbfce9;
+  box-shadow: inset 2px 0 0 #dbe92f;
+}
+
+html[data-theme="light"] .mini-vessel {
+  background: #f2f4f5;
+  color: #66737b;
+}
+
+html[data-theme="light"] .vessel-name strong {
+  color: #1e2a32;
+}
+
+/* Contract / savings */
+html[data-theme="light"] .contract-grid {
+  border-bottom-color: #e7ebed;
+}
+
+html[data-theme="light"] .contract-item {
+  border-right-color: #e7ebed;
+}
+
+html[data-theme="light"] .contract-item span {
+  color: #89959d;
+}
+
+html[data-theme="light"] .contract-item strong {
+  color: #1d2932;
+}
+
+html[data-theme="light"] .contract-item small {
+  color: #8b969e;
+}
+
+html[data-theme="light"] .forecast-price strong {
+  color: #b66e39;
+}
+
+html[data-theme="light"] .fixed-price strong {
+  color: #628b67;
+}
+
+html[data-theme="light"] .savings-panel {
+  background: #f4f6ef;
+}
+
+html[data-theme="light"] .savings-panel span {
+  color: #717d38;
+}
+
+html[data-theme="light"] .savings-panel strong {
+  color: #273021;
+}
+
+html[data-theme="light"] .savings-progress {
+  background: #e6e9dc;
+}
+
+html[data-theme="light"] .savings-progress div {
+  background: #d4de62;
+}
+
+html[data-theme="light"] .savings-panel > small {
+  color: #89938c;
+}
+
+/* Scenario / risk */
+html[data-theme="light"] .scenario-row {
+  border-color: #e6eaec;
+  background: #fbfcfc;
+}
+
+html[data-theme="light"] .scenario-icon.down {
+  color: #a35e56;
+  background: #f7e9e6;
+}
+
+html[data-theme="light"] .scenario-icon.current {
+  color: #69757f;
+  background: #edf0f2;
+}
+
+html[data-theme="light"] .scenario-icon.up {
+  color: #5c8965;
+  background: #e7f2e9;
+}
+
+html[data-theme="light"] .scenario-row span:not(.scenario-icon) {
+  color: #8b969e;
+}
+
+html[data-theme="light"] .scenario-row strong {
+  color: #26313a;
+}
+
+html[data-theme="light"] .risk-summary {
+  border-top-color: #e7ebed;
+}
+
+html[data-theme="light"] .risk-summary svg {
+  color: #668c6c;
+}
+
+html[data-theme="light"] .risk-summary p {
+  color: #7a858d;
+}
+
+html[data-theme="light"] .risk-summary strong {
+  color: #485f4d;
+}
+
+/* Footer */
+html[data-theme="light"] .footer {
+  border-top-color: #dce1e4;
+  color: #8b969d;
+}
+
+html[data-theme="light"] .footer strong {
+  color: #52606a;
+}
+
+/* Toast */
+html[data-theme="light"] .toast {
+  background: #172129;
+  color: #ffffff;
+}
+
+/* API error */
+html[data-theme="light"] .api-error {
+  border-color: #efc9c4;
+  background: #fbefed;
+  color: #8d5149;
+}
+
+/* Mobile menu button */
+html[data-theme="light"] .menu-btn {
+  background: #ffffff;
+  color: #26323a;
+  border: 1px solid #e0e6e9;
+}
+
+/* Mobile toggle behavior */
+@media (max-width: 620px) {
+  .topbar-actions {
+    gap: 6px;
+  }
+
+  .theme-toggle {
+    min-width: 34px;
+    width: 34px;
+    padding: 0;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
+}

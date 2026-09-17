@@ -15,7 +15,9 @@ import {
   Globe2,
   Menu,
   MapPin,
+  Moon,
   Navigation,
+  Sun,
   ShieldCheck,
   Sparkles,
   TrendingUp,
@@ -254,7 +256,21 @@ function SelectField({
 }
 
 function App() {
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem("freight-theme");
+    const initialTheme = savedTheme === "light" ? "light" : "dark";
+
+    document.documentElement.dataset.theme = initialTheme;
+
+    return initialTheme;
+  });
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("freight-theme", theme);
+  }, [theme]);
 
   const [commodity, setCommodity] = useState("Coal");
   const [cargo, setCargo] = useState("60000");
@@ -624,15 +640,42 @@ function App() {
             <h2>Freight Intelligence Dashboard</h2>
           </div>
 
-          <div className="system-status">
-            <span className="status-dot" />
-            <span>
-              {loading
-                ? "ANALYZING"
-                : result
-                  ? "BACKEND CONNECTED"
-                  : "SYSTEM READY"}
-            </span>
+          <div className="topbar-actions">
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={() =>
+                setTheme((currentTheme) =>
+                  currentTheme === "dark" ? "light" : "dark"
+                )
+              }
+              aria-label={`Switch to ${
+                theme === "dark" ? "light" : "dark"
+              } mode`}
+              title={`Switch to ${
+                theme === "dark" ? "light" : "dark"
+              } mode`}
+            >
+              {theme === "dark" ? (
+                <Sun size={17} />
+              ) : (
+                <Moon size={17} />
+              )}
+              <span>
+                {theme === "dark" ? "LIGHT" : "DARK"}
+              </span>
+            </button>
+
+            <div className="system-status">
+              <span className="status-dot" />
+              <span>
+                {loading
+                  ? "ANALYZING"
+                  : result
+                    ? "BACKEND CONNECTED"
+                    : "SYSTEM READY"}
+              </span>
+            </div>
           </div>
         </header>
 
@@ -1041,14 +1084,14 @@ function App() {
                   <CartesianGrid
                     strokeDasharray="3 4"
                     vertical={false}
-                    stroke="#2a3942"
+                    stroke="var(--chart-grid)"
                   />
 
                   <XAxis
                     dataKey="horizon"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: "#7f8e97", fontSize: 11 }}
+                    tick={{ fill: "var(--chart-text)", fontSize: 11 }}
                     padding={{ left: 8, right: 8 }}
                   />
 
@@ -1056,7 +1099,7 @@ function App() {
                     axisLine={false}
                     tickLine={false}
                     width={58}
-                    tick={{ fill: "#7f8e97", fontSize: 10 }}
+                    tick={{ fill: "var(--chart-text)", fontSize: 10 }}
                     domain={["auto", "auto"]}
                     tickFormatter={(value) =>
                       Number(value).toLocaleString("en-US", {
@@ -1067,12 +1110,15 @@ function App() {
 
                   <ReferenceLine
                     x="Current"
-                    stroke="#5a6972"
+                    stroke="var(--chart-reference)"
                     strokeDasharray="4 4"
                   />
 
                   <Tooltip
-                    cursor={{ stroke: "#6f7d85", strokeDasharray: "4 4" }}
+                    cursor={{
+                      stroke: "var(--chart-reference)",
+                      strokeDasharray: "4 4",
+                    }}
                     formatter={(value) => [
                       Number(value).toFixed(2),
                       "PI Index",
@@ -1081,13 +1127,13 @@ function App() {
                       `${label} outlook`
                     }
                     contentStyle={{
-                      background: "#111c23",
-                      border: "1px solid #31424c",
+                      background: "var(--tooltip-bg)",
+                      border: "1px solid var(--tooltip-border)",
                       borderRadius: "8px",
-                      color: "#eef4f7",
+                      color: "var(--tooltip-text)",
                     }}
                     labelStyle={{
-                      color: "#98a7af",
+                      color: "var(--tooltip-label)",
                       marginBottom: "4px",
                     }}
                     itemStyle={{
