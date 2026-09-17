@@ -1,251 +1,2330 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Freight Prediction — Technical and product brief for the AI-powered bulk chartering decision-support system." />
-  <title>Freight Prediction — About</title>
-  <script>
-    const savedTheme = localStorage.getItem("freight-theme");
-    if (savedTheme === "light" || savedTheme === "dark") {
-      document.documentElement.dataset.theme = savedTheme;
-    }
-  </script>
-  <style>
-    :root {
-      --paper: #eceee4;
-      --panel: #f7f8f2;
-      --panel-2: #e1e3d6;
-      --ink: #10222a;
-      --ink-soft: #45585d;
-      --ink-faint: #7c8c8a;
-      --line: rgba(16,34,42,0.16);
-      --accent: #b23a2e;
-      --accent-dim: rgba(178,58,46,0.10);
-      --teal: #2e6e71;
-      --brass: #8c6d1e;
-      --brass-dim: rgba(140,109,30,0.12);
-      --shadow: 0 12px 34px rgba(16,34,42,0.06);
-    }
-    :root[data-theme="dark"] {
-      --paper: #0c1a20;
-      --panel: #12262f;
-      --panel-2: #173039;
-      --ink: #ecefe6;
-      --ink-soft: #adc0bb;
-      --ink-faint: #7c9490;
-      --line: rgba(236,239,230,0.16);
-      --accent: #e1806f;
-      --accent-dim: rgba(225,128,111,0.14);
-      --teal: #74b7ae;
-      --brass: #d9b65d;
-      --brass-dim: rgba(217,182,93,0.14);
-      --shadow: 0 16px 38px rgba(0,0,0,0.22);
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { margin: 0; background: var(--paper); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", sans-serif; line-height: 1.65; -webkit-font-smoothing: antialiased; }
-    a { color: inherit; }
-    .mono { font-family: "IBM Plex Mono", Consolas, monospace; }
-    .shell { min-height: 100vh; display: grid; grid-template-columns: 250px minmax(0, 1fr); }
-    .rail { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 28px 22px 24px; background: var(--panel); border-right: 1px solid var(--line); }
-    .brand { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
-    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 8px; background: var(--ink); color: var(--paper); font-size: 16px; }
-    .brand strong { font-family: Georgia, serif; font-size: 17px; display: block; }
-    .brand span { font-size: 11px; color: var(--ink-faint); display: block; }
-    .rail-sub { font-size: 12px; color: var(--ink-faint); border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 16px; }
-    .rail-label { font-size: 10px; color: var(--ink-faint); letter-spacing: .08em; margin-bottom: 8px; }
-    .rail nav { display: grid; gap: 2px; }
-    .rail nav a { text-decoration: none; color: var(--ink-soft); padding: 8px; border-left: 2px solid transparent; border-radius: 6px; font-size: 13px; }
-    .rail nav a:hover { background: var(--panel-2); color: var(--ink); }
-    .back { display: inline-flex; margin-top: 22px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; text-decoration: none; color: var(--ink-soft); font-size: 12px; }
-    .back:hover { background: var(--panel-2); color: var(--ink); }
-    main { min-width: 0; }
-    .wrap { width: min(960px, calc(100% - 48px)); margin: 0 auto; }
-    .topline { display: flex; justify-content: flex-end; padding: 18px 0 0; }
-    .dashboard-link { text-decoration: none; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--ink-soft); background: var(--panel); }
-    .dashboard-link:hover { border-color: var(--accent); color: var(--accent); }
-    .cover { padding: 40px 0 44px; border-bottom: 1px solid var(--line); }
-    .eyebrow { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; }
-    h1,h2,h3 { font-family: Georgia, "Times New Roman", serif; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; }
-    h1 { font-size: clamp(38px, 6vw, 62px); margin: 12px 0 14px; }
-    h2 { font-size: clamp(28px, 4vw, 38px); margin: 0 0 18px; }
-    .lede { max-width: 70ch; color: var(--ink-soft); font-size: 18px; }
-    .manifest { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 28px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
-    .manifest div { padding: 13px 15px; border-right: 1px solid var(--line); }
-    .manifest div:last-child { border-right: 0; }
-    .manifest .k { display: block; color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
-    .manifest .v { display: block; margin-top: 3px; font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600; }
-    section { padding: 54px 0; border-bottom: 1px solid var(--line); }
-    .section-kicker { display: flex; align-items: center; gap: 12px; color: var(--accent); font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600; letter-spacing: .05em; }
-    .section-kicker::after { content: ""; height: 1px; flex: 1; background: var(--line); }
-    .lead { font-family: Georgia, serif; font-size: 18px; color: var(--ink); max-width: 66ch; }
-    p { color: var(--ink-soft); max-width: 72ch; }
-    ul { padding-left: 22px; max-width: 72ch; }
-    li { color: var(--ink-soft); margin: 9px 0; }
-    li strong { color: var(--ink); }
-    .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 22px; }
-    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--panel); box-shadow: var(--shadow); }
-    .card .tag { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
-    .card strong { display: block; margin: 8px 0 5px; font-size: 17px; }
-    .card span { color: var(--ink-soft); font-size: 13px; }
-    .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
-    .step { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 14px; }
-    .step .n { color: var(--accent); font-family: "IBM Plex Mono", monospace; font-size: 11px; }
-    .step strong { display: block; margin-top: 6px; }
-    .step p { margin: 7px 0 0; font-size: 12px; }
-    .arch { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: center; margin-top: 22px; }
-    .arch-box { min-height: 92px; display: grid; place-items: center; text-align: center; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); padding: 14px; }
-    .arch-box.accent { background: var(--accent-dim); border-color: var(--accent); }
-    .arrow { text-align: center; color: var(--ink-faint); font-size: 20px; }
-    .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 24px 0; }
-    .facts div { background: var(--panel); padding: 16px; }
-    .facts strong { display: block; font-family: "IBM Plex Mono", monospace; font-size: 21px; }
-    .facts span { color: var(--ink-faint); font-size: 11px; }
-    .note { margin-top: 22px; padding: 16px 18px; border: 1px solid var(--brass); border-radius: 10px; background: var(--brass-dim); color: var(--ink-soft); }
-    footer { padding: 34px 0 70px; color: var(--ink-faint); font-size: 12px; }
-    @media (max-width: 860px) {
-      .shell { display: block; }
-      .rail { display: none; }
-      .wrap { width: min(100% - 32px, 760px); }
-      .manifest, .facts { grid-template-columns: repeat(2, 1fr); }
-      .manifest div:nth-child(2), .facts div:nth-child(2) { border-right: 0; }
-      .manifest div, .facts div { border-bottom: 1px solid var(--line); }
-      .card-grid, .pipeline, .arch { grid-template-columns: 1fr; }
-      .arrow { transform: rotate(90deg); }
-    }
-    @media (max-width: 500px) {
-      .manifest, .facts { grid-template-columns: 1fr; }
-      .manifest div, .facts div { border-right: 0; }
-      .manifest div:last-child, .facts div:last-child { border-bottom: 0; }
-      .topline { padding-top: 12px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="shell">
-    <aside class="rail">
-      <div class="brand">
-        <div class="brand-mark">⚓</div>
-        <div><strong>Freight Prediction</strong><span>Technical &amp; product brief</span></div>
-      </div>
-      <div class="rail-sub">SIH Problem Statement 26006 — AI-powered bulk chartering decision support for India's East Coast.</div>
-      <div class="rail-label">CONTENTS</div>
-      <nav>
-        <a href="#summary">01 · Executive summary</a>
-        <a href="#problem">02 · Problem statement</a>
-        <a href="#solution">03 · Solution &amp; UVP</a>
-        <a href="#architecture">04 · Architecture</a>
-        <a href="#features">05 · Features &amp; pipeline</a>
-        <a href="#data">06 · Data &amp; forecasting</a>
-        <a href="#roadmap">07 · Feasibility &amp; roadmap</a>
-      </nav>
-      <a class="back" href="/">← Back to dashboard</a>
-    </aside>
-    <main>
-      <div class="wrap">
-        <div class="topline"><a class="dashboard-link" href="/">← DASHBOARD</a></div>
-        <header class="cover">
-          <div class="eyebrow">SMART INDIA HACKATHON · PROBLEM STATEMENT 26006</div>
-          <h1>Freight Prediction</h1>
-          <p class="lede">An AI-powered decision-support system for bulk-cargo chartering to India's East Coast — turning reactive spot-market decisions into a forecast-driven, physically-grounded strategy.</p>
-          <div class="manifest">
-            <div><span class="k">Organization</span><span class="v">Ministry of Steel</span></div>
-            <div><span class="k">Department</span><span class="v">SAIL</span></div>
-            <div><span class="k">Category</span><span class="v">Software</span></div>
-            <div><span class="k">Theme</span><span class="v">Transport &amp; Logistics</span></div>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+      Freight Prediction — Technical &amp; Product Brief
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      /* ============================================================
+      TOKENS
+      ============================================================ */
+      :root {
+        --paper: #ECEEE4;
+        --panel: #F7F8F2;
+        --panel-2: #E1E3D6;
+        --ink: #10222A;
+        --ink-soft: #45585D;
+        --ink-faint: #7C8C8A;
+        --line: rgba(16,34,42,0.16);
+        --line-soft: rgba(16,34,42,0.09);
+        --accent: #B23A2E;
+        --accent-ink: #FBF4F1;
+        --accent-dim: rgba(178,58,46,0.10);
+        --teal: #2E6E71;
+        --teal-dim: rgba(46,110,113,0.10);
+        --brass: #8C6D1E;
+        --brass-dim: rgba(140,109,30,0.12);
+        --code-bg: rgba(16,34,42,0.05);
+        --shadow: 0 1px 2px rgba(16,34,42,0.06);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --paper: #0C1A20;
+          --panel: #12262F;
+          --panel-2: #173039;
+          --ink: #ECEFE6;
+          --ink-soft: #ADC0BB;
+          --ink-faint: #7C9490;
+          --line: rgba(236,239,230,0.16);
+          --line-soft: rgba(236,239,230,0.09);
+          --accent: #E1806F;
+          --accent-ink: #241210;
+          --accent-dim: rgba(225,128,111,0.14);
+          --teal: #74B7AE;
+          --teal-dim: rgba(116,183,174,0.14);
+          --brass: #D9B65D;
+          --brass-dim: rgba(217,182,93,0.14);
+          --code-bg: rgba(236,239,230,0.06);
+        }
+      }
+      :root[data-theme="dark"] {
+        --paper: #0C1A20;
+        --panel: #12262F;
+        --panel-2: #173039;
+        --ink: #ECEFE6;
+        --ink-soft: #ADC0BB;
+        --ink-faint: #7C9490;
+        --line: rgba(236,239,230,0.16);
+        --line-soft: rgba(236,239,230,0.09);
+        --accent: #E1806F;
+        --accent-ink: #241210;
+        --accent-dim: rgba(225,128,111,0.14);
+        --teal: #74B7AE;
+        --teal-dim: rgba(116,183,174,0.14);
+        --brass: #D9B65D;
+        --brass-dim: rgba(217,182,93,0.14);
+        --code-bg: rgba(236,239,230,0.06);
+      }
+      /* ============================================================
+      RESET & BASE
+      ============================================================ */
+      *,*::before,*::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        * {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'IBM Plex Sans',-apple-system,'Segoe UI',sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,h2,h3,h4 {
+        font-family: 'Spectral',Georgia,'Times New Roman',serif;
+        font-weight: 600;
+        line-height: 1.18;
+        margin: 0 0 0.5em;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+      }
+      p {
+        margin: 0 0 1.05em;
+        color: var(--ink-soft);
+        max-width: 66ch;
+      }
+      a {
+        color: var(--accent);
+      }
+      img,svg {
+        max-width: 100%;
+      }
+      .mono {
+        font-family: 'IBM Plex Mono',SFMono-Regular,Consolas,monospace;
+      }
+      ::selection {
+        background: var(--accent);
+        color: var(--accent-ink);
+      }
+      /* ============================================================
+      LAYOUT
+      ============================================================ */
+      .shell {
+        display: flex;
+        min-height: 100vh;
+      }
+      .rail {
+        width: 250px;
+        flex: 0 0 250px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        border-right: 1px solid var(--line);
+        padding: 28px 22px 24px;
+        background: var(--panel);
+      }
+      .rail-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .rail-brand .mark {
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        background: var(--ink);
+        color: var(--paper);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex: none;
+      }
+      .rail-brand strong {
+        font-family: 'Spectral',serif;
+        font-size: 16.5px;
+        font-weight: 600;
+        display: block;
+      }
+      .rail-brand span {
+        font-size: 11.5px;
+        color: var(--ink-faint);
+        display: block;
+        margin-top: 1px;
+      }
+      .rail-sub {
+        font-size: 12.5px;
+        color: var(--ink-faint);
+        border-bottom: 1px solid var(--line-soft);
+        padding-bottom: 16px;
+        margin-bottom: 18px;
+        line-height: 1.5;
+      }
+      .rail-index-label {
+        font-size: 11px;
+        color: var(--ink-faint);
+        margin-bottom: 8px;
+        padding-left: 2px;
+      }
+      .rail nav {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .rail nav a {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+        text-decoration: none;
+        color: var(--ink-soft);
+        padding: 8px 8px;
+        border-radius: 6px;
+        font-size: 13.5px;
+        border-left: 2px solid transparent;
+      }
+      .rail nav a .num {
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 11px;
+        color: var(--ink-faint);
+        flex: none;
+        width: 16px;
+      }
+      .rail nav a:hover {
+        background: var(--panel-2);
+        color: var(--ink);
+      }
+      .rail nav a.active {
+        color: var(--ink);
+        font-weight: 600;
+        border-left-color: var(--accent);
+        background: var(--panel-2);
+      }
+      .rail nav a.active .num {
+        color: var(--accent);
+      }
+      .rail-foot {
+        margin-top: 22px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line-soft);
+      }
+      .rail-progress-label {
+        font-size: 11px;
+        color: var(--ink-faint);
+        margin-bottom: 6px;
+      }
+      .rail-progress-track {
+        height: 3px;
+        background: var(--line);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .rail-progress-fill {
+        height: 100%;
+        width: 12.5%;
+        background: var(--accent);
+        transition: width .25s ease;
+      }
+      .mobile-topbar {
+        display: none;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 16px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+      }
+      .mobile-topbar strong {
+        font-family: 'Spectral',serif;
+        font-size: 15.5px;
+      }
+      .mobile-topbar button {
+        background: none;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        width: 34px;
+        height: 34px;
+        color: var(--ink);
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 0 28px;
+      }
+      /* ============================================================
+      HERO / COVER
+      ============================================================ */
+      .cover {
+        padding: 64px 0 40px;
+        border-bottom: 1px solid var(--line);
+      }
+      .eyebrow {
+        font-size: 12.5px;
+        color: var(--accent);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        margin-bottom: 16px;
+        display: block;
+      }
+      .cover h1 {
+        font-size: clamp(34px,5.4vw,52px);
+        margin-bottom: 14px;
+      }
+      .cover .lede {
+        font-size: 18px;
+        color: var(--ink-soft);
+        max-width: 60ch;
+        margin-bottom: 26px;
+      }
+      .manifest {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 34px;
+        background: var(--panel);
+      }
+      .manifest div {
+        flex: 1 1 160px;
+        padding: 13px 16px;
+        border-right: 1px solid var(--line);
+      }
+      .manifest div:last-child {
+        border-right: none;
+      }
+      .manifest .k {
+        display: block;
+        font-size: 10.5px;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: 4px;
+      }
+      .manifest .v {
+        font-size: 13.5px;
+        font-weight: 600;
+        font-family: 'IBM Plex Mono',monospace;
+      }
+      .hero-figure {
+        margin: 8px 0 30px;
+      }
+      .hero-figure svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .fig-caption {
+        font-size: 12.5px;
+        color: var(--ink-faint);
+        margin-top: 8px;
+        max-width: 60ch;
+      }
+      .facts-strip {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .facts-strip div {
+        background: var(--panel);
+        padding: 16px 14px;
+      }
+      .facts-strip .v {
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 19px;
+        font-weight: 600;
+        display: block;
+      }
+      .facts-strip .k {
+        font-size: 11.5px;
+        color: var(--ink-faint);
+        margin-top: 3px;
+        display: block;
+      }
+      /* ============================================================
+      SECTIONS
+      ============================================================ */
+      section.doc-section {
+        padding: 56px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      section.doc-section:last-of-type {
+        border-bottom: none;
+      }
+      .section-kicker {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .section-kicker .idx {
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 13px;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .section-kicker .line {
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+      }
+      .section-kicker .part {
+        font-size: 11.5px;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+      }
+      .doc-section h2 {
+        font-size: clamp(26px,3.6vw,34px);
+        margin-bottom: 20px;
+        max-width: 22ch;
+      }
+      .doc-section h3 {
+        font-size: 19px;
+        margin-top: 34px;
+        margin-bottom: 12px;
+      }
+      .doc-section h4 {
+        font-size: 15.5px;
+        margin-top: 22px;
+        margin-bottom: 8px;
+        color: var(--ink);
+      }
+      .lead {
+        font-size: 17.5px;
+        color: var(--ink);
+        max-width: 64ch;
+        font-family: 'Spectral',serif;
+        font-weight: 400;
+        line-height: 1.55;
+      }
+      ul.doc-list, ol.doc-list {
+        padding-left: 22px;
+        margin: 0 0 1.1em;
+        max-width: 64ch;
+      }
+      ul.doc-list li, ol.doc-list li {
+        color: var(--ink-soft);
+        margin-bottom: 9px;
+        line-height: 1.6;
+      }
+      ul.doc-list li strong, ol.doc-list li strong {
+        color: var(--ink);
+      }
+      /* callouts / details */
+      details.note {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+        margin: 20px 0;
+        overflow: hidden;
+      }
+      details.note summary {
+        cursor: pointer;
+        padding: 13px 17px;
+        font-size: 13.5px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        list-style: none;
+        color: var(--ink);
+      }
+      details.note summary::-webkit-details-marker {
+        display: none;
+      }
+      details.note summary::before {
+        content: "+";
+        font-family: 'IBM Plex Mono',monospace;
+        color: var(--accent);
+        font-size: 15px;
+        width: 16px;
+        flex: none;
+      }
+      details.note[open] summary::before {
+        content: "–";
+      }
+      details.note summary .tag {
+        margin-left: auto;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--ink-faint);
+        font-weight: 600;
+        font-family: 'IBM Plex Sans',sans-serif;
+      }
+      details.note .note-body {
+        padding: 0 17px 17px;
+        border-top: 1px solid var(--line-soft);
+        padding-top: 13px;
+      }
+      details.note .note-body p:last-child {
+        margin-bottom: 0;
+      }
+      /* worked-example / result card */
+      .result-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--panel);
+        padding: 22px 24px;
+        margin: 22px 0;
+      }
+      .result-card .rc-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      .result-card .rc-head h4 {
+        margin: 0;
+        font-size: 16px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 600;
+        font-family: 'IBM Plex Mono',monospace;
+        letter-spacing: .01em;
+      }
+      .badge.high {
+        background: var(--teal-dim);
+        color: var(--teal);
+      }
+      .badge.med {
+        background: var(--brass-dim);
+        color: var(--brass);
+      }
+      .badge.low {
+        background: var(--accent-dim);
+        color: var(--accent);
+      }
+      .badge.action {
+        background: var(--ink);
+        color: var(--paper);
+      }
+      .kv-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(130px,1fr));
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        overflow: hidden;
+        margin: 14px 0;
+      }
+      .kv-grid div {
+        background: var(--panel);
+        padding: 11px 13px;
+      }
+      .kv-grid .k {
+        display: block;
+        font-size: 10.5px;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        margin-bottom: 3px;
+      }
+      .kv-grid .v {
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 14.5px;
+        font-weight: 600;
+      }
+      /* tables */
+      .table-wrap {
+        overflow-x: auto;
+        margin: 18px 0;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+        min-width: 520px;
+      }
+      table caption {
+        caption-side: top;
+        text-align: left;
+        font-size: 11.5px;
+        color: var(--ink-faint);
+        padding: 11px 14px 0;
+      }
+      th,td {
+        padding: 10px 14px;
+        text-align: left;
+        border-bottom: 1px solid var(--line-soft);
+        white-space: nowrap;
+      }
+      th {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: var(--ink-faint);
+        font-weight: 600;
+        background: var(--panel);
+      }
+      td {
+        color: var(--ink-soft);
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 13px;
+      }
+      td.label {
+        color: var(--ink);
+        font-family: 'IBM Plex Sans',sans-serif;
+        font-weight: 600;
+        white-space: normal;
+      }
+      td.reason {
+        white-space: normal;
+        color: var(--ink-faint);
+        font-family: 'IBM Plex Sans',sans-serif;
+        font-size: 12.5px;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr.win td {
+        background: var(--teal-dim);
+      }
+      tr.win td.label {
+        color: var(--teal);
+      }
+      /* provenance chips */
+      .prov-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 16px 0 22px;
+      }
+      .prov-chip {
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 11px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        color: var(--ink-soft);
+      }
+      .prov-chip.live,.prov-chip.verified {
+        border-color: var(--teal);
+        color: var(--teal);
+      }
+      .prov-chip.assumed {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .prov-chip.modelled,.prov-chip.calculated,.prov-chip.historical {
+        border-color: var(--brass);
+        color: var(--brass);
+      }
+      /* pipeline stepper */
+      .stepper {
+        margin: 24px 0 8px;
+      }
+      .stepper-track {
+        display: grid;
+        grid-template-columns: repeat(8,1fr);
+        gap: 6px;
+      }
+      .stepper-track button {
+        font-family: 'IBM Plex Sans',sans-serif;
+        cursor: pointer;
+        text-align: left;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 8px;
+        padding: 10px 8px 9px;
+        color: var(--ink-soft);
+        font-size: 11.5px;
+        line-height: 1.3;
+      }
+      .stepper-track button .n {
+        display: block;
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 10.5px;
+        color: var(--ink-faint);
+        margin-bottom: 5px;
+      }
+      .stepper-track button.active {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+        color: var(--ink);
+      }
+      .stepper-track button.active .n {
+        color: var(--accent);
+      }
+      .stepper-panel {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+        padding: 20px 22px;
+        margin-top: 12px;
+        min-height: 150px;
+      }
+      .stepper-panel h4 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .stepper-panel h4 .n {
+        font-family: 'IBM Plex Mono',monospace;
+        color: var(--accent);
+        font-size: 13px;
+      }
+      .stepper-panel .panel-content {
+        display: none;
+      }
+      .stepper-panel .panel-content.active {
+        display: block;
+      }
+      .stepper-panel p {
+        margin-bottom: 0.7em;
+        font-size: 14.5px;
+      }
+      .stepper-panel p:last-child {
+        margin-bottom: 0;
+      }
+      .stepper-panel code {
+        background: var(--code-bg);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 12.5px;
+        font-family: 'IBM Plex Mono',monospace;
+        color: var(--ink);
+      }
+      @media (max-width:700px) {
+        .stepper-track {
+          grid-template-columns: repeat(4,1fr);
+        }
+      }
+      @media (max-width:480px) {
+        .stepper-track {
+          grid-template-columns: repeat(2,1fr);
+        }
+      }
+      /* golden-path steps */
+      .gp-step {
+        display: flex;
+        gap: 16px;
+        margin: 0 0 26px;
+      }
+      .gp-step .gp-num {
+        flex: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--paper);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 12.5px;
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .gp-step .gp-body h4 {
+        margin-top: 0;
+        margin-bottom: 6px;
+      }
+      .gp-step .gp-body p {
+        margin-bottom: 8px;
+      }
+      /* stat chips row (dashboard schematic) */
+      .dash-mock {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 8px 0 10px;
+      }
+      .dash-mock .dm-topline {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 10px 16px;
+        font-size: 11.5px;
+        font-family: 'IBM Plex Mono',monospace;
+        display: flex;
+        justify-content: space-between;
+      }
+      .dash-mock .dm-body {
+        background: var(--panel);
+        padding: 18px;
+      }
+      .dm-decision {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--line-soft);
+        margin-bottom: 16px;
+      }
+      .dm-decision h4 {
+        margin: 2px 0 6px;
+        font-size: 20px;
+      }
+      .dm-decision .route {
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 12px;
+        color: var(--ink-faint);
+        margin-bottom: 8px;
+      }
+      .dm-decision p {
+        font-size: 13px;
+        max-width: 38ch;
+        margin-bottom: 0;
+      }
+      .dm-chips {
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
+        gap: 10px;
+      }
+      .dm-chips div {
+        background: var(--panel-2);
+        border-radius: 8px;
+        padding: 10px 12px;
+      }
+      .dm-chips .k {
+        display: block;
+        font-size: 10px;
+        color: var(--ink-faint);
+        text-transform: uppercase;
+        letter-spacing: .03em;
+      }
+      .dm-chips .v {
+        font-family: 'IBM Plex Mono',monospace;
+        font-weight: 600;
+        font-size: 14.5px;
+        display: block;
+        margin-top: 3px;
+      }
+      /* bar viz */
+      .bar-viz {
+        margin: 16px 0;
+      }
+      .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .bar-row .bl {
+        width: 150px;
+        flex: none;
+        font-size: 12.5px;
+        color: var(--ink-soft);
+      }
+      .bar-row .bt {
+        flex: 1;
+        height: 22px;
+        background: var(--panel-2);
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+      }
+      .bar-row .bf {
+        height: 100%;
+        border-radius: 5px 0 0 5px;
+      }
+      .bar-row .bf.teal {
+        background: var(--teal);
+      }
+      .bar-row .bf.ink {
+        background: var(--ink);
+      }
+      .bar-row .bf.accent {
+        background: var(--accent);
+      }
+      .bar-row .bv {
+        width: 110px;
+        flex: none;
+        text-align: right;
+        font-family: 'IBM Plex Mono',monospace;
+        font-size: 12.5px;
+      }
+      /* timeline (roadmap) */
+      .timeline {
+        margin: 20px 0;
+        border-left: 2px solid var(--line);
+        padding-left: 22px;
+      }
+      .tl-item {
+        position: relative;
+        padding-bottom: 22px;
+      }
+      .tl-item:last-child {
+        padding-bottom: 0;
+      }
+      .tl-item::before {
+        content: "";
+        position: absolute;
+        left: -27px;
+        top: 4px;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 2px solid var(--paper);
+        box-shadow: 0 0 0 1px var(--accent);
+      }
+      .tl-item h4 {
+        margin: 0 0 4px;
+        font-size: 14.5px;
+      }
+      .tl-item p {
+        margin: 0;
+        font-size: 13.5px;
+        max-width: 58ch;
+      }
+      /* figure block */
+      .figure {
+        margin: 26px 0;
+      }
+      .figure svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+      /* footer */
+      footer.doc-footer {
+        padding: 36px 0 70px;
+        font-size: 12.5px;
+        color: var(--ink-faint);
+      }
+      footer.doc-footer a {
+        color: var(--ink-faint);
+        text-decoration: underline;
+      }
+      /* responsive */
+      @media (max-width:860px) {
+        .rail {
+          display: none;
+        }
+        .mobile-topbar {
+          display: flex;
+        }
+        .wrap {
+          padding: 0 20px;
+        }
+        section.doc-section {
+          padding: 42px 0;
+        }
+        .cover {
+          padding: 36px 0 30px;
+        }
+      }
+      .rail.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        z-index: 50;
+        width: 82vw;
+        max-width: 300px;
+        box-shadow: 0 0 0 1000px rgba(0,0,0,.4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mobile-topbar">
+      <strong>⚓ Freight Prediction</strong>
+      <button id="mobileNavToggle" aria-label="Open section index">
+        ☰
+      </button>
+    </div>
+    <div class="shell">
+      <aside class="rail" id="rail">
+        <div class="rail-brand">
+          <div class="mark">
+            ⚓
           </div>
-        </header>
-        <section id="summary">
-          <div class="section-kicker">01 · EXECUTIVE SUMMARY</div>
-          <h2>From daily spot-checking the market to one graded recommendation</h2>
-          <p class="lead">Freight Prediction connects forecasting, vessel/port feasibility, voyage economics, contract strategy and risk into one decision flow. A cargo scenario goes in; the system returns a recommendation with the underlying assumptions and data provenance exposed.</p>
-          <div class="facts">
-            <div><strong>5</strong><span>Origin countries</span></div>
-            <div><strong>4</strong><span>Vessel classes</span></div>
-            <div><strong>4</strong><span>Forecast horizons</span></div>
-            <div><strong>16</strong><span>Forecast targets</span></div>
+          <div>
+            <strong>Freight Prediction</strong><span>Technical &amp; product brief</span>
           </div>
-          <ul>
-            <li><strong>Validated multi-horizon forecasting:</strong> 7/30/60/90-day outlooks across Handysize, Supramax, Panamax and Capesize indices.</li>
-            <li><strong>Physical reality:</strong> candidate vessels are screened against port and berth constraints before economics are compared.</li>
-            <li><strong>Transparent provenance:</strong> meaningful figures can be distinguished as live, verified, historical, calculated, modelled or assumed.</li>
-          </ul>
-        </section>
-        <section id="problem">
-          <div class="section-kicker">02 · PROBLEM STATEMENT</div>
-          <h2>Chartering needs more than a market number</h2>
-          <p class="lead">The problem is not only forecasting freight rates. A useful procurement decision also needs to know whether the vessel physically fits, what the complete voyage costs, how much congestion risk is present, and whether a contract can improve the expected outcome versus continued spot-market exposure.</p>
-          <div class="card-grid">
-            <div class="card"><span class="tag">01</span><strong>Forecasting</strong><span>Identify entry windows and forward market direction instead of relying only on today's spot observation.</span></div>
-            <div class="card"><span class="tag">02</span><strong>Constraints</strong><span>Respect berth limits, vessel dimensions, cargo requirements and congestion at both ends of the voyage.</span></div>
-            <div class="card"><span class="tag">03</span><strong>Economics</strong><span>Compare voyage cost, spot exposure, contract pricing and risk-adjusted savings in one view.</span></div>
+        </div>
+        <div class="rail-sub">
+          SIH Problem Statement 26006 — Ministry of Steel / SAIL. Prepared for the team.
+        </div>
+        <div class="rail-index-label">
+          CONTENTS
+        </div>
+        <nav id="railNav">
+          <a href="#exec-summary" data-target="exec-summary">
+            <span class="num">01</span> Executive summary
+          </a>
+          <a href="#problem" data-target="problem">
+            <span class="num">02</span> Problem statement
+          </a>
+          <a href="#solution" data-target="solution">
+            <span class="num">03</span> Solution &amp; UVP
+          </a>
+          <a href="#architecture" data-target="architecture">
+            <span class="num">04</span> Architecture &amp; innovation
+          </a>
+          <a href="#golden-path" data-target="golden-path">
+            <span class="num">05</span> Features &amp; golden path
+          </a>
+          <a href="#challenges" data-target="challenges">
+            <span class="num">06</span> Challenges &amp; triumphs
+          </a>
+          <a href="#roadmap" data-target="roadmap">
+            <span class="num">07</span> Feasibility &amp; roadmap
+          </a>
+          <a href="#conclusion" data-target="conclusion">
+            <span class="num">08</span> Conclusion
+          </a>
+        </nav>
+        <div class="rail-foot">
+          <div class="rail-progress-label">
+            Reading progress
           </div>
-        </section>
-        <section id="solution">
-          <div class="section-kicker">03 · SOLUTION &amp; UVP</div>
-          <h2>One integrated decision engine, not three disconnected tools</h2>
-          <p>Freight Prediction carries the same cargo scenario through every stage of the decision. The system first establishes a market outlook, then checks physical feasibility, prices the feasible options, evaluates contract economics and finally returns a confidence-aware recommendation.</p>
-          <ul>
-            <li><strong>Feasibility before price.</strong> A vessel that cannot physically serve the route is filtered out before voyage cost becomes a decision factor.</li>
-            <li><strong>Graded forecasts.</strong> Each horizon gets its own confidence assessment so short and long horizons are not treated as equally reliable by default.</li>
-            <li><strong>Visible economics.</strong> Freight, vessel time, bunker and port charges can be compared across feasible vessel classes.</li>
-            <li><strong>Contract math.</strong> Duration, discount assumptions and risk scenarios are combined into expected savings.</li>
-            <li><strong>Transparency.</strong> The response distinguishes validated output from prototype assumptions instead of hiding uncertainty behind a single confident number.</li>
-          </ul>
-        </section>
-        <section id="architecture">
-          <div class="section-kicker">04 · TECHNICAL ARCHITECTURE</div>
-          <h2>Frontend → API → models → decision engine</h2>
-          <p>The production stack mirrors the decision pipeline: React 19 on Vite forms the operator-facing dashboard; FastAPI exposes the prediction endpoint; Python models handle forecasting and optimization; and verified datasets plus optional live inputs feed the decision layer.</p>
-          <div class="arch">
-            <div class="arch-box"><strong>React Dashboard</strong><br><span class="mono">Vite · Vercel</span></div>
-            <div class="arrow">→</div>
-            <div class="arch-box"><strong>FastAPI Service</strong><br><span class="mono">/api/forecast · Render</span></div>
-            <div class="arrow">↓</div>
-            <div class="arch-box"><strong>Forecast Models</strong><br><span class="mono">XGBoost · LightGBM · RF</span></div>
-            <div class="arrow">→</div>
-            <div class="arch-box accent"><strong>Decision Engine</strong><br><span class="mono">vessel → economics → contract → risk</span></div>
+          <div class="rail-progress-track">
+            <div class="rail-progress-fill" id="railProgress">
+            </div>
           </div>
-        </section>
-        <section id="features">
-          <div class="section-kicker">05 · FEATURES &amp; GOLDEN PATH</div>
-          <h2>Eight linked stages behind one recommendation</h2>
-          <div class="pipeline">
-            <div class="step"><span class="n">01</span><strong>Scenario</strong><p>Commodity, quantity, origin, destination, duration and voyages.</p></div>
-            <div class="step"><span class="n">02</span><strong>Forecast</strong><p>Generate market outlooks across four horizons.</p></div>
-            <div class="step"><span class="n">03</span><strong>Confidence</strong><p>Attach validation-based confidence to every horizon.</p></div>
-            <div class="step"><span class="n">04</span><strong>Vessel</strong><p>Screen vessel classes against route and berth constraints.</p></div>
-            <div class="step"><span class="n">05</span><strong>Economics</strong><p>Calculate complete voyage cost for feasible options.</p></div>
-            <div class="step"><span class="n">06</span><strong>Contract</strong><p>Compare spot, forecast and fixed-contract scenarios.</p></div>
-            <div class="step"><span class="n">07</span><strong>Risk</strong><p>Assess downside, current and upside scenarios plus congestion.</p></div>
-            <div class="step"><span class="n">08</span><strong>Recommend</strong><p>Return vessel, action and supporting rationale.</p></div>
-          </div>
-        </section>
-        <section id="data">
-          <div class="section-kicker">06 · DATA &amp; FORECASTING</div>
-          <h2>Validated models with explicit prototype boundaries</h2>
-          <p>The current forecasting layer uses historical Baltic dry-bulk data covering August 2012 to July 2019. Four vessel-class indices are forecast over four horizons, giving sixteen forecast targets in total.</p>
-          <ul>
-            <li>Candidate algorithms include <strong>XGBoost, LightGBM and Random Forest</strong>, benchmarked against a persistence baseline.</li>
-            <li>Validation uses chronological splits and walk-forward evaluation rather than random shuffling.</li>
-            <li>The model registry records the serving method per vessel class and horizon; where boosted models did not reliably beat persistence, the simpler baseline is used.</li>
-            <li>An optional live-market calibration layer can adjust the current index level when benchmark data is available, while keeping the trained model responsible for forecast shape.</li>
-          </ul>
-          <div class="note"><strong>Prototype data transparency:</strong> route-specific freight USD/MT, bunker costs, port charges, sailing time and some queue inputs may still be assumptions in the prototype. The interface is designed to label those values rather than present them as live commercial quotations.</div>
-        </section>
-        <section id="roadmap">
-          <div class="section-kicker">07 · FEASIBILITY &amp; ROADMAP</div>
-          <h2>Designed to move from prototype to operational decision support</h2>
-          <div class="card-grid">
-            <div class="card"><span class="tag">Now</span><strong>Prototype</strong><span>Integrated forecasting, vessel screening, economics, contract analysis, risk and dashboard presentation.</span></div>
-            <div class="card"><span class="tag">Next</span><strong>Live data</strong><span>Expand continuous market and port observations, improve route-specific operational inputs and strengthen monitoring.</span></div>
-            <div class="card"><span class="tag">Future</span><strong>Decision platform</strong><span>Prediction history, scenario simulation, alerts, reporting and model monitoring for day-to-day procurement workflows.</span></div>
-          </div>
-        </section>
-        <footer><strong>Freight Prediction</strong> · AI-powered bulk chartering decision support · International origins → India's East Coast</footer>
-      </div>
-    </main>
-  </div>
-</body>
+        </div>
+      </aside>
+      <main class="main">
+        <div class="wrap">
+          <!-- ============================================================ COVER ============================================================ -->
+          <section class="cover" id="cover">
+            <span class="eyebrow">SMART INDIA HACKATHON · PROBLEM STATEMENT 26006</span>
+            <h1>
+              Freight Prediction
+            </h1>
+            <p class="lede">
+              An AI-powered decision-support system for bulk-cargo chartering to India's East Coast — turning a reactive, day-by-day spot-market habit into a forecast-driven, physically-grounded strategy.
+            </p>
+            <div class="manifest">
+              <div>
+                <span class="k">Organization</span><span class="v">Ministry of Steel</span>
+              </div>
+              <div>
+                <span class="k">Department</span><span class="v">SAIL</span>
+              </div>
+              <div>
+                <span class="k">Category</span><span class="v">Software</span>
+              </div>
+              <div>
+                <span class="k">Theme</span><span class="v">Transport &amp; Logistics</span>
+              </div>
+            </div>
+            <div class="hero-figure">
+              <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of five overseas origin countries routing bulk cargo toward seven East Coast India destination ports">
+                <text x="60" y="28" fill="var(--ink-faint)" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="0.06em">
+                  ORIGINS
+                </text>
+                <text x="700" y="28" fill="var(--ink-faint)" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="0.06em">
+                  EAST COAST INDIA
+                </text>
+                <!-- origin nodes -->
+                <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">
+                  <circle cx="66" cy="60" r="4" fill="var(--accent)"/>
+                  <text x="80" y="64">
+                    Australia
+                  </text>
+                  <circle cx="66" cy="105" r="4" fill="var(--accent)"/>
+                  <text x="80" y="109">
+                    Indonesia
+                  </text>
+                  <circle cx="66" cy="150" r="4" fill="var(--accent)"/>
+                  <text x="80" y="154">
+                    United States
+                  </text>
+                  <circle cx="66" cy="195" r="4" fill="var(--accent)"/>
+                  <text x="80" y="199">
+                    Mozambique
+                  </text>
+                  <circle cx="66" cy="240" r="4" fill="var(--accent)"/>
+                  <text x="80" y="244">
+                    Russia
+                  </text>
+                </g>
+                <!-- destination coastline -->
+                <line x1="742" y1="42" x2="742" y2="264" stroke="var(--teal)" stroke-width="2.5"/>
+                <g font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="var(--ink)">
+                  <circle cx="742" cy="50" r="3.4" fill="var(--teal)"/>
+                  <text x="754" y="54">
+                    Haldia
+                  </text>
+                  <circle cx="742" cy="82" r="3.4" fill="var(--teal)"/>
+                  <text x="754" y="86">
+                    Sagar / Sandheads
+                  </text>
+                  <circle cx="742" cy="114" r="3.4" fill="var(--teal)"/>
+                  <text x="754" y="118">
+                    Dhamra
+                  </text>
+                  <circle cx="742" cy="146" r="3.4" fill="var(--teal)"/>
+                  <text x="754" y="150">
+                    Paradip
+                  </text>
+                  <circle cx="742" cy="178" r="3.4" fill="var(--teal)"/>
+                  <text x="754" y="182">
+                    Gopalpur
+                  </text>
+                  <circle cx="742" cy="210" r="3.4" fill="var(--teal)"/>
+                  <text x="754" y="214">
+                    Visakhapatnam
+                  </text>
+                  <circle cx="742" cy="242" r="3.4" fill="var(--teal)"/>
+                  <text x="754" y="246">
+                    Gangavaram
+                  </text>
+                </g>
+                <!-- converging lanes -->
+                <g fill="none" stroke="var(--line)" stroke-width="1.4">
+                  <path d="M70,60 C 380,60 380,146 738,146"/>
+                  <path d="M70,105 C 380,105 380,146 738,146"/>
+                  <path d="M70,150 C 380,150 380,146 738,146"/>
+                  <path d="M70,195 C 380,195 380,146 738,146"/>
+                  <path d="M70,240 C 380,240 380,146 738,146"/>
+                </g>
+              </svg>
+            </div>
+            <p class="fig-caption">
+              Fig. 1 — The trade network the system is built for: five overseas dry-bulk origin regions routed against seven East Coast India discharge points, each with its own berth and congestion limits.
+            </p>
+            <div class="facts-strip">
+              <div>
+                <span class="v">5</span><span class="k">Origin countries</span>
+              </div>
+              <div>
+                <span class="v">4</span><span class="k">Vessel classes</span>
+              </div>
+              <div>
+                <span class="v">4</span><span class="k">Forecast horizons</span>
+              </div>
+              <div>
+                <span class="v">16</span><span class="k">Validated forecast models</span>
+              </div>
+            </div>
+          </section>
+          <!-- ============================================================ 01 EXEC SUMMARY ============================================================ -->
+          <section class="doc-section" id="exec-summary">
+            <div class="section-kicker">
+              <span class="idx">01</span><span class="line"></span><span class="part">Executive summary</span>
+            </div>
+            <h2>
+              From daily spot-checking the market to one graded recommendation
+            </h2>
+            <p class="lead">
+              India's steel sector imports coking coal and other dry bulk from five continents, and pays for the ships that carry it almost entirely through daily, reactive spot-market decisions. Freight Prediction replaces that habit with a single decision engine that forecasts the market, checks the physical limits of the ports involved, prices the whole voyage, and returns one graded recommendation — with every number in it labelled by where it actually came from.
+            </p>
+            <h3>
+              What it is
+            </h3>
+            <p>
+              Freight Prediction is not a forecasting widget bolted onto a dashboard. Given a cargo scenario — commodity, quantity, origin, destination, contract length — it runs the full chain a chartering desk would run by hand: which vessel class actually fits the berths at both ends, what a complete voyage costs on that vessel, where the freight market is headed over the next 7 to 90 days, how reliable that forecast actually is, whether a multi-voyage contract beats staying on the spot market, and what the risk-adjusted numbers say to do about it. One request in, one graded recommendation out.
+            </p>
+            <h3>
+              Why this matters right now
+            </h3>
+            <p>
+              The system is built directly against<strong>Smart India Hackathon Problem Statement 26006</strong>, issued by the Ministry of Steel through SAIL: a call for an intelligent freight-forecasting model that helps move India's bulk-cargo procurement away from repeated single spot-market fixtures and toward planned short- and medium-term multiple-voyage contracts — without losing sight of what India's East Coast ports can physically handle. That's a live, stated operational need inside a public-sector steel supply chain, not a hypothetical use case.
+            </p>
+            <h3>
+              The core value proposition
+            </h3>
+            <ul class="doc-list">
+              <li>
+                <strong>Validated, multi-horizon forecasting</strong> — four vessel-class market indices, each forecast at 7/30/60/90 days, each carrying its own tested confidence grade rather than one point estimate presented as certain.
+              </li>
+              <li>
+                <strong>Physical reality, not just a market index</strong> — every recommendation is checked against real berth constraints, port congestion, and vessel economics before a number is ever quoted.
+              </li>
+              <li>
+                <strong>Radical transparency about data provenance</strong> — every figure in the response is tagged live, verified, historical, calculated, modelled, or assumed, so nobody mistakes a placeholder for a market quote.
+              </li>
+            </ul>
+            <div class="result-card">
+              <div class="rc-head">
+                <h4>
+                  The hook, in one live run of the system
+                </h4>
+                <span class="badge action">CONSIDER_CONTRACT</span>
+              </div>
+              <p style="margin-bottom:10px;">
+                60,000 MT of coal, Newcastle (Australia) → Paradip, a 6-month / 6-voyage contract. The engine screened all four vessel classes down to the one that actually fits the cargo and the berths, priced the complete voyage, forecast the underlying market across four horizons — and came back<em>honest</em> about how much to trust that forecast, rather than manufacturing urgency it hadn't earned.
+              </p>
+              <div class="kv-grid">
+                <div>
+                  <span class="k">Vessel</span><span class="v">Supramax</span>
+                </div>
+                <div>
+                  <span class="k">Voyage cost</span><span class="v">$1,651,480</span>
+                </div>
+                <div>
+                  <span class="k">Cost / MT</span><span class="v">$27.52</span>
+                </div>
+                <div>
+                  <span class="k">30-day signal</span><span class="v">LOW confidence</span>
+                </div>
+              </div>
+              <p style="margin-bottom:0; font-size:13px;">
+                This exact scenario is traced end to end, with real output, in<a href="#golden-path">Section 05</a>.
+              </p>
+            </div>
+          </section>
+          <!-- ============================================================ 02 PROBLEM ============================================================ -->
+          <section class="doc-section" id="problem">
+            <div class="section-kicker">
+              <span class="idx">02</span><span class="line"></span><span class="part">Problem statement</span>
+            </div>
+            <h2>
+              Chartering by reflex, in a market that doesn't reward reflexes
+            </h2>
+            <p class="lead">
+              The problem statement's own framing is blunt: bulk-cargo procurement to India's East Coast runs on daily market exploration. That's not a data-availability problem so much as a data-<em>integration</em> problem — three genuinely different disciplines are being handled as separate manual steps instead of one connected decision.
+            </p>
+            <h3>
+              What's actually happening today
+            </h3>
+            <p>
+              Each cargo parcel is priced and fixed close to independently, off whatever the freight market happens to be doing that morning. There is no forward view carried from one fixture to the next, so there's no way to systematically prefer a good entry window over a mediocre one, or a short-term contract over a string of one-off spot fixtures, beyond a broker's memory and a spreadsheet.
+            </p>
+            <h3>
+              Three problems stacked on top of each other
+            </h3>
+            <ul class="doc-list">
+              <li>
+                <strong>A forecasting problem.</strong> Freight markets for Handysize, Supramax, Panamax, and Capesize tonnage move on their own cycles, driven by global supply and demand that a single day's spot check can't reveal. Without a validated forward view, "is now a good time to fix a contract" is a guess dressed up as a decision.
+              </li>
+              <li>
+                <strong>A constraint problem.</strong> Cargo doesn't just need a ship — it needs a ship that physically fits the berths at both ends. Paradip, Visakhapatnam, Gangavaram, Gopalpur, Dhamra, the Sagar/Sandheads anchorage, and Haldia each cap out at different maximum LOA, beam, draft, and cargo-handling rate. A vessel that's cheap on paper but too large for the discharge berth doesn't save money; it just converts the saving into idle time and demurrage.
+              </li>
+              <li>
+                <strong>A financial-optimization problem.</strong> Whether a multi-voyage contract is actually worth fixing depends on the forecast, the contract's discount curve, and a genuine risk comparison against staying on the spot market — three numbers that need to be reconciled against each other before "fix" or "wait" means anything.
+              </li>
+            </ul>
+            <h3>
+              Why the reactive approach persists — and why it has to change
+            </h3>
+            <p>
+              Nobody chooses the daily-spot-check approach because it's the best one; it persists because assembling the alternative by hand — a market read, a port-ops call, a cost spreadsheet, and a judgment call — doesn't scale to every parcel, every day. Published freight indices tell a desk where the market has<em>been</em>; they don't tell it whether a specific vessel can even use a specific berth, or whether this month's contract math actually beats the risk of staying exposed to the spot market. Closing that gap is what makes a genuinely new approach necessary here, rather than an incrementally better spreadsheet.
+            </p>
+            <details class="note">
+              <summary>
+                Read the problem statement's own framing<span class="tag">SIH 26006</span>
+              </summary>
+              <div class="note-body">
+                <p>
+                  The official description names the same three failure modes directly: an inability to identify optimal entry points for short- or mid-term charters amid volatile global freight markets; no systematic way to match vessel type to cargo size while respecting port infrastructure limits at both ends; and no forecasting mechanism to reduce vessel idle time or manage the risk of market volatility and port congestion. The expected solution it asks for — market-entry timing, vessel-type optimization against port constraints, idle-time management, and risk mitigation, delivered through a usable interface — maps directly onto the system described in this brief.
+                </p>
+              </div>
+            </details>
+          </section>
+          <!-- ============================================================ 03 SOLUTION ============================================================ -->
+          <section class="doc-section" id="solution">
+            <div class="section-kicker">
+              <span class="idx">03</span><span class="line"></span><span class="part">The solution &amp; UVP</span>
+            </div>
+            <h2>
+              One integrated decision engine, not three disconnected tools
+            </h2>
+            <p class="lead">
+              Freight Prediction's answer to a three-part problem is a single pipeline that carries a cargo scenario through forecasting, physical constraints, and contract economics without ever losing the thread between them — and that says plainly, at every step, which numbers are live, which are validated model output, and which are still working assumptions.
+            </p>
+            <h3>
+              What "integrated" concretely buys a chartering desk
+            </h3>
+            <ul class="doc-list">
+              <li>
+                <strong>Feasibility before price.</strong> Every candidate vessel is checked against real port and berth data first, so the system can never recommend a vessel that physically can't load or discharge the cargo at either port.
+              </li>
+              <li>
+                <strong>Graded forecasts, not one number.</strong> Each vessel-class market index is forecast at four horizons, and each of those forecasts carries its own validated HIGH / MEDIUM / LOW confidence — so a 7-day signal and a 90-day signal are never treated as equally trustworthy just because they came out of the same model family.
+              </li>
+              <li>
+                <strong>Full-voyage economics for every option, not just the winner.</strong> Freight, vessel time-charter, bunker, and port charges are priced for every feasible vessel, so the cheapest option is chosen by visible comparison rather than an opaque default.
+              </li>
+              <li>
+                <strong>Contract math that produces a number, not a hunch.</strong> A duration-based discount curve and a probability-weighted risk model turn "should we fix a contract" into an actual expected-savings figure.
+              </li>
+              <li>
+                <strong>A confidence-aware final call.</strong> The recommendation layer won't push toward fixing a contract just because the market is forecast to move, if that particular forecast hasn't validated as reliable. Direction and confidence are gated together.
+              </li>
+            </ul>
+            <h3>
+              The unique value proposition
+            </h3>
+            <p>
+              Tools in this space tend to do one half of the job well: a market index that forecasts price and stops there, or a logistics/constraint tool with no market view behind it. Freight Prediction's differentiator is closing that loop end-to-end — and then being explicit about which part of the loop is real-time, which part is validated, and which part is still a labelled placeholder. That distinction is exposed to the user, not hidden behind a confident-looking number.
+            </p>
+            <div class="prov-legend">
+              <span class="prov-chip live">LIVE</span><span class="prov-chip verified">VERIFIED</span><span class="prov-chip historical">HISTORICAL</span><span class="prov-chip calculated">CALCULATED</span><span class="prov-chip modelled">MODELLED</span><span class="prov-chip assumed">ASSUMED</span>
+            </div>
+            <p style="font-size:13px; margin-top:-10px;">
+              This six-state label is attached to every meaningful figure the API returns — freight rate, forecast level, congestion, sailing time, voyage cost, contract economics. Section 04 covers how it's built; Section 05 shows it attached to a real response.
+            </p>
+            <h3>
+              Bridging 2012–2019 training data to today's market
+            </h3>
+            <p>
+              The forecasting models are trained on historical Baltic dry-bulk data running from August 2012 to July 2019 — the current prototype dataset. Rather than quietly pretend the market froze there, the system includes a live-calibration layer: when a live benchmark feed is configured, it recalibrates the<em>current level</em> of each vessel-class index to today's market, and lets the trained model supply the validated<em>shape</em> of the forecast on top of that live level. Section 04 details the mechanism; it is one of the more deliberate pieces of engineering in the system.
+            </p>
+          </section>
+          <!-- ============================================================ 04 ARCHITECTURE ============================================================ -->
+          <section class="doc-section" id="architecture">
+            <div class="section-kicker">
+              <span class="idx">04</span><span class="line"></span><span class="part">Technical architecture &amp; innovation</span>
+            </div>
+            <h2>
+              Under the hood: stack, data, models, and the decision pipeline
+            </h2>
+            <p class="lead">
+              This is the section judges will spend the most time in, so it's organized the way the system is actually built: the stack and why it was chosen, the data underneath it, the forecasting layer, the live-calibration engineering, the vessel/port/economics engine, and finally the eight-stage pipeline that ties all of it into one recommendation.
+            </p>
+            <h3>
+              Stack and rationale
+            </h3>
+            <ul class="doc-list">
+              <li>
+                <strong>Backend — FastAPI (Python).</strong> The entire ML and data-science stack (pandas, scikit-learn, XGBoost, LightGBM, joblib) is native Python, so the API layer and the model layer share one runtime with nothing to keep in sync across a language boundary. FastAPI adds typed request validation via Pydantic and automatic interactive API documentation on top, at no extra integration cost.
+              </li>
+              <li>
+                <strong>Frontend — React 19 on Vite,</strong> deployed to Vercel, talking to the API over a typed Axios client with Vercel Analytics and Speed Insights wired in.
+              </li>
+              <li>
+                <strong>Deployment — Render</strong> hosts the FastAPI service; the repository is cleanly separated into<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">backend/</code> (API),<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">models/</code> (forecasting + optimization engine), and<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">frontend/</code> (dashboard) — a structure that mirrors the actual pipeline rather than an arbitrary folder split.
+              </li>
+            </ul>
+            <div class="figure">
+              <svg viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="System architecture diagram: React frontend on Vercel calling a FastAPI backend on Render, which orchestrates the ML forecasting layer, the optimization engine, and internal plus external data sources">
+                <defs>
+                  <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <path d="M0,0 L8,4 L0,8 z" fill="var(--ink-faint)"/>
+                  </marker>
+                </defs>
+                <!-- Frontend -->
+                <rect x="30" y="40" width="180" height="64" rx="9" fill="var(--panel-2)" stroke="var(--line)"/>
+                <text x="120" y="66" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="var(--ink)">
+                  React Dashboard
+                </text>
+                <text x="120" y="84" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-faint)">
+                  Vite · Vercel
+                </text>
+                <!-- API -->
+                <rect x="320" y="40" width="180" height="64" rx="9" fill="var(--panel-2)" stroke="var(--line)"/>
+                <text x="410" y="66" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="var(--ink)">
+                  FastAPI Service
+                </text>
+                <text x="410" y="84" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-faint)">
+                  /api/forecast · Render
+                </text>
+                <line x1="210" y1="72" x2="316" y2="72" stroke="var(--ink-faint)" stroke-width="1.4" marker-end="url(#arrow)"/>
+                <line x1="316" y1="86" x2="210" y2="86" stroke="var(--ink-faint)" stroke-width="1.4" marker-end="url(#arrow)"/>
+                <!-- Decision engine -->
+                <rect x="610" y="20" width="180" height="104" rx="9" fill="var(--accent-dim)" stroke="var(--accent)"/>
+                <text x="700" y="44" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="var(--ink)">
+                  Decision Engine
+                </text>
+                <text x="700" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-faint)">
+                  forecast → confidence
+                </text>
+                <text x="700" y="76" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-faint)">
+                  → vessel → economics
+                </text>
+                <text x="700" y="90" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-faint)">
+                  → contract → risk
+                </text>
+                <text x="700" y="104" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-faint)">
+                  → recommendation
+                </text>
+                <line x1="500" y1="70" x2="606" y2="70" stroke="var(--ink-faint)" stroke-width="1.4" marker-end="url(#arrow)"/>
+                <!-- ML models -->
+                <rect x="330" y="160" width="150" height="56" rx="9" fill="var(--panel-2)" stroke="var(--line)"/>
+                <text x="405" y="184" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--ink)">
+                  Forecast Models
+                </text>
+                <text x="405" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-faint)">
+                  XGBoost · LightGBM · RF
+                </text>
+                <!-- Optimization engine -->
+                <rect x="150" y="160" width="150" height="56" rx="9" fill="var(--panel-2)" stroke="var(--line)"/>
+                <text x="225" y="184" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--ink)">
+                  Vessel + Port Engine
+                </text>
+                <text x="225" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-faint)">
+                  berths · routing · cost
+                </text>
+                <!-- Data sources -->
+                <rect x="510" y="160" width="150" height="56" rx="9" fill="var(--panel-2)" stroke="var(--line)"/>
+                <text x="585" y="184" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--ink)">
+                  Verified Datasets
+                </text>
+                <text x="585" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-faint)">
+                  ports · congestion · BDI
+                </text>
+                <rect x="670" y="160" width="150" height="56" rx="9" fill="var(--teal-dim)" stroke="var(--teal)"/>
+                <text x="745" y="184" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="var(--ink)">
+                  Live Market Feed
+                </text>
+                <text x="745" y="200" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-faint)">
+                  OilPriceAPI (optional)
+                </text>
+                <line x1="700" y1="124" x2="405" y2="156" stroke="var(--ink-faint)" stroke-width="1.2" marker-end="url(#arrow)"/>
+                <line x1="670" y1="60" x2="405" y2="156" stroke="var(--ink-faint)" stroke-width="1.2" marker-end="url(#arrow)" stroke-dasharray="1"/>
+                <line x1="700" y1="124" x2="225" y2="156" stroke="var(--ink-faint)" stroke-width="1.2" marker-end="url(#arrow)"/>
+                <line x1="700" y1="124" x2="585" y2="156" stroke="var(--ink-faint)" stroke-width="1.2" marker-end="url(#arrow)"/>
+                <line x1="745" y1="160" x2="745" y2="130" stroke="var(--teal)" stroke-width="1.2" marker-end="url(#arrow)"/>
+                <!-- Provenance -->
+                <rect x="330" y="248" width="330" height="40" rx="8" fill="none" stroke="var(--line)" stroke-dasharray="3 3"/>
+                <text x="495" y="272" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-faint)">
+                  every field tagged LIVE / VERIFIED / HISTORICAL / CALCULATED / MODELLED / ASSUMED
+                </text>
+                <line x1="495" y1="216" x2="495" y2="244" stroke="var(--line)" stroke-width="1.2"/>
+              </svg>
+            </div>
+            <p class="fig-caption">
+              Fig. 2 — Request flow: the dashboard calls one FastAPI endpoint, which orchestrates the forecasting models, the vessel/port engine, and (where configured) a live market feed, before every field in the response is stamped with its data provenance.
+            </p>
+            <h3>
+              Data foundations
+            </h3>
+            <ul class="doc-list">
+              <li>
+                <strong>Historical training data.</strong> Baltic dry-bulk vessel-class indices — HSI (Handysize), SI (Supramax), PI (Panamax), CI (Capesize) — covering 1 August 2012 to 31 July 2019, cleaned and engineered into a multi-horizon feature set.
+              </li>
+              <li>
+                <strong>Verified port infrastructure.</strong> Berth-level records — max LOA, beam, draft, DWT, and cargo-handling rate — sourced from port authorities (for example, Paradip Port Authority) and marked<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">VERIFIED</code>, used directly in feasibility screening.
+              </li>
+              <li>
+                <strong>Verified port congestion.</strong> Median vessel-waiting-time data from Portcast, a maritime analytics provider, where a verified reading exists — and an explicit<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">NO_VERIFIED_CURRENT_DATA</code> flag, not a guess, everywhere it doesn't yet.
+              </li>
+              <li>
+                <strong>Live benchmark feed (optional).</strong> A server-side OilPriceAPI integration for current Baltic Dry Index and Baltic Capesize Index readings, cached 30 minutes, designed to fail soft.
+              </li>
+            </ul>
+            <h3>
+              The forecasting layer
+            </h3>
+            <p>
+              Sixteen forecast targets — four vessel-class indices across four horizons — were each independently benchmarked. Three candidate algorithms (XGBoost, LightGBM, Random Forest) were trained per target and compared against a naive persistence baseline, using a<strong>chronological</strong> 80/20 train/test split (never randomly shuffled, which would leak future information backward into training) and then re-validated with a 40-point<strong>walk-forward</strong> evaluation over a held-out window from 15 March 2018 to 1 April 2019.
+            </p>
+            <p>
+              The winning method per target is recorded in a model registry — and the registry does not reflexively favor the more complex model. In<strong>7 of the 16</strong> vessel-class/horizon combinations, walk-forward testing showed the boosted models did not reliably beat the simple persistence baseline, so the registry uses the baseline there instead. That's a validated choice the data forced, not a shortfall the team is glossing over.
+            </p>
+            <h4>
+              Model registry — what actually serves each forecast
+            </h4>
+            <div class="table-wrap">
+              <table>
+                <caption>
+                  Selected model per vessel class and horizon, read directly from the live model registry.
+                </caption>
+                <thead>
+                  <tr>
+                    <th>
+                      Vessel class
+                    </th>
+                    <th>
+                      7-day
+                    </th>
+                    <th>
+                      30-day
+                    </th>
+                    <th>
+                      60-day
+                    </th>
+                    <th>
+                      90-day
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="label">
+                      Handysize (HSI)
+                    </td>
+                    <td>
+                      XGBoost
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      XGBoost
+                    </td>
+                    <td>
+                      XGBoost
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      Supramax (SI)
+                    </td>
+                    <td>
+                      XGBoost
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      Panamax (PI)
+                    </td>
+                    <td>
+                      XGBoost
+                    </td>
+                    <td>
+                      LightGBM
+                    </td>
+                    <td>
+                      Random Forest
+                    </td>
+                    <td>
+                      XGBoost
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      Capesize (CI)
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      XGBoost
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="result-card">
+              <div class="rc-head">
+                <h4>
+                  Worked example — Supramax (SI), 7-day horizon
+                </h4>
+                <span class="badge high">HIGH confidence</span>
+              </div>
+              <p>
+                This is a real forecast from the live run traced in Section 05, not a constructed example. It shows exactly how the confidence grade is earned.
+              </p>
+              <div class="kv-grid">
+                <div>
+                  <span class="k">Model</span><span class="v">XGBoost</span>
+                </div>
+                <div>
+                  <span class="k">R²</span><span class="v">0.943</span>
+                </div>
+                <div>
+                  <span class="k">MAPE</span><span class="v">4.15%</span>
+                </div>
+                <div>
+                  <span class="k">vs. naive</span><span class="v">+11.85%</span>
+                </div>
+              </div>
+              <p style="margin-bottom:0;">
+                Confidence rule:<strong>HIGH</strong> requires R² ≥ 0.50, MAPE ≤ 15%, and a validated improvement over the naive baseline greater than 10% — this forecast clears all three. Compare that to the<em>same</em> market's 90-day horizon in the same run: persistence baseline, R² ‑0.23, an 15.5%<em>worse</em> walk-forward result than naive — graded<strong>LOW</strong>. Both numbers are returned in the same API response, correctly labelled, rather than the system pretending every horizon is equally trustworthy.
+              </p>
+            </div>
+            <details class="note">
+              <summary>
+                Confidence formula, in full<span class="tag">Rule-based, not a black box</span>
+              </summary>
+              <div class="note-body">
+                <p>
+                  <strong>HIGH</strong> — R² ≥ 0.50<em>and</em> MAPE ≤ 15%<em>and</em> walk-forward improvement over the naive baseline &gt; 10%.
+                </p>
+                <p>
+                  <strong>MEDIUM</strong> — R² ≥ 0.00<em>and</em> MAPE ≤ 30%<em>and</em> improvement &gt; 0%.
+                </p>
+                <p style="margin-bottom:0;">
+                  <strong>LOW</strong> — everything else. Every forecast the API returns carries this grade, computed from the same validation tables shown above rather than an ad hoc heuristic at request time.
+                </p>
+              </div>
+            </details>
+            <h3>
+              Live-market calibration — the standout piece of engineering
+            </h3>
+            <p>
+              The trained models operate in a 2012–2019 feature space, but chartering decisions get made today. Rather than retrain against data nobody has a continuous licensed feed for, the system recalibrates the<em>current level</em>:
+            </p>
+            <ul class="doc-list">
+              <li>
+                When a live BDI/BCI reading is available, a least-squares regression — fit once on the historical relationship between the composite Baltic indices and each vessel class — converts today's benchmark reading into today's calibrated HSI/SI/PI/CI level.
+              </li>
+              <li>
+                The trained model's predicted<em>percentage move</em> is then applied on top of that live level, instead of on top of a stale 2019 number — recombining a validated<em>shape</em> with a live<em>level</em>, rather than having to pick one or the other.
+              </li>
+              <li>
+                The resulting live-adjusted freight rate is clamped to a<strong>0.70×–1.50×</strong> band around the prototype baseline rate, so a bad reading from a third-party feed can't propagate into an unusable quote.
+              </li>
+              <li>
+                No API key configured, or the provider unreachable → the system continues on historical data without failing the request, and labels the response<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">HISTORICAL</code> /<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">PROTOTYPE_ASSUMPTION</code> accordingly. This is exactly the path the Section 05 walkthrough took, and it still returned a complete, correctly-labelled answer.
+              </li>
+            </ul>
+            <h3>
+              The vessel &amp; port engine
+            </h3>
+            <p>
+              Four IMO-standard bulk-carrier classes are modelled with real DWT/LOA/beam/draft envelopes, from Handysize (10,000–49,999 DWT) through Capesize (100,000–250,000 DWT). Every candidate is checked against the actual berth records at both ports before a single dollar figure is produced — and a missing berth limit is treated as unknown, never guessed.
+            </p>
+            <h4>
+              Sailing time: great-circle distance, corrected for the planet's landmasses
+            </h4>
+            <p>
+              A straight great-circle line is the shortest path over a<em>sphere</em>, not the shortest path over<em>water</em> — for several real origins it cuts straight through a continent. The routing engine corrects for this with a small graph of real maritime chokepoints: the Suez Canal, Bab-el-Mandeb, the Bosphorus, the Cape of Good Hope, Cape Leeuwin, and the Singapore and Taiwan Straits.
+            </p>
+            <div class="figure">
+              <svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram contrasting a naive straight-line route from Newcastle to Paradip that crosses Australia against the corrected route via the Cape Leeuwin waypoint that stays over water">
+                <rect x="330" y="30" width="170" height="120" rx="6" fill="var(--panel-2)" stroke="var(--line)"/>
+                <text x="415" y="94" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink-faint)">
+                  AUSTRALIA
+                </text>
+                <text x="415" y="110" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-faint)">
+                  (landmass)
+                </text>
+                <circle cx="470" cy="58" r="4.5" fill="var(--accent)"/>
+                <text x="480" y="52" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink)">
+                  Newcastle
+                </text>
+                <circle cx="70" cy="100" r="4.5" fill="var(--teal)"/>
+                <text x="30" y="120" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink)">
+                  Paradip
+                </text>
+                <!-- naive line -->
+                <line x1="470" y1="58" x2="70" y2="100" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="4 4"/>
+                <text x="230" y="72" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--accent)">
+                  great-circle (crosses land) ✕
+                </text>
+                <!-- corrected route via waypoint -->
+                <circle cx="330" cy="188" r="4.5" fill="var(--ink)"/>
+                <text x="270" y="206" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--ink-faint)">
+                  Cape Leeuwin waypoint
+                </text>
+                <path d="M470,58 C 430,150 380,180 330,188" fill="none" stroke="var(--teal)" stroke-width="2"/>
+                <path d="M330,188 C 220,190 140,150 70,100" fill="none" stroke="var(--teal)" stroke-width="2"/>
+                <text x="150" y="212" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--teal)">
+                  waypoint-corrected route ✓ (stays over water)
+                </text>
+              </svg>
+            </div>
+            <p class="fig-caption">
+              Fig. 3 — Why the waypoint graph exists: the Australia-east-coast → India-east-coast lane is routed south of the continent via Cape Leeuwin, not across it. This is the actual routing applied to the Newcastle → Paradip leg used throughout Section 05.
+            </p>
+            <h3>
+              Voyage economics, contracts, and risk
+            </h3>
+            <ul class="doc-list">
+              <li>
+                <strong>Total voyage cost</strong> = freight cost + vessel time-charter cost (transit + port days, priced at a day-rate by vessel class) + bunker + port charges — computed for<em>every</em> feasible vessel, so the cheapest option is chosen by comparison, not assumption.
+              </li>
+              <li>
+                <strong>Contract pricing</strong> runs a duration-based discount curve, anchored at 1 / 3 / 6 / 12 months and linearly interpolated for anything in between, against the current spot rate.
+              </li>
+              <li>
+                <strong>Risk analysis</strong> prices a probability-weighted scenario range — 25% downside / 50% central / 25% upside, ±10% around the current rate — against the fixed contract cost, producing an actual expected-savings figure. This is the number the final recommendation is gated on, not just the direction of the forecast.
+              </li>
+            </ul>
+            <h3>
+              The master decision pipeline
+            </h3>
+            <p>
+              Everything above feeds one eight-stage pipeline. Step through it below — each stage is the exact sequence the engine runs for every request.
+            </p>
+            <div class="stepper" id="pipelineStepper">
+              <div class="stepper-track">
+                <button class="stage-btn active" data-stage="1">
+                  <span class="n">01</span> Vessel feasibility
+                </button>
+                <button class="stage-btn" data-stage="2">
+                  <span class="n">02</span> Voyage economics
+                </button>
+                <button class="stage-btn" data-stage="3">
+                  <span class="n">03</span> Cheapest vessel
+                </button>
+                <button class="stage-btn" data-stage="4">
+                  <span class="n">04</span> ML forecast
+                </button>
+                <button class="stage-btn" data-stage="5">
+                  <span class="n">05</span> Confidence grade
+                </button>
+                <button class="stage-btn" data-stage="6">
+                  <span class="n">06</span> Contract pricing
+                </button>
+                <button class="stage-btn" data-stage="7">
+                  <span class="n">07</span> Risk analysis
+                </button>
+                <button class="stage-btn" data-stage="8">
+                  <span class="n">08</span> Recommendation
+                </button>
+              </div>
+              <div class="stepper-panel">
+                <div class="panel-content active" data-panel="1">
+                  <h4>
+                    <span class="n">01</span> Vessel feasibility
+                  </h4>
+                  <p>
+                    All four vessel classes are checked against the cargo quantity and the real berth records at both the origin and destination port. A class fails here with a plain reason —<code>Insufficient cargo capacity</code>, or<code>below this vessel class's minimum realistic stem size</code> — before any economics are even computed.
+                  </p>
+                </div>
+                <div class="panel-content" data-panel="2">
+                  <h4>
+                    <span class="n">02</span> Full voyage economics
+                  </h4>
+                  <p>
+                    For every vessel that survives Stage 1, the engine prices the complete voyage: freight cost, vessel time-charter cost, bunker, and port charges. This runs for every feasible candidate, not only the one that ends up winning — so the comparison itself stays visible in the response.
+                  </p>
+                </div>
+                <div class="panel-content" data-panel="3">
+                  <h4>
+                    <span class="n">03</span> Cheapest feasible vessel
+                  </h4>
+                  <p>
+                    Among the feasible, fully-priced candidates, the lowest total voyage cost is selected as the recommended vessel. When only one class is feasible — as in the Section 05 example — it wins by definition, but the losing classes and their reasons are still returned for transparency.
+                  </p>
+                </div>
+                <div class="panel-content" data-panel="4">
+                  <h4>
+                    <span class="n">04</span> ML forecast
+                  </h4>
+                  <p>
+                    The selected vessel's underlying Baltic index (Supramax → SI, for example) is forecast at 7, 30, 60, and 90 days using whichever model the registry validated as best for each horizon.
+                  </p>
+                </div>
+                <div class="panel-content" data-panel="5">
+                  <h4>
+                    <span class="n">05</span> Forecast confidence
+                  </h4>
+                  <p>
+                    Each of the four horizon forecasts is graded HIGH, MEDIUM, or LOW from its own R², MAPE, and walk-forward improvement over the naive baseline — the rule set out in full above.
+                  </p>
+                </div>
+                <div class="panel-content" data-panel="6">
+                  <h4>
+                    <span class="n">06</span> Contract economics
+                  </h4>
+                  <p>
+                    The current spot rate is priced against a multi-voyage contract using the duration-interpolated discount curve, producing a contract rate and a total contract cost for the planned number of voyages.
+                  </p>
+                </div>
+                <div class="panel-content" data-panel="7">
+                  <h4>
+                    <span class="n">07</span> Risk analysis
+                  </h4>
+                  <p>
+                    A probability-weighted downside/central/upside scenario (25/50/25, ±10% around the current rate) is compared against the fixed contract cost to produce an expected-savings figure in dollars and in percent.
+                  </p>
+                </div>
+                <div class="panel-content" data-panel="8">
+                  <h4>
+                    <span class="n">08</span> Final recommendation
+                  </h4>
+                  <p>
+                    Direction, confidence, and economics are combined into one of four actions —<code>FIX_CONTRACT</code>,<code>CONSIDER_CONTRACT</code>,<code>MONITOR</code>, or<code>SPOT_OR_WAIT</code>. A strong forecast alone is never enough to trigger<code>FIX_CONTRACT</code> if the confidence behind it is LOW — the engine downgrades to a more measured action instead.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <h3>
+              The data-provenance layer
+            </h3>
+            <p>
+              Every meaningful field in the API response — freight rate, forecast level, forecast model, sailing time, loading and discharge congestion, total voyage cost, contract economics — is accompanied by a status tag:<strong>LIVE, VERIFIED, HISTORICAL, CALCULATED, MODELLED,</strong> or<strong>ASSUMED</strong>, plus a plain-language note explaining what that means for that specific field. It's an unusual thing to see built into a hackathon-stage prototype: most projects under time pressure either hard-code confident-looking numbers or blur the line between "this is real" and "this is a placeholder for now." This system chose to expose that line instead of hiding it.
+            </p>
+          </section>
+          <!-- ============================================================ 05 GOLDEN PATH ============================================================ -->
+          <section class="doc-section" id="golden-path">
+            <div class="section-kicker">
+              <span class="idx">05</span><span class="line"></span><span class="part">Core features &amp; the golden path</span>
+            </div>
+            <h2>
+              A live demo walkthrough, not a description of one
+            </h2>
+            <p class="lead">
+              Every number below is a real, live-executed output of the system — the same scenario a judge could run in the dashboard in under a minute. Nothing here is a mock-up of what the output<em>would</em> look like.
+            </p>
+            <h3>
+              The dashboard
+            </h3>
+            <p>
+              <strong>Freight AI — Chartering Intelligence</strong> is a single-page React dashboard framed around one line:<em>"From international cargo sourcing to the right Indian port strategy."</em> It opens on a scenario builder — Commodity, Cargo Quantity, Origin Country (which drives a dependent Origin Port list), Destination Port, Contract Duration, and Planned Voyages — and returns a full decision brief below it.
+            </p>
+            <div class="gp-step">
+              <div class="gp-num">
+                1
+              </div>
+              <div class="gp-body">
+                <h4>
+                  Build the scenario
+                </h4>
+                <p>
+                  Coal · 60,000 MT · Origin: Australia → Newcastle · Destination: Paradip · Contract: 6 months · Planned voyages: 6.
+                </p>
+              </div>
+            </div>
+            <div class="gp-step">
+              <div class="gp-num">
+                2
+              </div>
+              <div class="gp-body">
+                <h4>
+                  Analyze
+                </h4>
+                <p>
+                  One click sends the scenario to<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">POST /api/forecast</code>. The dashboard smooth-scrolls to the results the moment the response lands.
+                </p>
+              </div>
+            </div>
+            <div class="dash-mock">
+              <div class="dm-topline">
+                <span>FREIGHT INTELLIGENCE DASHBOARD</span><span>BACKEND CONNECTED</span>
+              </div>
+              <div class="dm-body">
+                <div class="dm-decision">
+                  <div>
+                    <span class="badge action" style="margin-bottom:8px; display:inline-flex;">CONSIDER_CONTRACT</span>
+                    <h4>
+                      Supramax
+                    </h4>
+                    <div class="route">
+                      Australia → Newcastle → Paradip
+                    </div>
+                    <p>
+                      "The contract has positive expected economic value, but the market signal is not strong enough for an immediate fix."
+                    </p>
+                  </div>
+                </div>
+                <div class="dm-chips">
+                  <div>
+                    <span class="k">Voyage cost</span><span class="v">$1,651,480</span>
+                  </div>
+                  <div>
+                    <span class="k">Cost / MT</span><span class="v">$27.52</span>
+                  </div>
+                  <div>
+                    <span class="k">30-day outlook</span><span class="v">0.0%</span>
+                  </div>
+                  <div>
+                    <span class="k">Port queue</span><span class="v">1.0d · LOW</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="fig-caption">
+              Fig. 4 — Schematic of the recommendation card and quick-stat row, populated with the real values this scenario returns.
+            </p>
+            <div class="gp-step">
+              <div class="gp-num">
+                3
+              </div>
+              <div class="gp-body">
+                <h4>
+                  Why Supramax — feasibility &amp; cost comparison
+                </h4>
+                <p>
+                  The table underneath the decision card shows the full field, not only the winner:
+                </p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Vessel
+                    </th>
+                    <th>
+                      Feasible
+                    </th>
+                    <th>
+                      Total voyage cost
+                    </th>
+                    <th>
+                      Notes
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="label">
+                      Handysize
+                    </td>
+                    <td>
+                      No
+                    </td>
+                    <td>
+                      —
+                    </td>
+                    <td class="reason">
+                      Insufficient cargo capacity
+                    </td>
+                  </tr>
+                  <tr class="win">
+                    <td class="label">
+                      Supramax
+                    </td>
+                    <td>
+                      Yes
+                    </td>
+                    <td>
+                      $1,651,480 ($27.52/MT)
+                    </td>
+                    <td class="reason">
+                      Recommended · 6 verified discharge berths at Paradip
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      Panamax
+                    </td>
+                    <td>
+                      No
+                    </td>
+                    <td>
+                      —
+                    </td>
+                    <td class="reason">
+                      Below this class's minimum realistic stem size
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      Capesize
+                    </td>
+                    <td>
+                      No
+                    </td>
+                    <td>
+                      —
+                    </td>
+                    <td class="reason">
+                      Below this class's minimum realistic stem size
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="gp-step">
+              <div class="gp-num">
+                4
+              </div>
+              <div class="gp-body">
+                <h4>
+                  Market forecast — the SI index outlook
+                </h4>
+                <p>
+                  All four horizons for the Supramax index (SI), plotted with their confidence grades, so a teammate can see at a glance which part of the curve to actually lean on:
+                </p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      Horizon
+                    </th>
+                    <th>
+                      Model
+                    </th>
+                    <th>
+                      Change
+                    </th>
+                    <th>
+                      Confidence
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="label">
+                      7-day
+                    </td>
+                    <td>
+                      XGBoost
+                    </td>
+                    <td>
+                      +0.24%
+                    </td>
+                    <td>
+                      <span class="badge high">HIGH</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      30-day
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      0.0%
+                    </td>
+                    <td>
+                      <span class="badge low">LOW</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      60-day
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      0.0%
+                    </td>
+                    <td>
+                      <span class="badge low">LOW</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      90-day
+                    </td>
+                    <td>
+                      Naive
+                    </td>
+                    <td>
+                      0.0%
+                    </td>
+                    <td>
+                      <span class="badge low">LOW</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="gp-step">
+              <div class="gp-num">
+                5
+              </div>
+              <div class="gp-body">
+                <h4>
+                  Destination risk
+                </h4>
+                <p>
+                  Newcastle carries no verified congestion data, so the loading leg uses the labelled 1.0-day prototype fallback. Paradip's discharge leg uses a<strong>verified</strong> median waiting time from Portcast — 0.0 days in this snapshot. Combined queue: 1.0 day,<strong>LOW</strong> overall risk.
+                </p>
+              </div>
+            </div>
+            <div class="gp-step">
+              <div class="gp-num">
+                6
+              </div>
+              <div class="gp-body">
+                <h4>
+                  Spot vs. fixed contract, and the scenario spread
+                </h4>
+                <p>
+                  Six voyages at the current $20.00/MT spot rate cost $7,200,000. The same six voyages on a 6-month contract, priced at $19.20/MT (a 4% duration discount), cost $6,912,000 — an expected saving of<strong>$288,000 (4.0%)</strong>.
+                </p>
+              </div>
+            </div>
+            <div class="bar-viz">
+              <div class="bar-row">
+                <div class="bl">
+                  Downside (‑10%)
+                </div>
+                <div class="bt">
+                  <div class="bf teal" style="width:81.8%">
+                  </div>
+                </div>
+                <div class="bv">
+                  $6,480,000
+                </div>
+              </div>
+              <div class="bar-row">
+                <div class="bl">
+                  Contract (fixed)
+                </div>
+                <div class="bt">
+                  <div class="bf ink" style="width:87.3%">
+                  </div>
+                </div>
+                <div class="bv">
+                  $6,912,000
+                </div>
+              </div>
+              <div class="bar-row">
+                <div class="bl">
+                  Upside (+10%)
+                </div>
+                <div class="bt">
+                  <div class="bf accent" style="width:100%">
+                  </div>
+                </div>
+                <div class="bv">
+                  $7,920,000
+                </div>
+              </div>
+            </div>
+            <p style="margin-top:26px;">
+              This is the point of a golden path: a teammate — or a judge — can run this exact scenario live in under a minute and get back this exact answer, not a scripted screenshot.
+            </p>
+          </section>
+          <!-- ============================================================ 06 CHALLENGES ============================================================ -->
+          <section class="doc-section" id="challenges">
+            <div class="section-kicker">
+              <span class="idx">06</span><span class="line"></span><span class="part">Technical challenges &amp; triumphs</span>
+            </div>
+            <h2>
+              Where the engineering got hard, and what shipped instead of a shortcut
+            </h2>
+            <h4>
+              Challenge — the training data stops in 2019, the market doesn't
+            </h4>
+            <p style="max-width:64ch;">
+              <strong>Triumph:</strong> rather than retrain against data nobody has a continuous licensed feed for, the live-calibration layer (Section 04) recalibrates only the current<em>level</em> of each index from a live benchmark and lets the validated model supply the<em>shape</em> of the move — with a bounded multiplier so a bad reading can't produce a nonsensical quote, and a fail-soft path so a missing API key degrades the response instead of breaking it.
+            </p>
+            <h4>
+              Challenge — a great circle cuts straight through continents
+            </h4>
+            <p style="max-width:64ch;">
+              <strong>Triumph:</strong> the shortest path on a sphere isn't the shortest path over water. The chokepoint waypoint graph (Fig. 3) routes the Australia, US Gulf, Russian Black Sea, and Russian Pacific origins through the real straits and canals their traffic actually uses, each verified to stay over water rather than land on a convenient assumption.
+            </p>
+            <h4>
+              Challenge — the pull to force machine learning everywhere
+            </h4>
+            <p style="max-width:64ch;">
+              <strong>Triumph:</strong> walk-forward discipline, applied honestly. In 7 of 16 vessel-class/horizon combinations, a simple persistence baseline validated better than gradient boosting, and the model registry uses the baseline there — a harder call to make than shipping the "AI model" everywhere, and a more defensible one in front of the validation numbers.
+            </p>
+            <h4>
+              Challenge — real port and congestion data is incomplete
+            </h4>
+            <p style="max-width:64ch;">
+              <strong>Triumph:</strong> rather than fabricate a plausible-looking queue time for a port with no verified reading, the system labels it<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">ASSUMED</code> or<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">NO_VERIFIED_CURRENT_DATA</code> and keeps going — a constraint that, worked through consistently, is what produced the full data-provenance layer described in Section 04.
+            </p>
+            <h4>
+              Challenge — an optional third-party market feed that can be slow, wrong, or simply absent
+            </h4>
+            <p style="max-width:64ch;">
+              <strong>Triumph:</strong> a 30-minute server-side cache, a try/except boundary around every external call, and a bounded output multiplier mean the live-market integration can only ever improve a response, never break one. The Section 05 walkthrough ran the fallback path end to end and still returned a complete, correctly-labelled answer.
+            </p>
+          </section>
+          <!-- ============================================================ 07 ROADMAP ============================================================ -->
+          <section class="doc-section" id="roadmap">
+            <div class="section-kicker">
+              <span class="idx">07</span><span class="line"></span><span class="part">Feasibility, scalability &amp; roadmap</span>
+            </div>
+            <h2>
+              Already running end-to-end. Built to extend, not rebuild.
+            </h2>
+            <h3>
+              Feasibility today
+            </h3>
+            <p>
+              This isn't a notebook with a promising chart in it — it's a deployed, working system. The frontend is live on Vercel, the API is live on Render, the request/response contract is typed end to end, and the repository is cleanly modular:<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">backend/</code>,<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">models/</code>, and<code class="mono" style="background:var(--code-bg); padding:1px 5px; border-radius:4px;">frontend/</code> map directly onto the API layer, the forecasting/optimization engine, and the dashboard. Section 05's walkthrough is not a projection of what the system could do — it's what it does right now, on request.
+            </p>
+            <h3>
+              Scalability
+            </h3>
+            <ul class="doc-list">
+              <li>
+                <strong>New geography is configuration, not architecture.</strong> Adding an origin port, a destination berth, or a new congestion source is a config and CSV addition against the existing port-loader and congestion modules, not a rewrite.
+              </li>
+              <li>
+                <strong>New forecasting methods slot into the existing registry pattern</strong> without touching the API layer — the pipeline already treats "which model serves this forecast" as a lookup, not a hard-coded branch.
+              </li>
+              <li>
+                <strong>The live-market adapter is provider-agnostic by design</strong> — swapping in a different benchmark source means implementing the same fetch/cache interface, not restructuring the calibration math around it.
+              </li>
+              <li>
+                <strong>FastAPI and Render scale horizontally</strong> behind the same typed contract the dashboard already speaks to.
+              </li>
+            </ul>
+            <h3>
+              A plausible path to deployment
+            </h3>
+            <p>
+              The most direct fit is exactly where the problem statement points: a decision-support module for the Ministry of Steel's own import desks through SAIL. Beyond that, the same engine is a reasonable candidate for licensing — as a module or an API — to other public-sector bulk importers and to ship-broking desks who price the same origin-to-India trade lanes for private clients. None of this is secured; it's the shape of demand the problem statement itself describes.
+            </p>
+            <h3>
+              Roadmap — the next six months
+            </h3>
+            <p>
+              Every item below maps directly onto something the system already, honestly, labels as a prototype assumption today — this is a punch list against the system's own provenance layer, not a wish list.
+            </p>
+            <div class="timeline">
+              <div class="tl-item">
+                <h4>
+                  Route-specific rate feeds
+                </h4>
+                <p>
+                  Replace the prototype freight-rate, bunker, and port-charge constants with licensed, route-specific market data.
+                </p>
+              </div>
+              <div class="tl-item">
+                <h4>
+                  Wider verified port coverage
+                </h4>
+                <p>
+                  Extend verified berth and congestion data beyond Paradip and Visakhapatnam to the remaining East Coast ports.
+                </p>
+              </div>
+              <div class="tl-item">
+                <h4>
+                  Real vessel-schedule routing
+                </h4>
+                <p>
+                  Replace the great-circle-plus-waypoint sailing-time estimate with AIS-based vessel-schedule data.
+                </p>
+              </div>
+              <div class="tl-item">
+                <h4>
+                  An extended, continuously updated training window
+                </h4>
+                <p>
+                  Push the historical dataset past July 2019 with a live feed, reducing how much weight the live-calibration layer has to carry.
+                </p>
+              </div>
+              <div class="tl-item">
+                <h4>
+                  Commodity- and route-specific modeling
+                </h4>
+                <p>
+                  Move from index-level forecasting to models that account for the specific commodity and trade lane, not just the vessel class.
+                </p>
+              </div>
+              <div class="tl-item">
+                <h4>
+                  Multi-user procurement workflows
+                </h4>
+                <p>
+                  Add roles and scenario history so a procurement team, not a single analyst, can work from the same evolving picture.
+                </p>
+              </div>
+            </div>
+          </section>
+          <!-- ============================================================ 08 CONCLUSION ============================================================ -->
+          <section class="doc-section" id="conclusion">
+            <div class="section-kicker">
+              <span class="idx">08</span><span class="line"></span><span class="part">Conclusion</span>
+            </div>
+            <h2>
+              A working answer to a real, stated problem
+            </h2>
+            <p class="lead">
+              Freight Prediction takes a genuinely three-part problem — forecasting, physical port constraints, and contract economics — and closes it into one system that returns a single, graded recommendation instead of three disconnected data points a desk has to reconcile by hand.
+            </p>
+            <p>
+              What makes it credible rather than just ambitious is what Section 05 shows directly: run a real scenario, and the system doesn't just return an answer — it returns an answer it's honest about, downgrading its own confidence when the underlying forecast hasn't validated well rather than manufacturing certainty it hasn't earned. That's a harder standard to build to than a flashy demo, and it's the standard this system was held to throughout: real port data over guesses, validated models over the flashiest algorithm, and a labelled assumption over a hidden one.
+            </p>
+            <p>
+              It was built against one SAIL problem statement. If the roadmap in Section 07 lands, the architecture underneath it — modular, provider-agnostic, config-driven — is already shaped to become something bigger than the submission that started it: a standard decision layer for how India's steel sector, and potentially its wider bulk-import economy, buys shipping capacity.
+            </p>
+          </section>
+          <footer class="doc-footer">
+            Freight Prediction — prepared as an internal technical &amp; product brief for the project team. Source:<span class="mono">github.com/RajCodes2006/freight-prediction</span>.
+          </footer>
+        </div>
+      </main>
+    </div>
+    <script>
+      (function () {
+        // Mobile nav toggle
+        var rail = document.getElementById('rail');
+        var toggle = document.getElementById('mobileNavToggle');
+        if (toggle) {
+          toggle.addEventListener('click', function () {
+            rail.classList.toggle('open');
+          });
+          rail.addEventListener('click', function (e) {
+            if (e.target.tagName === 'A') { rail.classList.remove('open'); }
+          });
+          document.addEventListener('click', function (e) {
+            if (rail.classList.contains('open') && !rail.contains(e.target) && e.target !== toggle) {
+              rail.classList.remove('open');
+            }
+          });
+        }
+      
+        // Scrollspy
+        var sections = Array.prototype.slice.call(document.querySelectorAll('section.doc-section[id]'));
+        var links = Array.prototype.slice.call(document.querySelectorAll('#railNav a'));
+        var progressFill = document.getElementById('railProgress');
+      
+        function setActive(id) {
+          links.forEach(function (l) {
+            l.classList.toggle('active', l.getAttribute('data-target') === id);
+          });
+          var idx = sections.findIndex(function (s) { return s.id === id; });
+          if (idx > -1 && progressFill) {
+            var pct = ((idx+1) / sections.length) * 100;
+            progressFill.style.width = pct + '%';
+          }
+        }
+      
+        if ('IntersectionObserver' in window && sections.length) {
+          var observer = new IntersectionObserver(function (entries) {
+            var visible = entries.filter(function (e) { return e.isIntersecting; });
+            if (visible.length) {
+              visible.sort(function (a,b) { return b.intersectionRatio - a.intersectionRatio; });
+              setActive(visible[0].target.id);
+            }
+          }, { rootMargin: '-15% 0px -60% 0px', threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
+          sections.forEach(function (s) { observer.observe(s); });
+        }
+        if (sections.length) { setActive(sections[0].id); }
+      
+        // Pipeline stepper
+        var stageButtons = document.querySelectorAll('.stage-btn');
+        var panels = document.querySelectorAll('.panel-content');
+        stageButtons.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var stage = btn.getAttribute('data-stage');
+            stageButtons.forEach(function (b) { b.classList.toggle('active', b === btn); });
+            panels.forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === stage); });
+          });
+        });
+      })();
+    </script>
+  </body>
 </html>
