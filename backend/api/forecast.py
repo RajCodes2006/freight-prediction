@@ -113,7 +113,8 @@ def forecast(request: ForecastRequest):
                 "The current freight-rate estimate is scaled from the live-calibrated "
                 "vessel-class index and a prototype baseline; it is not a route-specific "
                 "charter quote. Weather-adjusted sailing time and bunker impact are "
-                "prototype calculations based on route-sampled Open-Meteo data. "
+                "prototype calculations based on Open-Meteo data sampled along "
+                "the routed sea geometry. "
                 "Port charges and some queue inputs remain prototype assumptions."
             )
         else:
