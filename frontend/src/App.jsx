@@ -1025,7 +1025,7 @@ function App() {
               {loading ? (
                 <>
                   <Gauge size={16} />
-                  Analyzing...
+                  {loadingStage}...
                 </>
               ) : (
                 <>
