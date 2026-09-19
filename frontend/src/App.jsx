@@ -689,14 +689,6 @@ function App() {
           </a>
 
           <a
-            href="#vessels"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <Container size={17} />
-            Vessel Economics
-          </a>
-
-          <a
             href="#ports"
             onClick={() => setSidebarOpen(false)}
           >
@@ -710,6 +702,14 @@ function App() {
           >
             <CloudRain size={17} />
             Weather Intelligence
+          </a>
+
+          <a
+            href="#vessels"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <Container size={17} />
+            Vessel Economics
           </a>
 
           <a
