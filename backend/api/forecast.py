@@ -2,7 +2,11 @@ from fastapi import APIRouter, HTTPException
 
 from backend.schemas.forecast import ForecastRequest
 from models.decision_engine import build_decision
-from models.optimization.route_sailing import estimate_sailing_days
+from models.optimization.route_sailing import (
+    estimate_sailing_days,
+    get_route_distance_nm,
+    get_route_routing_source,
+)
 from models.inference.live_market import get_live_market_snapshot
 from models.inference.live_calibration import calibrate_live_vessel_indices
 from models.optimization.voyage_cost import get_freight_rate_details
@@ -15,6 +19,15 @@ router = APIRouter(prefix="/api", tags=["Forecast"])
 @router.post("/forecast")
 def forecast(request: ForecastRequest):
     try:
+        route_distance_nm = get_route_distance_nm(
+            request.origin_port,
+            request.destination_port,
+        )
+        route_routing_source = get_route_routing_source(
+            request.origin_port,
+            request.destination_port,
+        )
+
         sailing_days = estimate_sailing_days(
             origin_port=request.origin_port,
             destination_port=request.destination_port,
@@ -69,6 +82,8 @@ def forecast(request: ForecastRequest):
             "origin_port": request.origin_port,
             "destination_port": request.destination_port,
             "optimization_mode": "INDIAN_DESTINATION_PROTOTYPE",
+            "route_distance_nm": round(route_distance_nm, 2),
+            "route_routing_source": route_routing_source,
             "estimated_sailing_days": sailing_days,
             "weather_adjusted_sailing_days": weather_impact.get(
                 "adjusted_sailing_days"
@@ -77,14 +92,14 @@ def forecast(request: ForecastRequest):
                 "weather_delay_days"
             ),
             "sailing_time_source": (
-                "ROUTE_ESTIMATE_PLUS_WEATHER"
+                "MARITIME_ROUTING_PLUS_WEATHER"
                 if weather_impact.get("status") == "AVAILABLE"
-                else "ROUTE_ESTIMATE"
+                else "MARITIME_ROUTING"
             ),
             "sailing_time_note": (
-                "Prototype estimate from port coordinates and planning speed, "
-                "optionally adjusted using the first 7 days of route-sampled "
-                "Open-Meteo weather data; not a live vessel schedule."
+                "Maritime sea-route distance from the configured routing network "
+                "and planning speed, optionally adjusted using the first 7 days of "
+                "weather sampled along that route; not a live vessel schedule."
             ),
         }
 
