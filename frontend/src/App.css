@@ -3840,3 +3840,245 @@ tbody td {
     font-size: 10.5px;
   }
 }
+
+
+/* =========================================================
+   FINAL UI POLISH — WEATHER + FORECAST
+   ========================================================= */
+
+.content-grid {
+  align-items: start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.chart-panel,
+.weather-panel {
+  overflow: hidden;
+}
+
+.chart-panel {
+  min-height: 0;
+}
+
+.chart-panel .panel-header,
+.weather-panel .panel-header {
+  margin-bottom: 2px;
+}
+
+.chart-panel .section-kicker,
+.weather-panel .section-kicker {
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.chart-panel h3,
+.weather-panel h3 {
+  font-size: 20px;
+  line-height: 1.2;
+  margin-top: 7px;
+}
+
+.chart-panel .panel-description,
+.weather-panel .panel-description {
+  font-size: 10px;
+  line-height: 1.5;
+  margin-top: 5px;
+}
+
+.chart-area {
+  height: 270px;
+  margin-top: 14px;
+}
+
+.chart-empty-state {
+  min-height: 100%;
+  padding: 24px;
+  gap: 10px;
+}
+
+.chart-empty-state svg {
+  width: 24px;
+  height: 24px;
+}
+
+.chart-empty-state strong {
+  font-size: 16px;
+}
+
+.chart-empty-state span {
+  max-width: 500px;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.chart-tag,
+.weather-status-badge {
+  padding: 8px 11px;
+  font-size: 9px;
+}
+
+.forecast-summary-strip {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.forecast-summary-strip > div {
+  padding: 10px 12px;
+}
+
+.forecast-summary-strip span {
+  margin-bottom: 6px;
+  font-size: 8px;
+}
+
+.forecast-summary-strip strong {
+  font-size: 17px;
+}
+
+.forecast-cards {
+  gap: 9px;
+  margin-top: 10px;
+}
+
+.forecast-item {
+  padding: 11px;
+  border-radius: 10px;
+}
+
+.forecast-item > span {
+  font-size: 9px;
+}
+
+.forecast-item strong {
+  margin: 6px 0 4px;
+  font-size: 15px;
+}
+
+.forecast-item small {
+  font-size: 9px;
+}
+
+.weather-panel {
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.weather-metrics {
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.weather-metric {
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.weather-metric svg {
+  width: 18px;
+  height: 18px;
+}
+
+.weather-metric span {
+  margin-top: 10px;
+  font-size: 8px;
+}
+
+.weather-metric strong {
+  margin-top: 5px;
+  font-size: 16px;
+}
+
+.weather-impact-row {
+  gap: 18px;
+  margin-top: 14px;
+  padding: 15px 16px;
+}
+
+.weather-impact-row span,
+.weather-route span,
+.weather-source-item span {
+  font-size: 8px;
+}
+
+.weather-impact-row strong,
+.weather-route strong {
+  font-size: 13px;
+}
+
+.weather-route {
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.weather-source-grid {
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.weather-source-item {
+  padding: 10px 12px;
+}
+
+.weather-source-item strong {
+  font-size: 8px;
+}
+
+.weather-warning {
+  gap: 10px;
+  margin-top: 10px;
+  padding: 11px 13px;
+}
+
+.weather-warning p,
+.weather-note p,
+.weather-empty-state span {
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.weather-note {
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 13px;
+}
+
+.weather-note small {
+  margin-top: 6px;
+  font-size: 7px;
+}
+
+@media (max-width: 1080px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .weather-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .weather-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .weather-impact-row {
+    display: grid;
+    grid-template-columns: 1fr 20px 1fr;
+    gap: 10px;
+  }
+
+  .weather-delay {
+    margin-left: 0;
+  }
+
+  .weather-source-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-area {
+    height: 235px;
+  }
+}
