@@ -1167,7 +1167,7 @@ function App() {
 
             <StatCard
               icon={BarChart3}
-              label="Forecast Rate"
+              label="30D Forecast Rate"
               value={
                 forecastRate !== null
                   ? `$${Number(forecastRate).toFixed(2)}/MT`
@@ -1412,7 +1412,7 @@ function App() {
               <div><span>Origin queue</span><strong>{loadingQueue !== null ? `${Number(loadingQueue).toFixed(1)} days` : "—"}</strong></div>
               <div><span>Destination queue</span><strong>{dischargeQueue !== null ? `${Number(dischargeQueue).toFixed(1)} days` : "—"}</strong></div>
               <div><span>Total queue exposure</span><strong>{totalQueue !== null ? `${Number(totalQueue).toFixed(1)} days` : "—"}</strong></div>
-              <div><span>Data coverage</span><strong className="muted-value">{portDataState}</strong></div>
+              <div><span>Data coverage</span><strong className="muted-value">{congestion ? portDataState : "AWAITING"}</strong></div>
             </div>
 
             {congestion && (
@@ -1426,7 +1426,12 @@ function App() {
               <div className="port-source-meta"><span>DESTINATION OBSERVATION</span><strong>{congestion.discharge.source_name || "Verified source"}</strong><small>Observed {congestion.discharge.observation_date}</small></div>
             )}
 
-            {portWarningText && (<div className="warning-box"><Clock3 size={16} /><p>{portWarningText}</p></div>)}
+            {congestion && portWarningText && (
+              <div className="warning-box">
+                <Clock3 size={16} />
+                <p>{portWarningText}</p>
+              </div>
+            )}
           </div>
 
         </section>
