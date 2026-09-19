@@ -5547,3 +5547,143 @@ html[data-theme="light"] .weather-route-point.waypoint strong {
     min-height: 214px;
   }
 }
+
+
+/* Compact Port Intelligence footer — no stacked mini-cards. */
+#forecast .port-panel {
+  justify-content: flex-start;
+}
+
+#forecast .port-panel .port-coverage-compact,
+#forecast .port-panel .port-preview-compact {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--theme-line-soft);
+  border-radius: 10px;
+  background: var(--theme-surface-2);
+}
+
+.compact-state-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.compact-state-head > div {
+  min-width: 0;
+}
+
+.compact-state-head .section-kicker {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 7px;
+}
+
+.compact-state-head strong {
+  display: block;
+  color: var(--theme-text);
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.compact-ready,
+.compact-coverage {
+  flex: none;
+  padding: 4px 7px;
+  border: 1px solid var(--theme-line-soft);
+  border-radius: 999px;
+  background: var(--theme-surface);
+  color: var(--theme-muted);
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.compact-ready {
+  border-color: #dfe6b8;
+  background: #f5f8df;
+  color: #71803a;
+}
+
+.compact-route {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 9px;
+  color: var(--theme-text);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.compact-route svg {
+  flex: none;
+  color: #9aa7ad;
+}
+
+.compact-source-row {
+  display: grid;
+  grid-template-columns: 7px minmax(0, 1fr) auto 7px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 5px 7px;
+  margin-top: 9px;
+}
+
+.source-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.source-dot.verified {
+  background: #6fa276;
+}
+
+.source-dot.prototype {
+  background: #b2bbc1;
+}
+
+.compact-source-row > span:not(.source-dot) {
+  color: var(--theme-text);
+  font-size: 9px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact-source-row > small {
+  color: var(--theme-muted);
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+}
+
+.compact-observation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid var(--theme-line-soft);
+  color: var(--theme-muted);
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+}
+
+.compact-observation strong {
+  color: var(--theme-text-2);
+  font-size: 8px;
+}
+
+@media (max-width: 560px) {
+  .compact-source-row {
+    grid-template-columns: 7px minmax(0, 1fr) auto;
+  }
+
+  .compact-source-row > .source-dot:nth-of-type(2) {
+    display: none;
+  }
+}
