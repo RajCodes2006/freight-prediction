@@ -5441,3 +5441,73 @@ html[data-theme="light"] .weather-route-point.waypoint strong {
     max-height: 540px;
   }
 }
+
+
+/* Empty-state geometry: the outer panel stays fixed, while the
+   placeholder expands to occupy the same vertical footprint. */
+#forecast .chart-panel {
+  display: flex;
+  flex-direction: column;
+  height: 620px;
+  min-height: 620px;
+  max-height: 620px;
+}
+
+#forecast .chart-panel .panel-header {
+  flex: 0 0 auto;
+}
+
+#forecast .chart-area {
+  flex: 0 0 320px;
+  height: 320px;
+  min-height: 320px;
+}
+
+#forecast .chart-area.is-empty {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+  margin-top: 14px;
+  margin-bottom: 0;
+}
+
+#forecast .chart-area.is-empty .chart-empty-state {
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+#forecast .chart-area.is-empty .chart-empty-state span {
+  max-width: 560px;
+}
+
+@media (max-width: 760px) {
+  #forecast .chart-panel {
+    height: 570px;
+    min-height: 570px;
+    max-height: 570px;
+  }
+
+  #forecast .chart-area {
+    flex-basis: 225px;
+    height: 225px;
+    min-height: 225px;
+  }
+
+  #forecast .chart-area.is-empty {
+    flex-basis: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  #forecast .chart-panel {
+    height: 540px;
+    min-height: 540px;
+    max-height: 540px;
+  }
+}
