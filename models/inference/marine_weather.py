@@ -242,6 +242,7 @@ def _calculate_weather_metrics(
     atmospheric_payload: Any,
     route_points: list[str],
     base_sailing_days: float,
+    forecast_days: int,
 ) -> dict[str, Any]:
     wave_p90 = _percentile(_flatten_numeric(marine_payload, "wave_height"), 0.90)
     swell_p90 = _percentile(
@@ -328,7 +329,7 @@ def _calculate_weather_metrics(
         # do not pretend today's 7-day forecast describes the entire voyage.
         coverage_fraction = min(
             1.0,
-            FORECAST_DAYS / base_sailing_days,
+            forecast_days / base_sailing_days,
         )
         weather_delay_days = theoretical_delay_days * coverage_fraction
         adjusted_sailing_days = base_sailing_days + weather_delay_days
@@ -341,7 +342,7 @@ def _calculate_weather_metrics(
     return {
         "status": "AVAILABLE",
         "provider": "Open-Meteo",
-        "forecast_days": FORECAST_DAYS,
+        "forecast_days": forecast_days,
         "route_points": route_points,
         "weather_risk_score": score,
         "risk_level": risk_level,
@@ -377,8 +378,8 @@ def _calculate_weather_metrics(
         "forecast_coverage_fraction": round(coverage_fraction, 3),
         "note": (
             "Prototype weather-impact model using route-sampled Open-Meteo "
-            "marine and atmospheric forecasts. The first 7 forecast days are "
-            "used to adjust sailing time and bunker cost; longer-voyage "
+            "marine and atmospheric forecasts. The configured forecast window "
+            "is used to adjust sailing time and bunker cost; longer-voyage "
             "conditions beyond that window are not forecast here."
         ),
         "marine_api_url": build_marine_weather_url(
@@ -451,27 +452,13 @@ def get_route_weather(
         marine_payload = _get_json(marine_url)
         atmospheric_payload = _get_json(weather_url)
 
-        # The metric helper uses the configured 7-day horizon for coverage.
-        # For the current application we keep forecast_days at 7.
-        if forecast_days != FORECAST_DAYS:
-            original = FORECAST_DAYS
-            globals()["FORECAST_DAYS"] = forecast_days
-            try:
-                result = _calculate_weather_metrics(
-                    marine_payload,
-                    atmospheric_payload,
-                    route_points,
-                    base_sailing_days,
-                )
-            finally:
-                globals()["FORECAST_DAYS"] = original
-        else:
-            result = _calculate_weather_metrics(
-                marine_payload,
-                atmospheric_payload,
-                route_points,
-                base_sailing_days,
-            )
+        result = _calculate_weather_metrics(
+            marine_payload,
+            atmospheric_payload,
+            route_points,
+            base_sailing_days,
+            forecast_days,
+        )
 
         result["marine_api_url"] = marine_url
         result["weather_api_url"] = weather_url
