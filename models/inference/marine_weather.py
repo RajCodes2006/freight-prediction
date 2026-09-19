@@ -3,7 +3,7 @@
 Uses Open-Meteo's public marine and weather endpoints. No API key is required
 for the public non-commercial tier.
 
-The service samples the same prototype route chain used by route_sailing.py,
+The service samples the routed sea geometry produced by route_sailing.py,
 fetches 7 days of hourly conditions, summarizes route-wide conditions, and
 turns them into a bounded prototype weather-impact adjustment for sailing time
 and bunker cost.
@@ -25,7 +25,6 @@ import requests
 from models.optimization.route_sailing import (
     ORIGIN_ROUTE_OVERRIDES,
     PORT_COORDINATES,
-    WAYPOINTS,
     get_route_coordinates,
     get_route_distance_nm,
     get_route_routing_source,
@@ -63,14 +62,6 @@ ATMOSPHERIC_HOURLY_VARIABLES = (
 )
 
 _CACHE: dict[str, tuple[float, Any]] = {}
-
-
-def _coords(point_name: str) -> tuple[float, float]:
-    if point_name in PORT_COORDINATES:
-        return PORT_COORDINATES[point_name]
-    if point_name in WAYPOINTS:
-        return WAYPOINTS[point_name]
-    raise ValueError(f"Unknown route point: {point_name}")
 
 
 def get_route_points(origin_port: str, destination_port: str) -> list[str]:
