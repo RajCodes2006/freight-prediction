@@ -1020,6 +1020,7 @@ function App() {
               className="analyze-btn"
               onClick={handleAnalyze}
               disabled={loading}
+              aria-busy={loading}
             >
               {loading ? (
                 <>
@@ -1433,174 +1434,104 @@ function App() {
         <section id="weather" className="panel weather-panel">
           <div className="panel-header">
             <div>
-              <span className="section-kicker">
-                WEATHER INTELLIGENCE
-              </span>
-
+              <span className="section-kicker">WEATHER INTELLIGENCE</span>
               <h3>Route weather impact</h3>
-
               <p className="panel-description">
-                Seven-day route-sampled marine and atmospheric forecast
+                {weather
+                  ? weather.status === "PARTIAL"
+                    ? "Seven-day route-sampled forecast · partial source coverage"
+                    : "Seven-day route-sampled marine and atmospheric forecast"
+                  : "Seven-day route-sampled marine and atmospheric forecast"}
               </p>
             </div>
-
-            <span className="weather-status-badge">
+            <span className={`weather-status-badge ${weather?.status === "AVAILABLE" ? "available" : weather?.status === "PARTIAL" ? "partial" : "unavailable"}`}>
               {weather?.status === "AVAILABLE"
                 ? `${weather.risk_level} RISK`
                 : weather?.status === "PARTIAL"
                   ? `PARTIAL · ${weather.risk_level} RISK`
                   : result
                     ? "UNAVAILABLE"
-                    : "RUN ANALYSIS"}
+                    : "AWAITING ANALYSIS"}
             </span>
           </div>
 
           {!weather || !["AVAILABLE", "PARTIAL"].includes(weather.status) ? (
             <div className="weather-empty-state">
-              <CloudRain size={20} />
+              <CloudRain size={26} />
               <strong>
-                {result
-                  ? "Weather data unavailable"
-                  : "Weather impact appears after analysis"}
+                {result ? "Weather data unavailable" : "Weather impact appears after analysis"}
               </strong>
               <span>
                 {result
-                  ? "The decision engine kept the base route estimate because the weather provider did not return usable data."
-                  : "Run Analyze Strategy to fetch route weather and calculate its effect on sailing time, bunker cost and operational risk."}
+                  ? "The decision engine kept the base route estimate because no usable weather data was returned."
+                  : "Run Analyze Strategy to fetch route weather and calculate its effect on sailing time and bunker cost."}
               </span>
             </div>
           ) : (
             <>
               <div className="weather-metrics">
                 <div className="weather-metric weather-risk-metric">
-                  <CloudRain size={16} />
-                  <span>Weather risk score</span>
+                  <CloudRain size={18} />
+                  <span title="Composite score from the available route-sampled weather variables">Weather risk score</span>
                   <strong>{weather.weather_risk_score}/100</strong>
+                  <small>{weather.risk_level} risk</small>
+                  <div className="weather-risk-scale">
+                    <div style={{ width: String(Math.max(0, Math.min(100, Number(weather.weather_risk_score) || 0))) + "%" }} />
+                  </div>
                 </div>
-
-                <div className="weather-metric">
-                  <Waves size={16} />
-                  <span>90th pct wave</span>
-                  <strong>
-                    {weather.p90_wave_height_m !== null
-                      ? `${weather.p90_wave_height_m} m`
-                      : "—"}
-                  </strong>
-                </div>
-
-                <div className="weather-metric">
-                  <Wind size={16} />
-                  <span>90th pct wind</span>
-                  <strong>
-                    {weather.p90_wind_speed_knots !== null
-                      ? `${weather.p90_wind_speed_knots} kn`
-                      : "—"}
-                  </strong>
-                </div>
-
-                <div className="weather-metric">
-                  <Wind size={16} />
-                  <span>90th pct gust</span>
-                  <strong>
-                    {weather.p90_wind_gust_knots !== null
-                      ? `${weather.p90_wind_gust_knots} kn`
-                      : "—"}
-                  </strong>
-                </div>
-
-                <div className="weather-metric">
-                  <Waves size={16} />
-                  <span>90th pct swell</span>
-                  <strong>
-                    {weather.p90_swell_height_m !== null
-                      ? `${weather.p90_swell_height_m} m`
-                      : "—"}
-                  </strong>
-                </div>
-
-                <div className="weather-metric">
-                  <Navigation size={16} />
-                  <span>90th pct current</span>
-                  <strong>
-                    {weather.p90_ocean_current_ms !== null
-                      ? `${weather.p90_ocean_current_ms} m/s`
-                      : "—"}
-                  </strong>
-                </div>
+                <div className="weather-metric"><Waves size={18} /><span title="90th percentile of sampled hourly wave height">90th percentile wave</span><strong>{formatWeatherValue(weather.p90_wave_height_m, " m") || <span className="weather-unavailable">Unavailable</span>}</strong></div>
+                <div className="weather-metric"><Wind size={18} /><span title="90th percentile of sampled hourly wind speed">90th percentile wind</span><strong>{formatWeatherValue(weather.p90_wind_speed_knots, " kn") || <span className="weather-unavailable">Unavailable</span>}</strong></div>
+                <div className="weather-metric"><Wind size={18} /><span title="90th percentile of sampled hourly wind gusts">90th percentile gust</span><strong>{formatWeatherValue(weather.p90_wind_gust_knots, " kn") || <span className="weather-unavailable">Unavailable</span>}</strong></div>
+                <div className="weather-metric"><Waves size={18} /><span title="90th percentile of sampled hourly swell height">90th percentile swell</span><strong>{formatWeatherValue(weather.p90_swell_height_m, " m") || <span className="weather-unavailable">Unavailable</span>}</strong></div>
+                <div className="weather-metric"><Navigation size={18} /><span title="90th percentile of sampled hourly ocean current velocity">90th percentile current</span><strong>{formatWeatherValue(weather.p90_ocean_current_ms, " m/s") || <span className="weather-unavailable">Unavailable</span>}</strong></div>
               </div>
 
               <div className="weather-impact-row">
-                <div>
-                  <span>Base sailing time</span>
-                  <strong>{weather.base_sailing_days} days</strong>
-                </div>
-
+                <div><span>Base sailing time</span><strong>{weather.base_sailing_days} days</strong></div>
                 <ArrowRight size={16} />
-
-                <div>
-                  <span>Weather-adjusted</span>
-                  <strong>{weather.adjusted_sailing_days} days</strong>
-                </div>
-
-                <div className="weather-delay">
-                  <span>Weather delay</span>
-                  <strong>+{weather.weather_delay_days} days</strong>
-                </div>
-
-                <div className="weather-delay">
-                  <span>Bunker impact</span>
-                  <strong>
-                    ×{Number(weather.bunker_cost_multiplier).toFixed(2)}
-                  </strong>
-                </div>
+                <div><span>Weather-adjusted</span><strong>{weather.adjusted_sailing_days} days</strong></div>
+                <div><span>Weather delay</span><strong>+{weather.weather_delay_days} days</strong></div>
+                <div><span>Bunker impact</span><strong>+{Math.max(0, (Number(weather.bunker_cost_multiplier) - 1) * 100).toFixed(1)}%</strong><small>{Number(weather.bunker_cost_multiplier).toFixed(2)}× baseline</small></div>
               </div>
 
               <div className="weather-route">
                 <span>ROUTE SAMPLED</span>
-                <strong>
-                  {(weather.route_points || [])
-                    .map(formatRoutePointName)
-                    .join(" → ")}
-                </strong>
+                <div className="weather-route-points">
+                  {(weather.route_points || []).map((point, index) => (
+                    <div
+                      className={index > 0 && index < (weather.route_points || []).length - 1 ? "weather-route-point waypoint" : "weather-route-point"}
+                      key={String(point) + "-" + String(index)}
+                    >
+                      <strong>{formatRoutePointName(point)}</strong>
+                      {index < (weather.route_points || []).length - 1 && <ArrowRight size={13} />}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="weather-source-grid">
                 <div className="weather-source-item">
-                  <span>Marine conditions</span>
-                  <strong
-                    className={
-                      weather.source_status?.marine === "AVAILABLE"
-                        ? "source-available"
-                        : "source-unavailable"
-                    }
-                  >
-                    {weather.source_status?.marine || "UNKNOWN"}
-                  </strong>
+                  <div><span>Marine</span><small>Waves · swell · current</small></div>
+                  <strong className={weather.source_status?.marine === "AVAILABLE" ? "source-available" : "source-unavailable"}>{weather.source_status?.marine || "UNKNOWN"}</strong>
                 </div>
-
                 <div className="weather-source-item">
-                  <span>Atmospheric conditions</span>
-                  <strong
-                    className={
-                      weather.source_status?.atmospheric === "AVAILABLE"
-                        ? "source-available"
-                        : "source-unavailable"
-                    }
-                  >
-                    {weather.source_status?.atmospheric || "UNKNOWN"}
-                  </strong>
+                  <div><span>Atmospheric</span><small>Wind · gust · visibility</small></div>
+                  <strong className={weather.source_status?.atmospheric === "AVAILABLE" ? "source-available" : "source-unavailable"}>{weather.source_status?.atmospheric || "UNKNOWN"}</strong>
                 </div>
               </div>
 
               {weather.status === "PARTIAL" && (
                 <div className="weather-warning">
                   <CloudRain size={15} />
-                  <p>
-                    Wind, gust and visibility inputs are unavailable for this
-                    route right now. The displayed risk score is therefore
-                    based primarily on the marine conditions that were
-                    returned.
-                  </p>
+                  <p>{weatherWarningText}</p>
+                </div>
+              )}
+
+              {weatherUpdatedAt && (
+                <div className="weather-freshness">
+                  <span>Forecast updated</span>
+                  <strong>{weatherUpdatedAt}</strong>
+                  <span>· {weather.forecast_days || 7}-day window</span>
                 </div>
               )}
 
@@ -1608,10 +1539,7 @@ function App() {
                 <CloudRain size={15} />
                 <div>
                   <p>{weather.note}</p>
-                  <small>
-                    Weather source: Open-Meteo
-                    {weather.status === "PARTIAL" ? " · Partial coverage" : ""}
-                  </small>
+                  <small>Weather source: Open-Meteo{weather.status === "PARTIAL" ? " · partial coverage" : " · full source coverage"}</small>
                 </div>
               </div>
             </>
