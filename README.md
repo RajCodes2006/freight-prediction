@@ -147,10 +147,10 @@ The current prototype includes:
                                │
                                ▼
              ┌─────────────────────────────────┐
-             │       Decision Engine            │
+             │       Decision Engine           │
              │                                 │
              │ Vessel │ Port │ Cost │ Risk     │
-             │        │      │      │           │
+             │        │      │      │          │
              └────────────────┬────────────────┘
                               │
                               ▼
@@ -303,7 +303,9 @@ The project uses a split deployment architecture:
                 │       Vercel         │
                 │   React + Vite UI    │
                 └──────────┬───────────┘
-                           │ API Requests
+                           │
+                       API Requests
+                           │
                            ▼
                 ┌──────────────────────┐
                 │       Render         │
