@@ -86,6 +86,32 @@ const formatRoutePointName = (point) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
+const VESSEL_CLASS_NAMES = {
+  HSI: "Handysize",
+  SI: "Supramax",
+  PI: "Panamax",
+  CI: "Capesize",
+};
+
+const formatWeatherValue = (value, suffix = "") => {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) {
+    return null;
+  }
+  return String(Number(value)) + suffix;
+};
+
+const formatUpdatedTime = (value) => {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+};
+
 const DESTINATION_PORTS = [
   "Paradip",
   "Visakhapatnam",
@@ -217,13 +243,18 @@ function SelectField({
   onChange,
   options,
   icon: Icon = ChevronDown,
+  disabled = false,
 }) {
   return (
     <label className="field">
       <span className="field-label">{label}</span>
 
       <div className="select-control">
-        <select value={value} onChange={(e) => onChange(e.target.value)}>
+        <select
+          value={value}
+          disabled={disabled}
+          onChange={(e) => onChange(e.target.value)}
+        >
           {options.map((option) => (
             <option key={option} value={option}>
               {option}
@@ -272,6 +303,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
   const [error, setError] = useState("");
+  const [scenarioDirty, setScenarioDirty] = useState(false);
+  const [loadingStage, setLoadingStage] = useState("Preparing analysis");
+  const [activeSection, setActiveSection] = useState("overview");
 
   const availableOriginPorts = ORIGIN_PORTS[originCountry];
 
@@ -280,6 +314,59 @@ function App() {
       setOriginPort(availableOriginPorts[0]);
     }
   }, [originCountry, availableOriginPorts, originPort]);
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingStage("Preparing analysis");
+      return undefined;
+    }
+
+    const stages = [
+      "Validating scenario",
+      "Fetching market context",
+      "Sampling route weather",
+      "Optimizing vessel economics",
+      "Building forecast and risk view",
+    ];
+
+    let index = 0;
+    setLoadingStage(stages[index]);
+
+    const intervalId = window.setInterval(() => {
+      index = (index + 1) % stages.length;
+      setLoadingStage(stages[index]);
+    }, 1800);
+
+    return () => window.clearInterval(intervalId);
+  }, [loading]);
+
+  useEffect(() => {
+    const ids = ["overview", "forecast", "vessels", "ports", "weather", "contract"];
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+
+    if (!sections.length) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible[0]?.target?.id) {
+          setActiveSection(visible[0].target.id);
+        }
+      },
+      {
+        rootMargin: "-15% 0px -65% 0px",
+        threshold: [0.05, 0.2, 0.5],
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
 
   const forecast = result?.forecast;
   const vesselDecision = result?.vessel_decision;
@@ -292,6 +379,47 @@ function App() {
     result?.status === "NO_ECONOMICALLY_FEASIBLE_VESSEL";
   const diagnosticAction =
     result?.diagnostic?.recommended_action;
+
+  const forecastClass = forecast?.vessel_class || null;
+  const forecastClassName =
+    VESSEL_CLASS_NAMES[forecastClass] || "Vessel-Class";
+  const forecastHeader = forecastClass
+    ? forecastClass + " · " + forecastClassName + " Index"
+    : "Awaiting analysis";
+  const forecastStatLabel = forecastClass
+    ? "Current " + forecastClass + " Index"
+    : "Current Vessel Index";
+
+  const weatherSourceStatus = weather?.source_status || {};
+  const missingWeatherSources = [
+    weatherSourceStatus.marine !== "AVAILABLE" ? "marine" : null,
+    weatherSourceStatus.atmospheric !== "AVAILABLE" ? "atmospheric" : null,
+  ].filter(Boolean);
+  const weatherWarningText =
+    missingWeatherSources.length === 0
+      ? ""
+      : "Missing " +
+        missingWeatherSources.join(" and ") +
+        " weather data. The weather risk score is calculated from the conditions that were returned.";
+  const weatherUpdatedAt = formatUpdatedTime(
+    weather?.data_fetched_at_utc
+  );
+
+  const loadingDataUsed = congestion?.loading_data_used === true;
+  const dischargeDataUsed = congestion?.discharge_data_used === true;
+  const allPortDataUsed = congestion?.all_ports_have_real_data === true;
+  const anyPortDataUsed = loadingDataUsed || dischargeDataUsed;
+  const portDataState = allPortDataUsed
+    ? "VERIFIED"
+    : anyPortDataUsed
+      ? "MIXED"
+      : "PROTOTYPE";
+  const portWarningText =
+    portDataState === "VERIFIED"
+      ? ""
+      : portDataState === "MIXED"
+        ? "One side of the route uses verified observations; the other side still uses prototype fallback values."
+        : "No verified congestion observation is available for this route. Queue figures remain prototype assumptions.";
 
   const forecastData = useMemo(() => {
     const horizons = forecast?.all_horizons;
@@ -316,15 +444,16 @@ function App() {
         change: 0,
       },
       ...["7", "30", "60", "90"]
-        .filter((key) => horizons[key])
+        .filter(
+          (key) =>
+            horizons[key] &&
+            horizons[key]?.predicted_index !== null &&
+            horizons[key]?.predicted_index !== undefined
+        )
         .map((key) => ({
           horizon: `${key}D`,
-          value: Number(
-            horizons[key]?.predicted_index ?? currentIndex
-          ),
-          change: Number(
-            horizons[key]?.change_percent ?? 0
-          ),
+          value: Number(horizons[key].predicted_index),
+          change: Number(horizons[key]?.change_percent ?? 0),
         })),
     ];
   }, [forecast]);
@@ -429,12 +558,17 @@ function App() {
   const realDataUsed =
     congestion?.real_data_used ?? false;
 
-  const handleCountryChange = (country) => {
-    setOriginCountry(country);
-    setOriginPort(ORIGIN_PORTS[country][0]);
+  const invalidateAnalysis = () => {
     setResult(null);
     setAnalyzed(false);
     setError("");
+    setScenarioDirty(true);
+  };
+
+  const handleCountryChange = (country) => {
+    setOriginCountry(country);
+    setOriginPort(ORIGIN_PORTS[country][0]);
+    invalidateAnalysis();
   };
 
   const handleAnalyze = async () => {
@@ -444,6 +578,7 @@ function App() {
     setError("");
     setResult(null);
     setAnalyzed(false);
+    setScenarioDirty(false);
   
     try {
       const payload = {
@@ -482,6 +617,7 @@ function App() {
   
       if (apiResult?.status === "SUCCESS") {
         setAnalyzed(true);
+        setScenarioDirty(false);
   
         setTimeout(() => {
           document.getElementById("results")?.scrollIntoView({
@@ -510,6 +646,7 @@ function App() {
       setError(message);
       setResult(null);
       setAnalyzed(false);
+      setScenarioDirty(false);
     } finally {
       setLoading(false);
     }
@@ -526,6 +663,26 @@ function App() {
   const scenarioCountry =
     result?.trade_context?.origin_country ??
     originCountry;
+
+  const systemStatus = loading
+    ? loadingStage
+    : error
+      ? "Analysis error"
+      : scenarioDirty
+        ? "Scenario modified"
+        : result
+          ? "Result ready"
+          : "Ready to analyze";
+
+  const systemStatusClass = loading
+    ? "loading"
+    : error
+      ? "error"
+      : scenarioDirty
+        ? "warning"
+        : result
+          ? "success"
+          : "ready";
 
   return (
     <div className="app-shell">
@@ -551,7 +708,7 @@ function App() {
 
         <nav>
           <a
-            className="active"
+            className={activeSection === "overview" ? "active" : ""}
             href="#overview"
             onClick={() => setSidebarOpen(false)}
           >
@@ -560,6 +717,7 @@ function App() {
           </a>
 
           <a
+            className={activeSection === "forecast" ? "active" : ""}
             href="#forecast"
             onClick={() => setSidebarOpen(false)}
           >
@@ -568,6 +726,7 @@ function App() {
           </a>
 
           <a
+            className={activeSection === "vessels" ? "active" : ""}
             href="#vessels"
             onClick={() => setSidebarOpen(false)}
           >
@@ -576,6 +735,7 @@ function App() {
           </a>
 
           <a
+            className={activeSection === "ports" ? "active" : ""}
             href="#ports"
             onClick={() => setSidebarOpen(false)}
           >
@@ -584,6 +744,7 @@ function App() {
           </a>
 
           <a
+            className={activeSection === "weather" ? "active" : ""}
             href="#weather"
             onClick={() => setSidebarOpen(false)}
           >
@@ -592,6 +753,7 @@ function App() {
           </a>
 
           <a
+            className={activeSection === "contract" ? "active" : ""}
             href="#contract"
             onClick={() => setSidebarOpen(false)}
           >
@@ -656,15 +818,12 @@ function App() {
               </span>
             </button>
 
-            <div className="system-status">
-              <span className="status-dot" />
-              <span>
-                {loading
-                  ? "ANALYZING"
-                  : result
-                    ? "BACKEND CONNECTED"
-                    : "SYSTEM READY"}
-              </span>
+            <div
+              className={`system-status ${systemStatusClass}`}
+              aria-live="polite"
+            >
+              <span className={`status-dot ${systemStatusClass}`} />
+              <span>{systemStatus}</span>
             </div>
           </div>
         </header>
@@ -731,9 +890,15 @@ function App() {
               <h3>Build your procurement scenario</h3>
             </div>
 
-            <div className="scenario-status">
-              <span className="status-dot" />
-              {loading ? "Analyzing scenario..." : "API decision engine"}
+            <div className="scenario-status" aria-live="polite">
+              <span className={`status-dot ${systemStatusClass}`} />
+              {loading
+                ? loadingStage
+                : scenarioDirty
+                  ? "Scenario changed · analyze again"
+                  : result
+                    ? "Analysis complete"
+                    : "Ready to analyze"}
             </div>
           </div>
 
@@ -744,7 +909,11 @@ function App() {
               <div className="input-control">
                 <input
                   value={commodity}
-                  onChange={(e) => setCommodity(e.target.value)}
+                  disabled={loading}
+                  onChange={(e) => {
+                    setCommodity(e.target.value);
+                    invalidateAnalysis();
+                  }}
                   placeholder="Coal, iron ore..."
                 />
               </div>
@@ -758,7 +927,11 @@ function App() {
                   type="number"
                   min="1000"
                   value={cargo}
-                  onChange={(e) => setCargo(e.target.value)}
+                  disabled={loading}
+                  onChange={(e) => {
+                    setCargo(e.target.value);
+                    invalidateAnalysis();
+                  }}
                 />
 
                 <span>MT</span>
@@ -771,6 +944,7 @@ function App() {
               onChange={handleCountryChange}
               options={ORIGIN_COUNTRIES}
               icon={Globe2}
+              disabled={loading}
             />
 
             <SelectField
@@ -778,11 +952,11 @@ function App() {
               value={originPort}
               onChange={(value) => {
                 setOriginPort(value);
-                setResult(null);
-                setAnalyzed(false);
+                invalidateAnalysis();
               }}
               options={availableOriginPorts}
               icon={Navigation}
+              disabled={loading}
             />
 
             <SelectField
@@ -790,11 +964,11 @@ function App() {
               value={destinationPort}
               onChange={(value) => {
                 setDestinationPort(value);
-                setResult(null);
-                setAnalyzed(false);
+                invalidateAnalysis();
               }}
               options={DESTINATION_PORTS}
               icon={MapPin}
+              disabled={loading}
             />
 
             <label className="field">
@@ -808,7 +982,11 @@ function App() {
                   min="1"
                   max="12"
                   value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
+                  disabled={loading}
+                  onChange={(e) => {
+                    setDuration(e.target.value);
+                    invalidateAnalysis();
+                  }}
                 />
 
                 <span>MONTHS</span>
@@ -826,7 +1004,11 @@ function App() {
                   min="1"
                   max="24"
                   value={voyages}
-                  onChange={(e) => setVoyages(e.target.value)}
+                  disabled={loading}
+                  onChange={(e) => {
+                    setVoyages(e.target.value);
+                    invalidateAnalysis();
+                  }}
                 />
 
                 <span>VOYAGES</span>
@@ -970,7 +1152,7 @@ function App() {
           <div className="quick-stats">
             <StatCard
               icon={TrendingUp}
-              label="Current PI Index"
+              label={forecastStatLabel}
               value={formatNumber(currentIndex, 0)}
               subtext={
                 forecast
@@ -990,7 +1172,11 @@ function App() {
                   ? `$${Number(forecastRate).toFixed(2)}/MT`
                   : "—"
               }
-              subtext="30-day market scenario"
+              subtext={
+                forecast
+                  ? forecastClass + " · " + forecastClassName + " market outlook"
+                  : "Awaiting forecast"
+              }
               positive={Number(change30) >= 0}
             />
 
