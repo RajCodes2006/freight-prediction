@@ -305,7 +305,6 @@ function App() {
   const [error, setError] = useState("");
   const [scenarioDirty, setScenarioDirty] = useState(false);
   const [loadingStage, setLoadingStage] = useState("Preparing analysis");
-  const [activeSection, setActiveSection] = useState("overview");
 
   const availableOriginPorts = ORIGIN_PORTS[originCountry];
 
@@ -339,34 +338,6 @@ function App() {
 
     return () => window.clearInterval(intervalId);
   }, [loading]);
-
-  useEffect(() => {
-    const ids = ["overview", "forecast", "vessels", "ports", "weather", "contract"];
-    const sections = ids
-      .map((id) => document.getElementById(id))
-      .filter(Boolean);
-
-    if (!sections.length) return undefined;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-        if (visible[0]?.target?.id) {
-          setActiveSection(visible[0].target.id);
-        }
-      },
-      {
-        rootMargin: "-15% 0px -65% 0px",
-        threshold: [0.05, 0.2, 0.5],
-      }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
 
   const forecast = result?.forecast;
   const vesselDecision = result?.vessel_decision;
@@ -708,7 +679,7 @@ function App() {
 
         <nav>
           <a
-            className={activeSection === "overview" ? "active" : ""}
+            className="active"
             href="#overview"
             onClick={() => setSidebarOpen(false)}
           >
@@ -717,7 +688,6 @@ function App() {
           </a>
 
           <a
-            className={activeSection === "forecast" ? "active" : ""}
             href="#forecast"
             onClick={() => setSidebarOpen(false)}
           >
@@ -726,7 +696,6 @@ function App() {
           </a>
 
           <a
-            className={activeSection === "vessels" ? "active" : ""}
             href="#vessels"
             onClick={() => setSidebarOpen(false)}
           >
@@ -735,7 +704,6 @@ function App() {
           </a>
 
           <a
-            className={activeSection === "ports" ? "active" : ""}
             href="#ports"
             onClick={() => setSidebarOpen(false)}
           >
@@ -744,7 +712,6 @@ function App() {
           </a>
 
           <a
-            className={activeSection === "weather" ? "active" : ""}
             href="#weather"
             onClick={() => setSidebarOpen(false)}
           >
@@ -753,7 +720,6 @@ function App() {
           </a>
 
           <a
-            className={activeSection === "contract" ? "active" : ""}
             href="#contract"
             onClick={() => setSidebarOpen(false)}
           >
