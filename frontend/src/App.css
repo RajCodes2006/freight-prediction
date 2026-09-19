@@ -5140,3 +5140,304 @@ html[data-theme="light"] .weather-route-point.waypoint strong {
     margin-top: 3px;
   }
 }
+
+
+/* =========================================================
+   FINAL TUNING — stable geometry + richer port intelligence
+   ========================================================= */
+
+/* Forecast: use the same inner chart footprint before and after analysis. */
+#forecast .chart-area {
+  height: 320px;
+  flex: 0 0 320px;
+  margin-top: 14px;
+}
+
+#forecast .chart-empty-state {
+  height: 320px !important;
+  min-height: 320px !important;
+  max-height: 320px;
+  box-sizing: border-box;
+  padding: 28px 44px;
+}
+
+#forecast .chart-empty-state strong {
+  margin-top: 4px;
+  font-size: 17px;
+}
+
+#forecast .chart-empty-state span {
+  max-width: 560px;
+  font-size: 11px;
+}
+
+/* Port panel: keep the same fixed outer size, but fill the empty state
+   instead of leaving a large dead zone. */
+#forecast .port-panel {
+  display: flex;
+  flex-direction: column;
+  height: 620px;
+  min-height: 620px;
+  max-height: 620px;
+}
+
+#forecast .port-panel .queue-list {
+  flex: 0 0 auto;
+}
+
+.port-preview-card,
+.port-data-story {
+  margin-top: 12px;
+  padding: 13px 14px;
+  border: 1px solid var(--theme-line-soft);
+  border-radius: 12px;
+  background: var(--theme-surface-2);
+  flex: 1 1 auto;
+  min-height: 150px;
+  overflow: hidden;
+}
+
+.port-preview-head,
+.port-data-story-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.port-preview-head > div,
+.port-data-story-head > div {
+  min-width: 0;
+}
+
+.port-preview-head .section-kicker,
+.port-data-story-head .section-kicker {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 7px;
+}
+
+.port-preview-head strong,
+.port-data-story-head > div > strong {
+  color: var(--theme-text);
+  font-size: 12px;
+}
+
+.port-preview-head > svg {
+  color: #84929b;
+  flex: none;
+}
+
+.port-preview-flow {
+  display: grid;
+  grid-template-columns: 1fr 18px 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.port-preview-flow > svg {
+  color: #9aa7ad;
+  justify-self: center;
+}
+
+.port-preview-node {
+  min-width: 0;
+  padding: 10px;
+  border: 1px dashed var(--theme-line);
+  border-radius: 9px;
+  background: var(--theme-surface);
+}
+
+.port-preview-node span {
+  display: block;
+  color: var(--theme-muted);
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.05em;
+}
+
+.port-preview-node strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--theme-text);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.port-preview-node small {
+  display: block;
+  margin-top: 3px;
+  color: var(--theme-muted);
+  font-size: 8px;
+}
+
+.port-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid var(--theme-line-soft);
+  color: var(--theme-muted);
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.port-preview-footer > span:first-child {
+  min-width: 0;
+}
+
+.port-preview-live-dot {
+  flex: none;
+  padding: 4px 7px;
+  border: 1px solid #dfe6b8;
+  border-radius: 999px;
+  background: #f5f8df;
+  color: #73803a;
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.05em;
+}
+
+.port-data-story {
+  display: flex;
+  flex-direction: column;
+}
+
+.port-data-story-head > strong {
+  color: #66733a;
+  font-family: "DM Mono", monospace;
+  font-size: 12px;
+}
+
+.port-coverage-bar {
+  height: 7px;
+  margin-top: 11px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8ebdf;
+}
+
+.port-coverage-bar > div {
+  height: 100%;
+  border-radius: inherit;
+  background: #cbd84a;
+  transition: width 0.35s ease;
+}
+
+.port-coverage-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.port-coverage-items > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid var(--theme-line-soft);
+  border-radius: 9px;
+  background: var(--theme-surface);
+}
+
+.port-coverage-items > div > span {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 6px;
+  background: #eef2e7;
+  color: #788449;
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.port-coverage-items > div.prototype > span {
+  background: #f0f1f2;
+  color: #9aa3aa;
+}
+
+.port-coverage-items > div > div {
+  min-width: 0;
+}
+
+.port-coverage-items strong {
+  display: block;
+  color: var(--theme-text);
+  font-size: 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.port-coverage-items small {
+  display: block;
+  margin-top: 2px;
+  color: var(--theme-muted);
+  font-size: 7px;
+}
+
+.port-observation-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 9px;
+  border-top: 1px solid var(--theme-line-soft);
+  color: var(--theme-muted);
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+}
+
+.port-observation-line strong {
+  color: var(--theme-text-2);
+  font-size: 8px;
+}
+
+/* Fixed dimensions across the main desktop state. */
+@media (min-width: 1081px) {
+  #forecast .chart-panel,
+  #forecast .port-panel {
+    height: 620px;
+    min-height: 620px;
+    max-height: 620px;
+  }
+}
+
+@media (max-width: 760px) {
+  #forecast .chart-area,
+  #forecast .chart-empty-state {
+    height: 225px !important;
+    min-height: 225px !important;
+    max-height: 225px;
+  }
+
+  #forecast .port-panel {
+    height: 570px;
+    min-height: 570px;
+    max-height: 570px;
+  }
+
+  .port-preview-flow,
+  .port-coverage-items {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  #forecast .port-panel {
+    height: 540px;
+    min-height: 540px;
+    max-height: 540px;
+  }
+}
