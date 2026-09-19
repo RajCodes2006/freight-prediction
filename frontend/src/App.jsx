@@ -1362,13 +1362,15 @@ function App() {
             <span className="weather-status-badge">
               {weather?.status === "AVAILABLE"
                 ? `${weather.risk_level} RISK`
-                : result
-                  ? "UNAVAILABLE"
-                  : "RUN ANALYSIS"}
+                : weather?.status === "PARTIAL"
+                  ? `PARTIAL · ${weather.risk_level} RISK`
+                  : result
+                    ? "UNAVAILABLE"
+                    : "RUN ANALYSIS"}
             </span>
           </div>
 
-          {!weather || weather.status !== "AVAILABLE" ? (
+          {!weather || !["AVAILABLE", "PARTIAL"].includes(weather.status) ? (
             <div className="weather-empty-state">
               <CloudRain size={20} />
               <strong>
@@ -1479,7 +1481,10 @@ function App() {
                 <CloudRain size={15} />
                 <div>
                   <p>{weather.note}</p>
-                  <small>Weather source: Open-Meteo</small>
+                  <small>
+                    Weather source: Open-Meteo
+                    {weather.status === "PARTIAL" ? " · Partial coverage" : ""}
+                  </small>
                 </div>
               </div>
             </>
