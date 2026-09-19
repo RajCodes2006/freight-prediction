@@ -1477,6 +1477,46 @@ function App() {
                 </strong>
               </div>
 
+              <div className="weather-source-grid">
+                <div className="weather-source-item">
+                  <span>Marine conditions</span>
+                  <strong
+                    className={
+                      weather.source_status?.marine === "AVAILABLE"
+                        ? "source-available"
+                        : "source-unavailable"
+                    }
+                  >
+                    {weather.source_status?.marine || "UNKNOWN"}
+                  </strong>
+                </div>
+
+                <div className="weather-source-item">
+                  <span>Atmospheric conditions</span>
+                  <strong
+                    className={
+                      weather.source_status?.atmospheric === "AVAILABLE"
+                        ? "source-available"
+                        : "source-unavailable"
+                    }
+                  >
+                    {weather.source_status?.atmospheric || "UNKNOWN"}
+                  </strong>
+                </div>
+              </div>
+
+              {weather.status === "PARTIAL" && (
+                <div className="weather-warning">
+                  <CloudRain size={15} />
+                  <p>
+                    Wind, gust and visibility inputs are unavailable for this
+                    route right now. The displayed risk score is therefore
+                    based primarily on the marine conditions that were
+                    returned.
+                  </p>
+                </div>
+              )}
+
               <div className="weather-note">
                 <CloudRain size={15} />
                 <div>
