@@ -357,7 +357,6 @@ def _calculate_weather_metrics(
         "provider": "Open-Meteo",
         "data_fetched_at_utc": datetime.now(timezone.utc).isoformat(),
         "forecast_days": forecast_days,
-        "forecast_days": forecast_days,
         "route_points": route_points,
         "weather_risk_score": score,
         "risk_level": risk_level,
