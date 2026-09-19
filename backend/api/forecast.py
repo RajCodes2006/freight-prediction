@@ -95,6 +95,7 @@ def forecast(request: ForecastRequest):
         ):
             result["data_note"] = (
                 "The ML component forecasts a Baltic vessel-class market index. "
+                "The current freight-rate estimate is scaled from the live-calibrated "
                 "vessel-class index and a prototype baseline; it is not a route-specific "
                 "charter quote. Weather-adjusted sailing time and bunker impact are "
                 "prototype calculations based on route-sampled Open-Meteo data. "
