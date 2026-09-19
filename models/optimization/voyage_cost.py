@@ -183,6 +183,7 @@ def calculate_total_voyage_cost(
     cargo_quantity_mt: float,
     vessel_type: str,
     vessel_time_cost_usd: float,
+    bunker_cost_multiplier: float = 1.0,
 ) -> Dict:
     """Calculate total estimated voyage cost."""
 
@@ -192,9 +193,13 @@ def calculate_total_voyage_cost(
     if vessel_time_cost_usd < 0:
         raise ValueError("vessel_time_cost_usd cannot be negative")
 
+    if bunker_cost_multiplier <= 0:
+        raise ValueError("bunker_cost_multiplier must be greater than 0")
+
     freight_details = get_freight_rate_details(vessel_type)
     freight_rate = freight_details["rate_usd_per_mt"]
-    bunker_cost = get_bunker_cost(vessel_type)
+    base_bunker_cost = get_bunker_cost(vessel_type)
+    bunker_cost = base_bunker_cost * bunker_cost_multiplier
     port_charges = get_port_charges(vessel_type)
 
     freight_cost = cargo_quantity_mt * freight_rate
@@ -216,6 +221,8 @@ def calculate_total_voyage_cost(
         "freight_rate_details": freight_details,
         "freight_cost_usd": round(freight_cost, 2),
         "vessel_time_cost_usd": round(vessel_time_cost_usd, 2),
+        "base_bunker_cost_usd": round(base_bunker_cost, 2),
+        "bunker_cost_multiplier": round(bunker_cost_multiplier, 4),
         "bunker_cost_usd": round(bunker_cost, 2),
         "port_charges_usd": round(port_charges, 2),
         "total_voyage_cost_usd": round(total_cost, 2),
