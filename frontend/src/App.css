@@ -802,6 +802,178 @@ a {
   margin-top: 17px;
 }
 
+.weather-panel {
+  max-width: 1440px;
+  margin: 0 auto 20px;
+}
+
+.weather-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 9px;
+  border: 1px solid #e1e6e9;
+  border-radius: 999px;
+  background: #fafbfb;
+  color: #6e7a83;
+  font-family: "DM Mono", monospace;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.weather-metrics {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.weather-metric {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #e6eaec;
+  border-radius: 11px;
+  background: #fbfcfc;
+}
+
+.weather-metric svg {
+  color: #79878f;
+}
+
+.weather-metric span {
+  display: block;
+  margin-top: 9px;
+  color: #8a959c;
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.03em;
+}
+
+.weather-metric strong {
+  display: block;
+  margin-top: 4px;
+  color: #1f2b33;
+  font-size: 14px;
+}
+
+.weather-risk-metric {
+  background: #fbfce9;
+  border-color: #e4eb9d;
+}
+
+.weather-risk-metric svg,
+.weather-risk-metric strong {
+  color: #6a741f;
+}
+
+.weather-impact-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 15px;
+  padding: 14px 15px;
+  border: 1px solid #e6eaec;
+  border-radius: 11px;
+  background: #fafbfb;
+}
+
+.weather-impact-row > svg {
+  color: #9aa4aa;
+  flex: none;
+}
+
+.weather-impact-row > div {
+  min-width: 0;
+}
+
+.weather-impact-row span {
+  display: block;
+  color: #89949c;
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.04em;
+}
+
+.weather-impact-row strong {
+  display: block;
+  margin-top: 4px;
+  color: #233039;
+  font-size: 12px;
+}
+
+.weather-delay {
+  margin-left: auto;
+}
+
+.weather-delay strong {
+  color: #6c7621;
+}
+
+.weather-route {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: baseline;
+  margin-top: 14px;
+}
+
+.weather-route span {
+  color: #89949c;
+  font-family: "DM Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.06em;
+}
+
+.weather-route strong {
+  color: #47545d;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.weather-note,
+.weather-empty-state {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid #e6eaec;
+  border-radius: 10px;
+  background: #fbfcfc;
+}
+
+.weather-note svg,
+.weather-empty-state svg {
+  flex: none;
+  color: #7d8a92;
+  margin-top: 1px;
+}
+
+.weather-note p,
+.weather-empty-state span {
+  margin: 0;
+  color: #7c878e;
+  font-size: 8px;
+  line-height: 1.55;
+}
+
+.weather-empty-state {
+  min-height: 150px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.weather-empty-state strong {
+  color: #28353d;
+  font-size: 12px;
+}
+
+.weather-empty-state span {
+  max-width: 550px;
+}
+
+
 .recharts-default-tooltip {
   border: 1px solid #dde3e6 !important;
   border-radius: 10px !important;
@@ -1450,6 +1622,18 @@ tbody tr:last-child td {
   .hero-side {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.weather-metrics {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.weather-impact-row {
+  flex-wrap: wrap;
+}
+
+.weather-delay {
+  margin-left: 0;
 }
 
 @media (max-width: 620px) {
@@ -3037,6 +3221,44 @@ html[data-theme="light"] .positive {
 /* Panel details */
 html[data-theme="light"] .panel-description {
   color: #89949c;
+}
+
+html[data-theme="light"] .weather-status-badge,
+html[data-theme="light"] .weather-metric,
+html[data-theme="light"] .weather-impact-row,
+html[data-theme="light"] .weather-note,
+html[data-theme="light"] .weather-empty-state {
+  border-color: #e1e6e9;
+  background: #fafbfb;
+  color: #17212b;
+}
+
+html[data-theme="light"] .weather-metric span,
+html[data-theme="light"] .weather-impact-row span,
+html[data-theme="light"] .weather-route span {
+  color: #89959d;
+}
+
+html[data-theme="light"] .weather-metric strong,
+html[data-theme="light"] .weather-impact-row strong,
+html[data-theme="light"] .weather-route strong,
+html[data-theme="light"] .weather-empty-state strong {
+  color: #28343c;
+}
+
+html[data-theme="light"] .weather-risk-metric {
+  border-color: #e4eb9d;
+  background: #fbfce9;
+}
+
+html[data-theme="light"] .weather-risk-metric svg,
+html[data-theme="light"] .weather-risk-metric strong {
+  color: #6a741f;
+}
+
+html[data-theme="light"] .weather-note p,
+html[data-theme="light"] .weather-empty-state span {
+  color: #7c878e;
 }
 
 html[data-theme="light"] .chart-tag,
