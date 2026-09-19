@@ -91,6 +91,7 @@ def _build_url(
     *,
     forecast_days: int = FORECAST_DAYS,
     extra_params: dict[str, str] | None = None,
+    use_sea_cell_selection: bool = False,
 ) -> str:
     coordinates = [_coords(point) for point in route_points]
 
@@ -100,8 +101,10 @@ def _build_url(
         ("hourly", ",".join(hourly_variables)),
         ("forecast_days", str(forecast_days)),
         ("timezone", "GMT"),
-        ("cell_selection", "sea"),
     ]
+
+    if use_sea_cell_selection:
+        params.append(("cell_selection", "sea"))
 
     if extra_params:
         params.extend(extra_params.items())
@@ -123,6 +126,7 @@ def build_marine_weather_url(
         get_route_points(origin_port, destination_port),
         MARINE_HOURLY_VARIABLES,
         forecast_days=forecast_days,
+        use_sea_cell_selection=True,
     )
 
 
