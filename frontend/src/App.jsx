@@ -1392,12 +1392,7 @@ function App() {
               <div className="port-source-meta"><span>DESTINATION OBSERVATION</span><strong>{congestion.discharge.source_name || "Verified source"}</strong><small>Observed {congestion.discharge.observation_date}</small></div>
             )}
 
-            {congestion && portWarningText && (
-              <div className="warning-box">
-                <Clock3 size={16} />
-                <p>{portWarningText}</p>
-              </div>
-            )}
+
           </div>
 
         </section>
@@ -1643,149 +1638,141 @@ function App() {
           <div className="panel contract-panel">
             <div className="panel-header">
               <div>
-                <span className="section-kicker">
-                  CONTRACT STRATEGY
-                </span>
-
+                <span className="section-kicker">CONTRACT STRATEGY</span>
                 <h3>Spot vs fixed contract</h3>
-
                 <p className="panel-description">
-                  {duration}-month procurement scenario ·{" "}
-                  {voyages} planned voyages
+                  {duration}-month procurement scenario · {voyages} planned voyages
                 </p>
               </div>
-
               <span className="savings-pill">
                 {expectedSavingsPercent !== null
-                  ? `${Number(
-                      expectedSavingsPercent
-                    ).toFixed(2)}% SAVINGS`
-                  : "NO RESULT"}
+                  ? `${Number(expectedSavingsPercent).toFixed(2)}% SAVINGS`
+                  : "AWAITING ANALYSIS"}
               </span>
             </div>
 
-            <div className="contract-grid">
-              <div className="contract-item">
+            <div className="contract-quotes">
+              <div className="contract-quote spot-quote">
                 <span>CURRENT SPOT</span>
                 <strong>
                   {currentRate !== null
                     ? `$${Number(currentRate).toFixed(2)}`
-                    : "—"}
+                    : "Awaiting analysis"}
                 </strong>
-                <small>/MT</small>
+                {currentRate !== null && <small>/MT</small>}
               </div>
 
-              <div className="contract-item forecast-price">
-                <span>FORECAST</span>
+              <div className="contract-quote forecast-quote">
+                <span>FORECAST RATE</span>
                 <strong>
                   {forecastRate !== null
                     ? `$${Number(forecastRate).toFixed(2)}`
-                    : "—"}
+                    : "Awaiting analysis"}
                 </strong>
-                <small>/MT</small>
+                {forecastRate !== null && <small>/MT</small>}
               </div>
 
-              <div className="contract-item fixed-price">
+              <div className="contract-quote fixed-quote">
                 <span>FIXED CONTRACT</span>
                 <strong>
                   {contractRate !== null
                     ? `$${Number(contractRate).toFixed(2)}`
-                    : "—"}
+                    : "Awaiting analysis"}
                 </strong>
-                <small>/MT</small>
+                {contractRate !== null && <small>/MT</small>}
               </div>
             </div>
 
-            <div className="savings-panel">
-              <div>
-                <span>EXPECTED CONTRACT SAVINGS</span>
-
-                <strong>
-                  {formatMoney(expectedSavings)}
-                </strong>
+            <div className="contract-savings-card">
+              <div className="contract-savings-main">
+                <div>
+                  <span>EXPECTED CONTRACT SAVINGS</span>
+                  <strong>
+                    {expectedSavings !== null
+                      ? formatMoney(expectedSavings)
+                      : "Awaiting analysis"}
+                  </strong>
+                </div>
+                <span className="contract-savings-percent">
+                  {expectedSavingsPercent !== null
+                    ? `${Number(expectedSavingsPercent).toFixed(2)}%`
+                    : "—"}
+                </span>
               </div>
 
-              <div className="savings-progress">
+              {expectedSavingsPercent !== null ? (
                 <div
-                  style={{
-                    width: `${Math.min(
-                      Math.max(
-                        Number(expectedSavingsPercent) || 0,
-                        0
-                      ),
-                      100
-                    )}%`,
-                  }}
-                />
-              </div>
+                  className="savings-progress"
+                  aria-label="Expected contract savings"
+                >
+                  <div
+                    style={{
+                      width: `${Math.min(
+                        Math.max(Number(expectedSavingsPercent) || 0, 0),
+                        100
+                      )}%`,
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="contract-savings-placeholder">
+                  Run Analyze Strategy to calculate expected savings.
+                </div>
+              )}
 
               <small>
-                Based on the decision engine's current contract
-                and risk assumptions
+                Based on the decision engine's current contract and risk assumptions
               </small>
+            </div>
+
+            <div className="contract-footnote">
+              <ShieldCheck size={14} />
+              <span>
+                Contract comparison uses the current forecast and procurement scenario.
+              </span>
             </div>
           </div>
 
           <div className="panel risk-panel">
             <div className="panel-header">
               <div>
-                <span className="section-kicker">
-                  RISK ANALYSIS
-                </span>
-
+                <span className="section-kicker">RISK ANALYSIS</span>
                 <h3>Market scenarios</h3>
               </div>
             </div>
 
             <div className="scenario-list">
               <div className="scenario-row">
-                <span className="scenario-icon down">
-                  <ArrowDown size={14} />
-                </span>
-
+                <span className="scenario-icon down"><ArrowDown size={14} /></span>
                 <div>
                   <span>Downside</span>
                   <strong>
-                    {riskAnalysis?.downside_rate_usd_per_mt !==
-                    undefined
-                      ? `$${Number(
-                          riskAnalysis.downside_rate_usd_per_mt
-                        ).toFixed(2)} / MT`
+                    {riskAnalysis?.downside_rate_usd_per_mt !== undefined
+                      ? `$${Number(riskAnalysis.downside_rate_usd_per_mt).toFixed(2)} / MT`
                       : "—"}
                   </strong>
                 </div>
               </div>
 
               <div className="scenario-row">
-                <span className="scenario-icon current">
-                  <Gauge size={14} />
-                </span>
-
+                <span className="scenario-icon current"><Gauge size={14} /></span>
                 <div>
                   <span>Current</span>
                   <strong>
                     {currentRate !== null
-                      ? `$${Number(
-                          currentRate
-                        ).toFixed(2)} / MT`
+                      ? `$${Number(currentRate).toFixed(2)} / MT`
                       : "—"}
                   </strong>
                 </div>
               </div>
 
               <div className="scenario-row">
-                <span className="scenario-icon up">
-                  <ArrowUp size={14} />
-                </span>
-
+                <span className="scenario-icon up"><ArrowUp size={14} /></span>
                 <div>
                   <span>Upside</span>
                   <strong>
-                    {riskAnalysis?.upside_rate_usd_per_mt !==
-                    undefined
-                      ? `$${Number(
-                          riskAnalysis.upside_rate_usd_per_mt
-                        ).toFixed(2)} / MT`
+                    {riskAnalysis?.upside_rate_usd_per_mt !== undefined
+                      ? `$${Number(riskAnalysis.upside_rate_usd_per_mt).toFixed(2)} / MT`
                       : "—"}
                   </strong>
                 </div>
@@ -1794,7 +1781,6 @@ function App() {
 
             <div className="risk-summary">
               <ShieldCheck size={16} />
-
               <p>
                 {recommendation?.reason ||
                   "Run the analysis to receive the decision engine's risk-aware recommendation."}
