@@ -1637,7 +1637,7 @@ function App() {
                   {duration}-month procurement scenario · {voyages} planned voyages
                 </p>
               </div>
-              <span className="savings-pill">
+              <span className={`savings-pill ${expectedSavingsPercent === null ? "pending" : "ready"}`}>
                 {expectedSavingsPercent !== null
                   ? `${Number(expectedSavingsPercent).toFixed(2)}% SAVINGS`
                   : "AWAITING ANALYSIS"}
@@ -1647,44 +1647,53 @@ function App() {
             <div className="contract-quotes">
               <div className="contract-quote spot-quote">
                 <span>CURRENT SPOT</span>
-                <strong>
-                  {currentRate !== null
-                    ? `$${Number(currentRate).toFixed(2)}`
-                    : "Awaiting analysis"}
-                </strong>
-                {currentRate !== null && <small>/MT</small>}
+                {currentRate !== null ? (
+                  <div className="contract-value">
+                    <strong>{`${Number(currentRate).toFixed(2)}`}</strong>
+                    <small>/MT</small>
+                  </div>
+                ) : (
+                  <div className="contract-pending">Awaiting analysis</div>
+                )}
               </div>
 
               <div className="contract-quote forecast-quote">
                 <span>FORECAST RATE</span>
-                <strong>
-                  {forecastRate !== null
-                    ? `$${Number(forecastRate).toFixed(2)}`
-                    : "Awaiting analysis"}
-                </strong>
-                {forecastRate !== null && <small>/MT</small>}
+                {forecastRate !== null ? (
+                  <div className="contract-value">
+                    <strong>{`${Number(forecastRate).toFixed(2)}`}</strong>
+                    <small>/MT</small>
+                  </div>
+                ) : (
+                  <div className="contract-pending">Awaiting analysis</div>
+                )}
               </div>
 
               <div className="contract-quote fixed-quote">
                 <span>FIXED CONTRACT</span>
-                <strong>
-                  {contractRate !== null
-                    ? `$${Number(contractRate).toFixed(2)}`
-                    : "Awaiting analysis"}
-                </strong>
-                {contractRate !== null && <small>/MT</small>}
+                {contractRate !== null ? (
+                  <div className="contract-value">
+                    <strong>{`${Number(contractRate).toFixed(2)}`}</strong>
+                    <small>/MT</small>
+                  </div>
+                ) : (
+                  <div className="contract-pending">Awaiting analysis</div>
+                )}
               </div>
             </div>
 
-            <div className="contract-savings-card">
+            <div className={`contract-savings-card ${expectedSavingsPercent === null ? "pending" : "ready"}`}>
               <div className="contract-savings-main">
                 <div>
                   <span>EXPECTED CONTRACT SAVINGS</span>
-                  <strong>
-                    {expectedSavings !== null
-                      ? formatMoney(expectedSavings)
-                      : "Awaiting analysis"}
-                  </strong>
+                  {expectedSavings !== null ? (
+                    <strong>{formatMoney(expectedSavings)}</strong>
+                  ) : (
+                    <div className="contract-savings-pending">
+                      <strong>Awaiting analysis</strong>
+                      <small>Run Analyze Strategy to calculate expected savings.</small>
+                    </div>
+                  )}
                 </div>
                 <span className="contract-savings-percent">
                   {expectedSavingsPercent !== null
@@ -1693,11 +1702,8 @@ function App() {
                 </span>
               </div>
 
-              {expectedSavingsPercent !== null ? (
-                <div
-                  className="savings-progress"
-                  aria-label="Expected contract savings"
-                >
+              {expectedSavingsPercent !== null && (
+                <div className="savings-progress" aria-label="Expected contract savings">
                   <div
                     style={{
                       width: `${Math.min(
@@ -1707,15 +1713,13 @@ function App() {
                     }}
                   />
                 </div>
-              ) : (
-                <div className="contract-savings-placeholder">
-                  Run Analyze Strategy to calculate expected savings.
-                </div>
               )}
 
-              <small>
-                Based on the decision engine's current contract and risk assumptions
-              </small>
+              {expectedSavingsPercent !== null && (
+                <small>
+                  Based on the decision engine's current contract and risk assumptions
+                </small>
+              )}
             </div>
 
             <div className="contract-footnote">
