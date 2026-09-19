@@ -385,13 +385,6 @@ function App() {
     : anyPortDataUsed
       ? "MIXED"
       : "PROTOTYPE";
-  const portWarningText =
-    portDataState === "VERIFIED"
-      ? ""
-      : portDataState === "MIXED"
-        ? "One side of the route uses verified observations; the other side still uses prototype fallback values."
-        : "No verified congestion observation is available for this route. Queue figures remain prototype assumptions.";
-
   const forecastData = useMemo(() => {
     const horizons = forecast?.all_horizons;
 
