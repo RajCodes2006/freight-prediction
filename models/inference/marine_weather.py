@@ -452,6 +452,11 @@ def get_route_weather(
         "speed_reduction_percent": 0.0,
         "bunker_cost_multiplier": 1.0,
         "forecast_coverage_fraction": 0.0,
+        "available_sources": [],
+        "source_status": {
+            "marine": "UNAVAILABLE",
+            "atmospheric": "UNAVAILABLE",
+        },
         "marine_api_url": marine_url,
         "weather_api_url": weather_url,
         "note": (
@@ -497,6 +502,14 @@ def get_route_weather(
             "AVAILABLE" if len(available_sources) == 2 else "PARTIAL"
         )
         result["available_sources"] = available_sources
+        result["source_status"] = {
+            "marine": "AVAILABLE" if marine_payload is not None else "UNAVAILABLE",
+            "atmospheric": (
+                "AVAILABLE"
+                if atmospheric_payload is not None
+                else "UNAVAILABLE"
+            ),
+        }
         result["provider_errors"] = {
             key: value
             for key, value in {
