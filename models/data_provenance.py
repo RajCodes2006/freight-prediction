@@ -34,6 +34,9 @@ def build_data_provenance(result: Dict[str, Any]) -> Dict[str, Any]:
     horizons = forecast.get("all_horizons") or {}
     forecast_live = forecast.get("current_level_source") == "LIVE_CALIBRATED"
 
+    weather = result.get("weather") or {}
+    weather_available = weather.get("status") == "AVAILABLE"
+
     vessel_decision = result.get("vessel_decision") or {}
     freight_rate_source = vessel_decision.get("freight_rate_source")
 
@@ -85,10 +88,25 @@ def build_data_provenance(result: Dict[str, Any]) -> Dict[str, Any]:
             freight_note,
         ),
         "bunker_cost": _source_record(
-            "ASSUMED",
-            "PROTOTYPE_ASSUMPTION",
-            "voyage_cost.py",
-            "Prototype bunker cost by vessel class; not a live bunker quote.",
+            "CALCULATED_FROM_ASSUMPTION" if weather_available else "ASSUMED",
+            "WEATHER_ADJUSTED_ASSUMPTION" if weather_available else "PROTOTYPE_ASSUMPTION",
+            "voyage_cost.py + Open-Meteo weather impact" if weather_available else "voyage_cost.py",
+            "Base bunker cost is a prototype vessel-class assumption. When weather data is available, the cost is adjusted by the prototype weather-time multiplier; it is not a live bunker quote." if weather_available else "Prototype bunker cost by vessel class; not a live bunker quote.",
+            multiplier=weather.get("bunker_cost_multiplier") if weather_available else 1.0,
+        ),
+        "weather": _source_record(
+            "LIVE",
+            "WEATHER_API",
+            "Open-Meteo Marine + Weather API",
+            "Route-sampled 7-day weather conditions are used by the prototype impact layer to adjust sailing time and bunker cost. This is operational decision support, not nautical navigation.",
+            risk_level=weather.get("risk_level"),
+            weather_risk_score=weather.get("weather_risk_score"),
+            route_points=weather.get("route_points", []),
+        ) if weather_available else _source_record(
+            "UNAVAILABLE",
+            "WEATHER_API",
+            "Open-Meteo Marine + Weather API",
+            "Weather data was unavailable for this request, so no weather adjustment was applied.",
         ),
         "port_charges": _source_record(
             "ASSUMED",
@@ -98,9 +116,11 @@ def build_data_provenance(result: Dict[str, Any]) -> Dict[str, Any]:
         ),
         "sailing_time": _source_record(
             "CALCULATED",
-            "ROUTE_ESTIMATE",
-            "route_sailing.py",
-            "Calculated from port coordinates, route waypoints, and planning speed; not a live vessel schedule.",
+            "ROUTE_ESTIMATE_PLUS_WEATHER" if weather_available else "ROUTE_ESTIMATE",
+            "route_sailing.py + Open-Meteo weather impact" if weather_available else "route_sailing.py",
+            "Calculated from port coordinates, route waypoints, planning speed, and a prototype weather adjustment for the first forecast window; not a live vessel schedule." if weather_available else "Calculated from port coordinates, route waypoints, and planning speed; not a live vessel schedule.",
+            base_sailing_days=weather.get("base_sailing_days") if weather_available else None,
+            weather_adjusted_sailing_days=weather.get("adjusted_sailing_days") if weather_available else None,
         ),
         "loading_congestion": _source_record(
             "VERIFIED" if loading.get("data_status") == "VERIFIED_MEDIAN_WAITING" else "ASSUMED",
