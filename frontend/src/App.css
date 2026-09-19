@@ -4531,3 +4531,60 @@ html[data-theme="light"] .weather-route-point.waypoint strong {
   background: #f8faf5;
 }
 
+
+
+/* Empty forecast layout fix
+   Keep the chart card sized to its own content instead of stretching
+   to match the adjacent panel, and keep empty-state text readable. */
+.content-grid {
+  align-items: start !important;
+}
+
+.chart-panel {
+  align-self: start;
+  height: auto;
+}
+
+.chart-area {
+  height: 235px;
+  margin-top: 12px;
+}
+
+.chart-empty-state {
+  height: 235px !important;
+  min-height: 235px !important;
+  max-height: 235px;
+  box-sizing: border-box;
+  color: #26333b;
+  background: #fbfcfc;
+}
+
+.chart-empty-state strong {
+  color: #26333b !important;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.chart-empty-state span {
+  color: #71818a !important;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* Avoid the pre-analysis card growing from hidden/empty content. */
+.chart-panel:has(.chart-empty-state) {
+  min-height: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .chart-area {
+    height: 205px;
+  }
+
+  .chart-empty-state {
+    height: 205px !important;
+    min-height: 205px !important;
+    max-height: 205px;
+  }
+}
