@@ -87,34 +87,6 @@ const DESTINATION_PORTS = [
   "Haldia",
 ];
 
-const DEFAULT_FORECAST = [
-  {
-    horizon: "Current",
-    value: 1189,
-    change: 0,
-  },
-  {
-    horizon: "7D",
-    value: 1186.79,
-    change: -0.19,
-  },
-  {
-    horizon: "30D",
-    value: 1328.4,
-    change: 11.72,
-  },
-  {
-    horizon: "60D",
-    value: 1280.71,
-    change: 7.71,
-  },
-  {
-    horizon: "90D",
-    value: 1921.14,
-    change: 61.58,
-  },
-];
-
 function formatMoney(value) {
   if (value === null || value === undefined || Number.isNaN(Number(value))) {
     return "—";
@@ -314,13 +286,17 @@ function App() {
     const horizons = forecast?.all_horizons;
 
     if (!horizons) {
-      return result ? [] : DEFAULT_FORECAST;
+      return [];
     }
 
     const currentIndex =
-      forecast.current_index ??
+      forecast?.current_index ??
       horizons["30"]?.current_index ??
-      1189;
+      null;
+
+    if (currentIndex === null || currentIndex === undefined) {
+      return [];
+    }
 
     return [
       {
@@ -328,17 +304,19 @@ function App() {
         value: Number(currentIndex),
         change: 0,
       },
-      ...["7", "30", "60", "90"].map((key) => ({
-        horizon: `${key}D`,
-        value: Number(
-          horizons[key]?.predicted_index ?? currentIndex
-        ),
-        change: Number(
-          horizons[key]?.change_percent ?? 0
-        ),
-      })),
+      ...["7", "30", "60", "90"]
+        .filter((key) => horizons[key])
+        .map((key) => ({
+          horizon: `${key}D`,
+          value: Number(
+            horizons[key]?.predicted_index ?? currentIndex
+          ),
+          change: Number(
+            horizons[key]?.change_percent ?? 0
+          ),
+        })),
     ];
-  }, [forecast, result]);
+  }, [forecast]);
 
   const vesselComparison = useMemo(() => {
     if (result?.vessel_comparison) {
@@ -370,20 +348,13 @@ function App() {
   }, [result]);
 
   const currentIndex =
-    forecast?.current_index ??
-    (result ? null : forecastData[0]?.value ?? 1189);
+    forecast?.current_index ?? null;
 
   const change30 =
-    forecast?.change_percent_30d ??
-    (result
-      ? null
-      : forecastData.find((item) => item.horizon === "30D")?.change ?? 0);
+    forecast?.change_percent_30d ?? null;
 
   const predicted30Value =
-    forecast?.predicted_30d_index ??
-    (result
-      ? null
-      : forecastData.find((item) => item.horizon === "30D")?.value ?? null);
+    forecast?.predicted_30d_index ?? null;
 
   const confidence30 =
     forecast?.confidence_30d ??
@@ -1058,8 +1029,18 @@ function App() {
             </div>
 
             <div className="chart-area">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={forecastData}>
+              {forecastData.length === 0 ? (
+                <div className="chart-empty-state">
+                  <TrendingUp size={20} />
+                  <strong>Forecast appears after analysis</strong>
+                  <span>
+                    Run Analyze Strategy to load the model-generated 7D, 30D,
+                    60D and 90D outlook.
+                  </span>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={forecastData}>
                   <defs>
                     <linearGradient
                       id="forecastFill"
@@ -1160,8 +1141,9 @@ function App() {
                       strokeWidth: 2,
                     }}
                   />
-                </AreaChart>
-              </ResponsiveContainer>
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
             </div>
 
             <div className="forecast-summary-strip">
