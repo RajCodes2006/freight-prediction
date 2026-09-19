@@ -9,6 +9,7 @@ import {
   BarChart3,
   CheckCircle2,
   ChevronDown,
+  CloudRain,
   Clock3,
   Container,
   Gauge,
@@ -19,6 +20,8 @@ import {
   Navigation,
   Sun,
   ShieldCheck,
+  Waves,
+  Wind,
   Sparkles,
   TrendingUp,
   X,
@@ -277,6 +280,7 @@ function App() {
   const riskAnalysis = contractDecision?.risk_analysis;
   const recommendation = result?.final_recommendation;
   const congestion = result?.congestion;
+  const weather = result?.weather;
   const noFeasibleVessel =
     result?.status === "NO_ECONOMICALLY_FEASIBLE_VESSEL";
   const diagnosticAction =
@@ -570,6 +574,14 @@ function App() {
           >
             <MapPin size={17} />
             Port Intelligence
+          </a>
+
+          <a
+            href="#weather"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <CloudRain size={17} />
+            Weather Intelligence
           </a>
 
           <a
@@ -1333,6 +1345,144 @@ function App() {
           </div>
         </section>
 
+        <section id="weather" className="panel weather-panel">
+          <div className="panel-header">
+            <div>
+              <span className="section-kicker">
+                WEATHER INTELLIGENCE
+              </span>
+
+              <h3>Route weather impact</h3>
+
+              <p className="panel-description">
+                Seven-day route-sampled marine and atmospheric forecast
+              </p>
+            </div>
+
+            <span className="weather-status-badge">
+              {weather?.status === "AVAILABLE"
+                ? `${weather.risk_level} RISK`
+                : result
+                  ? "UNAVAILABLE"
+                  : "RUN ANALYSIS"}
+            </span>
+          </div>
+
+          {!weather || weather.status !== "AVAILABLE" ? (
+            <div className="weather-empty-state">
+              <CloudRain size={20} />
+              <strong>
+                {result
+                  ? "Weather data unavailable"
+                  : "Weather impact appears after analysis"}
+              </strong>
+              <span>
+                {result
+                  ? "The decision engine kept the base route estimate because the weather provider did not return usable data."
+                  : "Run Analyze Strategy to fetch route weather and calculate its effect on sailing time, bunker cost and operational risk."}
+              </span>
+            </div>
+          ) : (
+            <>
+              <div className="weather-metrics">
+                <div className="weather-metric weather-risk-metric">
+                  <CloudRain size={16} />
+                  <span>Weather risk score</span>
+                  <strong>{weather.weather_risk_score}/100</strong>
+                </div>
+
+                <div className="weather-metric">
+                  <Waves size={16} />
+                  <span>90th pct wave</span>
+                  <strong>
+                    {weather.p90_wave_height_m !== null
+                      ? `${weather.p90_wave_height_m} m`
+                      : "—"}
+                  </strong>
+                </div>
+
+                <div className="weather-metric">
+                  <Wind size={16} />
+                  <span>90th pct wind</span>
+                  <strong>
+                    {weather.p90_wind_speed_knots !== null
+                      ? `${weather.p90_wind_speed_knots} kn`
+                      : "—"}
+                  </strong>
+                </div>
+
+                <div className="weather-metric">
+                  <Wind size={16} />
+                  <span>90th pct gust</span>
+                  <strong>
+                    {weather.p90_wind_gust_knots !== null
+                      ? `${weather.p90_wind_gust_knots} kn`
+                      : "—"}
+                  </strong>
+                </div>
+
+                <div className="weather-metric">
+                  <Waves size={16} />
+                  <span>90th pct swell</span>
+                  <strong>
+                    {weather.p90_swell_height_m !== null
+                      ? `${weather.p90_swell_height_m} m`
+                      : "—"}
+                  </strong>
+                </div>
+
+                <div className="weather-metric">
+                  <Navigation size={16} />
+                  <span>90th pct current</span>
+                  <strong>
+                    {weather.p90_ocean_current_ms !== null
+                      ? `${weather.p90_ocean_current_ms} m/s`
+                      : "—"}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="weather-impact-row">
+                <div>
+                  <span>Base sailing time</span>
+                  <strong>{weather.base_sailing_days} days</strong>
+                </div>
+
+                <ArrowRight size={16} />
+
+                <div>
+                  <span>Weather-adjusted</span>
+                  <strong>{weather.adjusted_sailing_days} days</strong>
+                </div>
+
+                <div className="weather-delay">
+                  <span>Weather delay</span>
+                  <strong>+{weather.weather_delay_days} days</strong>
+                </div>
+
+                <div className="weather-delay">
+                  <span>Bunker impact</span>
+                  <strong>
+                    ×{Number(weather.bunker_cost_multiplier).toFixed(2)}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="weather-route">
+                <span>ROUTE SAMPLED</span>
+                <strong>
+                  {(weather.route_points || []).join(" → ")}
+                </strong>
+              </div>
+
+              <div className="weather-note">
+                <CloudRain size={15} />
+                <p>{weather.note}</p>
+              </div>
+            </>
+          )}
+        </section>
+
         <section id="vessels" className="panel vessel-panel">
           <div className="panel-header">
             <div>
@@ -1628,11 +1778,13 @@ function App() {
             <strong>Prototype data transparency</strong>
 
             <p>
-              The ML layer currently forecasts a Baltic vessel-class
-              market index. Freight USD/MT, bunker costs, port
-              charges, sailing time and some queue inputs shown in
-              this prototype are assumptions and are not live
-              route-specific commercial quotations.
+              The ML layer forecasts a Baltic vessel-class market index.
+              The voyage engine also samples Open-Meteo marine and atmospheric
+              forecasts over the prototype route to adjust sailing time and
+              bunker cost for the first 7 forecast days. Weather impact
+              calculations, freight USD/MT, port charges and some queue inputs
+              remain prototype assumptions and are not live route-specific
+              commercial quotations.
             </p>
           </div>
         </section>
