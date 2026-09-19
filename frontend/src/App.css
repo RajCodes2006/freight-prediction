@@ -3378,3 +3378,166 @@ html[data-theme="light"] .menu-btn {
   font-size: 11px;
   line-height: 1.6;
 }
+
+
+/* =========================================================
+   READABILITY OVERRIDES
+   ========================================================= */
+
+/* Keep the dense dashboard feel, but make all informational text readable. */
+.brand span,
+.sidebar-note span,
+.eyebrow,
+.system-status,
+.hero-route span,
+.section-kicker,
+.scenario-status,
+.field-label,
+.recommendation-status,
+.confidence-pill,
+.label-small,
+.route-summary,
+.stat-label,
+.stat-subtext,
+.panel-description,
+.chart-tag,
+.table-route,
+.savings-pill,
+.forecast-item > span,
+.forecast-item small,
+.risk-badge,
+.route-place span,
+.route-place small,
+.route-connector span,
+.muted-value,
+.warning-box p,
+.table-status,
+.contract-item span,
+.contract-item small,
+.savings-panel span,
+.savings-panel > small,
+.scenario-row span:not(.scenario-icon),
+.risk-summary p,
+.data-note strong,
+.data-note p,
+.footer,
+.footer strong,
+.toast,
+.decision-action-label,
+.forecast-summary-strip span,
+.port-source-meta span,
+.port-source-meta strong,
+.port-source-meta small {
+  font-size: 10px;
+}
+
+.sidebar-note strong,
+.hero-stat strong,
+.action-banner strong,
+.vessel-name strong,
+.scenario-row strong,
+.port-source-meta strong {
+  font-size: 12px;
+}
+
+.hero-section p,
+.decision-main p,
+.warning-box p,
+.data-note p,
+.risk-summary p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.input-control input,
+.select-control select {
+  font-size: 12px;
+}
+
+.input-control > span {
+  font-size: 10px;
+}
+
+.analyze-btn {
+  font-size: 11px;
+}
+
+.decision-metrics span {
+  font-size: 10px;
+}
+
+.queue-list span {
+  font-size: 11px;
+}
+
+.queue-list strong {
+  font-size: 12px;
+}
+
+thead th {
+  font-size: 10px;
+}
+
+tbody td {
+  font-size: 11px;
+}
+
+.forecast-item small {
+  font-size: 10px;
+}
+
+.forecast-confidence {
+  font-size: 9px !important;
+}
+
+.contract-item span {
+  font-size: 10px;
+}
+
+.contract-item small {
+  font-size: 10px;
+}
+
+.savings-panel span {
+  font-size: 10px;
+}
+
+.savings-panel > small {
+  font-size: 10px;
+}
+
+.theme-toggle {
+  font-size: 9px;
+}
+
+@media (max-width: 620px) {
+  .brand span,
+  .sidebar-note span,
+  .eyebrow,
+  .system-status,
+  .section-kicker,
+  .field-label,
+  .panel-description,
+  .chart-tag,
+  .table-route,
+  .forecast-item > span,
+  .forecast-item small,
+  .route-place span,
+  .route-place small,
+  .route-connector span,
+  .data-note strong,
+  .data-note p,
+  .footer,
+  .footer strong {
+    font-size: 10px;
+  }
+
+  .hero-section p,
+  .decision-main p {
+    font-size: 12px;
+  }
+
+  tbody td {
+    font-size: 10.5px;
+  }
+}
