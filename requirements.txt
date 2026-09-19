@@ -16,6 +16,7 @@ pydantic
 
 python-dotenv
 requests
+searoute==1.6.0
 
 sqlalchemy
 psycopg2-binary
