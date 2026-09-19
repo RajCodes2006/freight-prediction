@@ -1477,7 +1477,10 @@ function App() {
 
               <div className="weather-note">
                 <CloudRain size={15} />
-                <p>{weather.note}</p>
+                <div>
+                  <p>{weather.note}</p>
+                  <small>Weather source: Open-Meteo</small>
+                </div>
               </div>
             </>
           )}
