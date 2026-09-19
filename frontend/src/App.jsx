@@ -385,6 +385,11 @@ function App() {
     : anyPortDataUsed
       ? "MIXED"
       : "PROTOTYPE";
+
+  const verifiedPortCount =
+    Number(loadingDataUsed) + Number(dischargeDataUsed);
+  const portCoveragePercent = (verifiedPortCount / 2) * 100;
+
   const forecastData = useMemo(() => {
     const horizons = forecast?.all_horizons;
 
@@ -1374,18 +1379,44 @@ function App() {
               <div><span>Data coverage</span><strong className="muted-value">{congestion ? portDataState : "AWAITING"}</strong></div>
             </div>
 
-            {congestion && (
-              <div className="port-source-grid">
-                <div className="port-source-item"><div><span>Origin</span><small>{congestion.loading?.source_name || "Queue source"}</small></div><strong className={loadingDataUsed ? "source-available" : "source-unavailable"}>{loadingDataUsed ? "Verified" : "Prototype"}</strong></div>
-                <div className="port-source-item"><div><span>Destination</span><small>{congestion.discharge?.source_name || "Queue source"}</small></div><strong className={dischargeDataUsed ? "source-available" : "source-unavailable"}>{dischargeDataUsed ? "Verified" : "Prototype"}</strong></div>
+            {!congestion ? (
+              <div className="port-preview-card">
+                <div className="port-preview-head">
+                  <div><span className="section-kicker">ANALYSIS PREVIEW</span><strong>Queue intelligence</strong></div>
+                  <Clock3 size={17} />
+                </div>
+                <div className="port-preview-flow">
+                  <div className="port-preview-node"><span>ORIGIN</span><strong>{scenarioOrigin}</strong><small>Queue observation</small></div>
+                  <ArrowRight size={16} />
+                  <div className="port-preview-node"><span>DESTINATION</span><strong>{scenarioDestination}</strong><small>Queue observation</small></div>
+                </div>
+                <div className="port-preview-footer">
+                  <span>Run analysis to populate queue exposure and source coverage.</span>
+                  <span className="port-preview-live-dot">READY</span>
+                </div>
+              </div>
+            ) : (
+              <div className="port-data-story">
+                <div className="port-data-story-head">
+                  <div><span className="section-kicker">DATA CONFIDENCE</span><strong>Route coverage</strong></div>
+                  <strong>{verifiedPortCount}/2</strong>
+                </div>
+                <div className="port-coverage-bar" aria-label={`${verifiedPortCount} of 2 ports verified`}><div style={{ width: `${portCoveragePercent}%` }} /></div>
+                <div className="port-coverage-items">
+                  <div className={loadingDataUsed ? "verified" : "prototype"}>
+                    <span>{loadingDataUsed ? "✓" : "—"}</span>
+                    <div><strong>{scenarioOrigin}</strong><small>{loadingDataUsed ? "Verified observation" : "Prototype fallback"}</small></div>
+                  </div>
+                  <div className={dischargeDataUsed ? "verified" : "prototype"}>
+                    <span>{dischargeDataUsed ? "✓" : "—"}</span>
+                    <div><strong>{scenarioDestination}</strong><small>{dischargeDataUsed ? "Verified observation" : "Prototype fallback"}</small></div>
+                  </div>
+                </div>
+                {congestion?.discharge?.observation_date && (
+                  <div className="port-observation-line"><span>Latest destination observation</span><strong>{congestion.discharge.observation_date}</strong></div>
+                )}
               </div>
             )}
-
-            {congestion?.discharge?.observation_date && (
-              <div className="port-source-meta"><span>DESTINATION OBSERVATION</span><strong>{congestion.discharge.source_name || "Verified source"}</strong><small>Observed {congestion.discharge.observation_date}</small></div>
-            )}
-
-
           </div>
 
         </section>
