@@ -244,7 +244,19 @@ def _calculate_weather_metrics(
     base_sailing_days: float,
     forecast_days: int,
 ) -> dict[str, Any]:
-    wave_p90 = _percentile(_flatten_numeric(marine_payload, "wave_height"), 0.90)
+    if not _as_location_list(marine_payload) or not _as_location_list(atmospheric_payload):
+        raise ValueError("Weather provider returned no location data")
+
+    marine_samples = _flatten_numeric(marine_payload, "wave_height")
+    atmospheric_samples = _flatten_numeric(
+        atmospheric_payload,
+        "wind_speed_10m",
+    )
+
+    if not marine_samples and not atmospheric_samples:
+        raise ValueError("Weather provider returned no usable weather samples")
+
+    wave_p90 = _percentile(marine_samples, 0.90)
     swell_p90 = _percentile(
         _flatten_numeric(marine_payload, "swell_wave_height"),
         0.90,
@@ -385,12 +397,12 @@ def _calculate_weather_metrics(
         "marine_api_url": build_marine_weather_url(
             route_points[0],
             route_points[-1],
-            forecast_days=FORECAST_DAYS,
+            forecast_days=forecast_days,
         ),
         "weather_api_url": build_atmospheric_weather_url(
             route_points[0],
             route_points[-1],
-            forecast_days=FORECAST_DAYS,
+            forecast_days=forecast_days,
         ),
     }
 
