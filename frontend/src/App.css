@@ -4588,3 +4588,124 @@ html[data-theme="light"] .weather-route-point.waypoint strong {
     max-height: 205px;
   }
 }
+
+
+/* =========================================================
+   FIXED CONTAINER HEIGHTS
+   Keep layout geometry stable while content changes state.
+   ========================================================= */
+
+.content-grid {
+  align-items: stretch !important;
+  grid-auto-rows: 620px;
+}
+
+#forecast.content-grid,
+#contract.content-grid {
+  min-height: 0;
+}
+
+#forecast .chart-panel,
+#forecast .port-panel {
+  height: 620px;
+  min-height: 620px;
+  max-height: 620px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#contract .contract-panel,
+#contract .risk-panel {
+  height: 340px;
+  min-height: 340px;
+  max-height: 340px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* The empty forecast state changes only the contents, never the card size. */
+#forecast .chart-area {
+  height: 270px;
+  flex: 0 0 270px;
+}
+
+#forecast .chart-empty-state {
+  height: 270px !important;
+  min-height: 270px !important;
+  max-height: 270px;
+}
+
+/* Keep the bottom contract row stable too. */
+.bottom-grid {
+  grid-auto-rows: 340px;
+}
+
+/* Responsive: still fixed within each breakpoint so switching
+   between empty/filled states does not move surrounding sections. */
+@media (max-width: 1080px) {
+  .content-grid {
+    grid-auto-rows: 620px;
+  }
+
+  #forecast .chart-panel,
+  #forecast .port-panel {
+    height: 620px;
+    min-height: 620px;
+    max-height: 620px;
+  }
+}
+
+@media (max-width: 760px) {
+  .content-grid {
+    grid-auto-rows: 570px;
+  }
+
+  #forecast .chart-panel,
+  #forecast .port-panel {
+    height: 570px;
+    min-height: 570px;
+    max-height: 570px;
+  }
+
+  #forecast .chart-area,
+  #forecast .chart-empty-state {
+    height: 225px !important;
+    min-height: 225px !important;
+    max-height: 225px;
+  }
+
+  .bottom-grid {
+    grid-auto-rows: 360px;
+  }
+
+  #contract .contract-panel,
+  #contract .risk-panel {
+    height: 360px;
+    min-height: 360px;
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-grid {
+    grid-auto-rows: 540px;
+  }
+
+  #forecast .chart-panel,
+  #forecast .port-panel {
+    height: 540px;
+    min-height: 540px;
+    max-height: 540px;
+  }
+
+  .bottom-grid {
+    grid-auto-rows: 390px;
+  }
+
+  #contract .contract-panel,
+  #contract .risk-panel {
+    height: 390px;
+    min-height: 390px;
+    max-height: 390px;
+  }
+}
