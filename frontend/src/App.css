@@ -956,6 +956,15 @@ a {
   line-height: 1.55;
 }
 
+.weather-note small {
+  display: block;
+  margin-top: 5px;
+  color: #8a959c;
+  font-family: "DM Mono", monospace;
+  font-size: 6.5px;
+  letter-spacing: 0.04em;
+}
+
 .weather-empty-state {
   min-height: 150px;
   align-items: center;
