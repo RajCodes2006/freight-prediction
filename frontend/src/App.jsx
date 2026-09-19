@@ -1381,12 +1381,43 @@ function App() {
               <div><span>Data coverage</span><strong className="muted-value">{congestion ? portDataState : "AWAITING"}</strong></div>
             </div>
 
-            {!congestion ? (
-              <div className="port-preview-card">
-                <div className="port-preview-head">
-                  <div><span className="section-kicker">ANALYSIS PREVIEW</span><strong>Queue intelligence</strong></div>
-                  <Clock3 size={17} />
-                </div>
+            <div className={congestion ? "port-coverage-compact" : "port-preview-compact"}>
+              {!congestion ? (
+                <>
+                  <div className="compact-state-head">
+                    <div><span className="section-kicker">ANALYSIS PREVIEW</span><strong>Queue intelligence</strong></div>
+                    <span className="compact-ready">READY</span>
+                  </div>
+                  <div className="compact-route">
+                    <span>{scenarioOrigin}</span>
+                    <ArrowRight size={14} />
+                    <span>{scenarioDestination}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="compact-state-head">
+                    <div><span className="section-kicker">DATA COVERAGE</span><strong>Source status</strong></div>
+                    <span className="compact-coverage">{verifiedPortCount}/2 verified</span>
+                  </div>
+                  <div className="compact-source-row">
+                    <span className={loadingDataUsed ? "source-dot verified" : "source-dot prototype"} />
+                    <span>{scenarioOrigin}</span>
+                    <small>{loadingDataUsed ? "Verified" : "Prototype"}</small>
+                    <span className={dischargeDataUsed ? "source-dot verified" : "source-dot prototype"} />
+                    <span>{scenarioDestination}</span>
+                    <small>{dischargeDataUsed ? "Verified" : "Prototype"}</small>
+                  </div>
+                  {congestion?.discharge?.observation_date && (
+                    <div className="compact-observation">
+                      <span>Destination observation</span>
+                      <strong>{congestion.discharge.observation_date}</strong>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
                 <div className="port-preview-flow">
                   <div className="port-preview-node"><span>ORIGIN</span><strong>{scenarioOrigin}</strong><small>Queue observation</small></div>
                   <ArrowRight size={16} />
