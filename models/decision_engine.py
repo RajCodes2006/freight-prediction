@@ -27,6 +27,7 @@ from models.optimization.voyage_cost import (
 )
 
 from models.inference.predict import predict
+from models.inference.marine_weather import get_route_weather
 
 
 # ============================================================
@@ -152,6 +153,7 @@ def get_forecasts(vessel_type: str) -> Dict:
 def calculate_candidate_voyage_cost(
     candidate: Dict,
     cargo_quantity_mt: float,
+    bunker_cost_multiplier: float = 1.0,
 ) -> Dict:
     """
     Calculate the complete voyage cost for one feasible vessel.
@@ -176,6 +178,7 @@ def calculate_candidate_voyage_cost(
         cargo_quantity_mt=cargo_quantity_mt,
         vessel_type=vessel_type,
         vessel_time_cost_usd=vessel_time_cost,
+        bunker_cost_multiplier=bunker_cost_multiplier,
     )
 
 
@@ -332,6 +335,7 @@ def build_decision(
     loading_queue_days: float = 1.0,
     discharge_queue_days: float = 1.5,
     verified_only: bool = False,
+    weather_impact: Dict | None = None,
 ) -> Dict:
     """
     Master Freight Prediction decision engine.
@@ -357,6 +361,23 @@ def build_decision(
         Final recommendation
     """
 
+    weather_impact = weather_impact or {
+        "status": "UNAVAILABLE",
+        "risk_level": "UNKNOWN",
+        "base_sailing_days": round(sailing_days, 2),
+        "adjusted_sailing_days": round(sailing_days, 2),
+        "weather_delay_days": 0.0,
+        "speed_reduction_percent": 0.0,
+        "bunker_cost_multiplier": 1.0,
+    }
+
+    effective_sailing_days = float(
+        weather_impact.get("adjusted_sailing_days", sailing_days)
+    )
+    bunker_cost_multiplier = float(
+        weather_impact.get("bunker_cost_multiplier", 1.0)
+    )
+
     # ========================================================
     # 1. Get ALL vessel feasibility results
     # ========================================================
@@ -369,7 +390,7 @@ def build_decision(
     cargo_quantity_mt=cargo_quantity_mt,
     origin_port=origin_port,
     destination_port=destination_port,
-    sailing_days=sailing_days,
+    sailing_days=effective_sailing_days,
     verified_only=verified_only,
     )
 
@@ -411,6 +432,7 @@ def build_decision(
                 calculate_candidate_voyage_cost(
                     candidate=candidate,
                     cargo_quantity_mt=cargo_quantity_mt,
+                    bunker_cost_multiplier=bunker_cost_multiplier,
                 )
             )
 
@@ -513,6 +535,7 @@ def build_decision(
             "candidates": candidates,
             "vessel_comparison": vessel_comparison,
             "congestion": congestion_summary,
+            "weather": weather_impact,
             "diagnostic": {
                 "type": "VESSEL_FEASIBILITY",
                 "recommended_action": (
@@ -907,6 +930,16 @@ def build_decision(
                 )
             ),
 
+            "base_sailing_days": weather_impact.get(
+                "base_sailing_days"
+            ),
+            "weather_adjusted_sailing_days": weather_impact.get(
+                "adjusted_sailing_days"
+            ),
+            "weather_delay_days": weather_impact.get(
+                "weather_delay_days"
+            ),
+
             "loading_berths": (
                 best_candidate.get(
                     "loading_berths",
@@ -926,6 +959,8 @@ def build_decision(
         # ALL VESSEL COMPARISON
         # ----------------------------------------------------
         "congestion": congestion_summary,
+
+        "weather": weather_impact,
 
         "vessel_comparison": (
             vessel_comparison
@@ -1035,10 +1070,12 @@ def build_decision(
         "data_note": (
 
             "The ML component currently forecasts a Baltic "
-            "vessel-class market index. USD/MT freight rate, "
-            "bunker cost, port charges, sailing time, and "
-            "queue time are prototype assumptions and are "
-            "not route-specific market quotes."
+            "vessel-class market index. The voyage engine now "
+            "incorporates a route-sampled weather adjustment from "
+            "Open-Meteo for the first 7 forecast days. Weather "
+            "effects on speed and bunker usage remain prototype "
+            "assumptions, and freight values are not route-specific "
+            "commercial quotes."
         ),
     }
 
