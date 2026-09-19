@@ -461,21 +461,62 @@ def get_route_weather(
     }
 
     try:
-        marine_payload = _get_json(marine_url)
-        atmospheric_payload = _get_json(weather_url)
+        marine_payload = None
+        atmospheric_payload = None
+        marine_error = None
+        atmospheric_error = None
+
+        try:
+            marine_payload = _get_json(marine_url)
+        except (requests.RequestException, ValueError, TypeError) as exc:
+            marine_error = f"{type(exc).__name__}: {exc}"
+
+        try:
+            atmospheric_payload = _get_json(weather_url)
+        except (requests.RequestException, ValueError, TypeError) as exc:
+            atmospheric_error = f"{type(exc).__name__}: {exc}"
+
+        if marine_payload is None and atmospheric_payload is None:
+            raise ValueError("Both weather providers failed")
 
         result = _calculate_weather_metrics(
-            marine_payload,
-            atmospheric_payload,
+            marine_payload or {},
+            atmospheric_payload or {},
             route_points,
             base_sailing_days,
             forecast_days,
         )
 
+        available_sources = []
+        if marine_payload is not None:
+            available_sources.append("marine")
+        if atmospheric_payload is not None:
+            available_sources.append("atmospheric")
+
+        result["status"] = (
+            "AVAILABLE" if len(available_sources) == 2 else "PARTIAL"
+        )
+        result["available_sources"] = available_sources
+        result["provider_errors"] = {
+            key: value
+            for key, value in {
+                "marine": marine_error,
+                "atmospheric": atmospheric_error,
+            }.items()
+            if value
+        }
         result["marine_api_url"] = marine_url
         result["weather_api_url"] = weather_url
         result["forecast_days"] = forecast_days
-        return result
 
-    except (requests.RequestException, ValueError, TypeError, KeyError):
+        if len(available_sources) == 1:
+            result["note"] = (
+                "Partial Open-Meteo coverage was available for this route. "
+                "Only the returned marine/atmospheric variables were used; "
+                "missing weather sources did not trigger a zero-data assumption."
+            )
+
+        return result
+    except (requests.RequestException, ValueError, TypeError, KeyError) as exc:
+        unavailable["provider_error"] = f"{type(exc).__name__}: {exc}"
         return unavailable
