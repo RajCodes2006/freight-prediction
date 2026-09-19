@@ -79,6 +79,13 @@ const ORIGIN_PORTS = {
   ],
 };
 
+const formatRoutePointName = (point) =>
+  point
+    .toLowerCase()
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
 const DESTINATION_PORTS = [
   "Paradip",
   "Visakhapatnam",
@@ -1114,7 +1121,7 @@ function App() {
                     }}
                     formatter={(value) => [
                       Number(value).toFixed(2),
-                      "PI Index",
+                      `${forecast?.vessel_class || "Vessel"} Index`,
                     ]}
                     labelFormatter={(label) =>
                       `${label} outlook`
@@ -1473,7 +1480,9 @@ function App() {
               <div className="weather-route">
                 <span>ROUTE SAMPLED</span>
                 <strong>
-                  {(weather.route_points || []).join(" → ")}
+                  {(weather.route_points || [])
+                    .map(formatRoutePointName)
+                    .join(" → ")}
                 </strong>
               </div>
 
