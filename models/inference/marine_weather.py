@@ -26,6 +26,9 @@ from models.optimization.route_sailing import (
     ORIGIN_ROUTE_OVERRIDES,
     PORT_COORDINATES,
     WAYPOINTS,
+    get_route_coordinates,
+    get_route_distance_nm,
+    get_route_routing_source,
 )
 
 MARINE_API_BASE_URL = "https://marine-api.open-meteo.com/v1/marine"
@@ -85,15 +88,16 @@ def get_route_points(origin_port: str, destination_port: str) -> list[str]:
 
 
 def _build_url(
+    coordinates: list[tuple[float, float]],
     base_url: str,
-    route_points: list[str],
     hourly_variables: tuple[str, ...],
     *,
     forecast_days: int = FORECAST_DAYS,
     extra_params: dict[str, str] | None = None,
     use_sea_cell_selection: bool = False,
 ) -> str:
-    coordinates = [_coords(point) for point in route_points]
+    if not coordinates:
+        raise ValueError("At least one route coordinate is required")
 
     params = [
         ("latitude", ",".join(f"{lat:.5f}" for lat, _ in coordinates)),
@@ -122,8 +126,8 @@ def build_marine_weather_url(
         raise ValueError("forecast_days must be between 1 and 8")
 
     return _build_url(
+        get_route_coordinates(origin_port, destination_port),
         MARINE_API_BASE_URL,
-        get_route_points(origin_port, destination_port),
         MARINE_HOURLY_VARIABLES,
         forecast_days=forecast_days,
         use_sea_cell_selection=True,
@@ -140,8 +144,8 @@ def build_atmospheric_weather_url(
         raise ValueError("forecast_days must be between 1 and 16")
 
     return _build_url(
+        get_route_coordinates(origin_port, destination_port),
         WEATHER_API_BASE_URL,
-        get_route_points(origin_port, destination_port),
         ATMOSPHERIC_HOURLY_VARIABLES,
         forecast_days=forecast_days,
         extra_params={"wind_speed_unit": "kn"},
@@ -431,6 +435,19 @@ def get_route_weather(
         raise ValueError("forecast_days must be between 1 and 8")
 
     route_points = get_route_points(origin_port, destination_port)
+    route_coordinates = get_route_coordinates(
+        origin_port,
+        destination_port,
+        max_points=24,
+    )
+    route_distance_nm = get_route_distance_nm(
+        origin_port,
+        destination_port,
+    )
+    routing_source = get_route_routing_source(
+        origin_port,
+        destination_port,
+    )
 
     # Keep the public helpers aligned when callers request a non-default
     # forecast horizon.
@@ -450,6 +467,9 @@ def get_route_weather(
         "provider": "Open-Meteo",
         "forecast_days": forecast_days,
         "route_points": route_points,
+        "route_distance_nm": round(route_distance_nm, 2),
+        "route_sampling_points": len(route_coordinates),
+        "routing_source": routing_source,
         "weather_risk_score": None,
         "risk_level": "UNKNOWN",
         "base_sailing_days": round(base_sailing_days, 2),
@@ -497,6 +517,9 @@ def get_route_weather(
             base_sailing_days,
             forecast_days,
         )
+        result["route_distance_nm"] = round(route_distance_nm, 2)
+        result["route_sampling_points"] = len(route_coordinates)
+        result["routing_source"] = routing_source
 
         available_sources = []
         if marine_payload is not None:
