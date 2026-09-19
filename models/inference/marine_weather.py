@@ -16,6 +16,7 @@ coarser resolution and should not replace nautical navigation data.
 from __future__ import annotations
 
 import time
+from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urlencode
 
@@ -354,6 +355,8 @@ def _calculate_weather_metrics(
     return {
         "status": "AVAILABLE",
         "provider": "Open-Meteo",
+        "data_fetched_at_utc": datetime.now(timezone.utc).isoformat(),
+        "forecast_days": forecast_days,
         "forecast_days": forecast_days,
         "route_points": route_points,
         "weather_risk_score": score,
