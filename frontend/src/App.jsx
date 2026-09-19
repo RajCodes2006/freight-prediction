@@ -1198,7 +1198,9 @@ function App() {
               </span>
             </div>
 
-            <div className="chart-area">
+            <div
+              className={`chart-area ${forecastData.length === 0 ? "is-empty" : ""}`}
+            >
               {forecastData.length === 0 ? (
                 <div className="chart-empty-state">
                   <TrendingUp size={24} />
@@ -1210,7 +1212,7 @@ function App() {
                   <span>
                     {result
                       ? "No model forecast is available in this response."
-                      : "Run Analyze Strategy to load the model-generated 7D, 30D and 60D outlook."}
+                      : "Run Analyze Strategy to load the model-generated 7D, 30D, 60D and 90D outlook."}
                   </span>
                 </div>
               ) : (
