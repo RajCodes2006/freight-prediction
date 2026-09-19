@@ -7,6 +7,7 @@ from models.inference.live_market import get_live_market_snapshot
 from models.inference.live_calibration import calibrate_live_vessel_indices
 from models.optimization.voyage_cost import get_freight_rate_details
 from models.data_provenance import build_data_provenance
+from models.inference.marine_weather import get_route_weather
 
 router = APIRouter(prefix="/api", tags=["Forecast"])
 
@@ -19,14 +20,22 @@ def forecast(request: ForecastRequest):
             destination_port=request.destination_port,
         )
 
+        weather_impact = get_route_weather(
+            origin_port=request.origin_port,
+            destination_port=request.destination_port,
+            base_sailing_days=sailing_days,
+            forecast_days=7,
+        )
+
         result = build_decision(
             cargo_quantity_mt=request.quantity_mt,
             origin_port=request.origin_port,
             destination_port=request.destination_port,
             contract_duration_months=request.contract_duration_months,
             planned_voyages=request.planned_voyages,
-            sailing_days=sailing_days,
+            sailing_days=weather_impact["adjusted_sailing_days"],
             verified_only=False,
+            weather_impact=weather_impact,
         )
 
         if not isinstance(result, dict):
@@ -61,10 +70,21 @@ def forecast(request: ForecastRequest):
             "destination_port": request.destination_port,
             "optimization_mode": "INDIAN_DESTINATION_PROTOTYPE",
             "estimated_sailing_days": sailing_days,
-            "sailing_time_source": "ROUTE_ESTIMATE",
+            "weather_adjusted_sailing_days": weather_impact.get(
+                "adjusted_sailing_days"
+            ),
+            "weather_delay_days": weather_impact.get(
+                "weather_delay_days"
+            ),
+            "sailing_time_source": (
+                "ROUTE_ESTIMATE_PLUS_WEATHER"
+                if weather_impact.get("status") == "AVAILABLE"
+                else "ROUTE_ESTIMATE"
+            ),
             "sailing_time_note": (
-                "Prototype estimate from port coordinates and planning speed; "
-                "not a live vessel schedule."
+                "Prototype estimate from port coordinates and planning speed, "
+                "optionally adjusted using the first 7 days of route-sampled "
+                "Open-Meteo weather data; not a live vessel schedule."
             ),
         }
 
@@ -75,17 +95,18 @@ def forecast(request: ForecastRequest):
         ):
             result["data_note"] = (
                 "The ML component forecasts a Baltic vessel-class market index. "
-                "The current freight-rate estimate is scaled from the live-calibrated "
                 "vessel-class index and a prototype baseline; it is not a route-specific "
-                "charter quote. Bunker cost, port charges, sailing time, and queue time "
-                "remain prototype assumptions/calculations."
+                "charter quote. Weather-adjusted sailing time and bunker impact are "
+                "prototype calculations based on route-sampled Open-Meteo data. "
+                "Port charges and some queue inputs remain prototype assumptions."
             )
         else:
             result["data_note"] = (
                 "The ML component forecasts a Baltic vessel-class market index. "
                 "Freight rate uses a prototype fallback when live calibration is unavailable. "
-                "Bunker cost, port charges, sailing time, and queue time remain prototype "
-                "assumptions/calculations and are not route-specific market quotes."
+                "Weather-adjusted sailing time and bunker impact use route-sampled "
+                "Open-Meteo data when available; otherwise the base route estimate is used. "
+                "Port charges and some queue inputs remain prototype assumptions."
             )
 
         # Attach an explicit provenance map after all response sections are
