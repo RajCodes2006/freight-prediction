@@ -4943,3 +4943,200 @@ html[data-theme="light"] .weather-route-point.waypoint strong {
     max-height: 390px;
   }
 }
+
+
+/* Contract Strategy — cleaner populated + empty states */
+#contract .contract-panel,
+#contract .risk-panel {
+  height: 340px;
+  min-height: 340px;
+  max-height: 340px;
+}
+
+#contract .contract-panel {
+  padding: 18px 20px;
+}
+
+#contract .contract-panel .panel-header {
+  margin-bottom: 10px;
+}
+
+.contract-quotes {
+  margin-top: 10px;
+  gap: 8px;
+}
+
+.contract-quote {
+  height: 76px;
+  min-height: 76px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.contract-quote span {
+  font-size: 8px;
+}
+
+.contract-value {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  min-height: 25px;
+}
+
+.contract-value strong {
+  margin-top: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.contract-value small {
+  margin-left: 0;
+  font-size: 8px;
+}
+
+.contract-pending {
+  min-height: 25px;
+  display: flex;
+  align-items: center;
+  color: var(--theme-muted);
+  font-family: "DM Mono", monospace;
+  font-size: 9px;
+}
+
+.contract-savings-card {
+  height: 112px;
+  min-height: 112px;
+  box-sizing: border-box;
+  margin-top: 10px;
+  padding: 13px 14px;
+  border: 1px solid #dfe5c2;
+  border-radius: 11px;
+}
+
+.contract-savings-main {
+  align-items: center;
+}
+
+.contract-savings-main span:first-child {
+  font-size: 8px;
+}
+
+.contract-savings-main strong {
+  margin-top: 5px;
+  font-size: 21px;
+}
+
+.contract-savings-percent {
+  padding: 5px 8px;
+  font-size: 8px !important;
+}
+
+.contract-savings-pending {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin-top: 5px;
+}
+
+.contract-savings-pending strong {
+  margin: 0;
+  font-size: 15px;
+  color: var(--theme-text) !important;
+}
+
+.contract-savings-pending small {
+  color: #858e84;
+  font-size: 8px;
+}
+
+.contract-savings-placeholder {
+  display: none;
+}
+
+.contract-savings-card > small {
+  margin-top: 7px;
+  font-size: 8px;
+}
+
+.contract-savings-card.pending {
+  background: #f7f8f1;
+}
+
+.contract-savings-card.pending .contract-savings-main {
+  min-height: 66px;
+}
+
+.contract-footnote {
+  margin-top: 8px;
+  font-size: 8px;
+}
+
+.contract-footnote svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Risk panel uses the same visual rhythm as contract panel. */
+#contract .risk-panel {
+  padding: 18px 20px;
+}
+
+#contract .risk-panel .panel-header {
+  margin-bottom: 8px;
+}
+
+#contract .scenario-list {
+  margin-top: 8px;
+}
+
+#contract .scenario-row {
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 7px 8px;
+}
+
+#contract .risk-summary {
+  margin-top: 8px;
+  padding-top: 9px;
+}
+
+@media (max-width: 760px) {
+  #contract .contract-panel {
+    height: 360px;
+    min-height: 360px;
+    max-height: 360px;
+  }
+
+  #contract .risk-panel {
+    height: 360px;
+    min-height: 360px;
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 560px) {
+  #contract .contract-panel {
+    height: 470px;
+    min-height: 470px;
+    max-height: 470px;
+  }
+
+  #contract .risk-panel {
+    height: 390px;
+    min-height: 390px;
+    max-height: 390px;
+  }
+
+  .contract-savings-pending {
+    display: block;
+  }
+
+  .contract-savings-pending small {
+    display: block;
+    margin-top: 3px;
+  }
+}
