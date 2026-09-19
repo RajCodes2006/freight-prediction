@@ -3347,3 +3347,34 @@ html[data-theme="light"] .menu-btn {
     display: none;
   }
 }
+
+
+/* Forecast stays neutral until a real API result exists. */
+.chart-empty-state {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.chart-empty-state svg {
+  color: #dbe92f;
+}
+
+.chart-empty-state strong {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.chart-empty-state span {
+  max-width: 420px;
+  color: var(--theme-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
