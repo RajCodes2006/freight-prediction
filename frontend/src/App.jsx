@@ -1218,9 +1218,7 @@ function App() {
                 </span>
 
                 <h3>
-                  {forecast?.vessel_class
-                    ? `${forecast.vessel_class} Index Outlook`
-                    : "Vessel-Class Index Outlook"}
+                  {forecast ? forecastHeader : "Vessel-Class Index Outlook"}
                 </h3>
 
                 <p className="panel-description">
@@ -1229,18 +1227,25 @@ function App() {
               </div>
 
               <span className="chart-tag">
-                {forecast?.vessel_class || "BALTIC"} · INDEX
+                {forecast
+                  ? forecastClass + " · " + forecastClassName
+                  : "AWAITING ANALYSIS"}
               </span>
             </div>
 
             <div className="chart-area">
               {forecastData.length === 0 ? (
                 <div className="chart-empty-state">
-                  <TrendingUp size={20} />
-                  <strong>Forecast appears after analysis</strong>
+                  <TrendingUp size={24} />
+                  <strong>
+                    {result
+                      ? "Forecast unavailable for this scenario"
+                      : "Forecast appears after analysis"}
+                  </strong>
                   <span>
-                    Run Analyze Strategy to load the model-generated 7D, 30D,
-                    60D and 90D outlook.
+                    {result
+                      ? "No model forecast is available in this response."
+                      : "Run Analyze Strategy to load the model-generated 7D, 30D and 60D outlook."}
                   </span>
                 </div>
               ) : (
@@ -1351,191 +1356,78 @@ function App() {
               )}
             </div>
 
-            <div className="forecast-summary-strip">
-              <div>
-                <span>CURRENT INDEX</span>
-                <strong>{formatNumber(currentIndex, 0)}</strong>
-              </div>
-              <div>
-                <span>30D FORECAST</span>
-                <strong>
-                  {predicted30Value !== null
-                    ? Number(predicted30Value).toFixed(2)
-                    : "—"}
-                </strong>
-              </div>
-              <div>
-                <span>30D CHANGE</span>
-                <strong className={Number(change30) >= 0 ? "lime" : "negative"}>
-                  {formatPercentage(change30)}
-                </strong>
-              </div>
-            </div>
-
-            <div className="forecast-cards">
-              {forecastData.slice(1).map((point) => {
-                const horizonKey = point.horizon.replace(
-                  "D",
-                  ""
-                );
-
-                const horizonResult =
-                  forecast?.all_horizons?.[horizonKey];
-
-                return (
-                  <div
-                    className="forecast-item"
-                    key={point.horizon}
-                  >
-                    <span>{point.horizon}</span>
-
-                    <strong>
-                      {Number(point.value).toFixed(2)}
-                    </strong>
-
-                    <small
-                      className={
-                        point.change >= 0
-                          ? "change positive"
-                          : "change negative"
-                      }
-                    >
-                      {point.change >= 0 ? (
-                        <ArrowUp size={11} />
-                      ) : (
-                        <ArrowDown size={11} />
-                      )}
-
-                      {formatPercentage(point.change)}
-                    </small>
-
-                    {horizonResult?.confidence && (
-                      <span className="forecast-confidence">
-                        {horizonResult.confidence}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            {forecastData.length > 0 && (
+              <>
+                <div className="forecast-summary-strip">
+                  <div><span>CURRENT INDEX</span><strong>{formatNumber(currentIndex, 0)}</strong></div>
+                  <div><span>30D FORECAST</span><strong>{predicted30Value !== null ? Number(predicted30Value).toFixed(2) : "—"}</strong></div>
+                  <div><span>30D CHANGE</span><strong className={Number(change30) >= 0 ? "lime" : "negative"}>{formatPercentage(change30)}</strong></div>
+                </div>
+                <div className="forecast-cards">
+                  {forecastData.slice(1).map((point) => {
+                    const horizonKey = point.horizon.replace("D", "");
+                    const horizonResult = forecast?.all_horizons?.[horizonKey];
+                    return (
+                      <div className="forecast-item" key={point.horizon}>
+                        <span>{point.horizon}</span>
+                        <strong>{Number(point.value).toFixed(2)}</strong>
+                        <small className={point.change >= 0 ? "change positive" : "change negative"}>
+                          {point.change >= 0 ? <ArrowUp size={11} /> : <ArrowDown size={11} />}
+                          {formatPercentage(point.change)}
+                        </small>
+                        {horizonResult?.confidence && (
+                          <span className="forecast-confidence" title="Historical validation strength for this forecast horizon">
+                            {horizonResult.confidence}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="forecast-confidence-note">
+                  Confidence reflects historical validation strength for each vessel-class forecast horizon.
+                </div>
+              </>
+            )}
           </div>
 
           <div id="ports" className="panel port-panel">
             <div className="panel-header">
               <div>
-                <span className="section-kicker">
-                  PORT INTELLIGENCE
-                </span>
-
-                <h3>Destination risk</h3>
-
-                <p className="panel-description">
-                  Current prototype queue assessment
-                </p>
+                <span className="section-kicker">PORT INTELLIGENCE</span>
+                <h3>Port congestion</h3>
+                <p className="panel-description">Current queue exposure and data coverage</p>
               </div>
-
-              <span className="risk-badge">
-                {riskLevel}
-              </span>
+              <span className="risk-badge">{riskLevel === "—" ? "AWAITING ANALYSIS" : riskLevel + " CONGESTION"}</span>
             </div>
 
             <div className="port-route-card">
-              <div className="route-place">
-                <div className="route-marker origin-marker">
-                  <Globe2 size={15} />
-                </div>
-
-                <div>
-                  <span>ORIGIN</span>
-                  <strong>{scenarioOrigin}</strong>
-                  <small>{scenarioCountry}</small>
-                </div>
-              </div>
-
-              <div className="route-connector">
-                <span>INTERNATIONAL BULK TRADE</span>
-                <div />
-              </div>
-
-              <div className="route-place">
-                <div className="route-marker destination-marker">
-                  <MapPin size={15} />
-                </div>
-
-                <div>
-                  <span>DESTINATION</span>
-                  <strong>{scenarioDestination}</strong>
-                  <small>East Coast India</small>
-                </div>
-              </div>
+              <div className="route-place"><div className="route-marker origin-marker"><Globe2 size={15} /></div><div><span>ORIGIN</span><strong>{scenarioOrigin}</strong><small>{scenarioCountry}</small></div></div>
+              <div className="route-connector"><span>INTERNATIONAL BULK TRADE</span><div /></div>
+              <div className="route-place"><div className="route-marker destination-marker"><MapPin size={15} /></div><div><span>DESTINATION</span><strong>{scenarioDestination}</strong><small>East Coast India</small></div></div>
             </div>
 
             <div className="queue-list">
-              <div>
-                <span>Loading / origin queue</span>
-                <strong>
-                  {loadingQueue !== null
-                    ? `${Number(loadingQueue).toFixed(1)} day`
-                    : "—"}
-                </strong>
-              </div>
-
-              <div>
-                <span>Destination queue</span>
-                <strong>
-                  {dischargeQueue !== null
-                    ? `${Number(dischargeQueue).toFixed(1)} days`
-                    : "—"}
-                </strong>
-              </div>
-
-              <div>
-                <span>Total queue exposure</span>
-                <strong>
-                  {totalQueue !== null
-                    ? `${Number(totalQueue).toFixed(1)} days`
-                    : "—"}
-                </strong>
-              </div>
-
-              <div>
-                <span>Data source</span>
-                <strong className="muted-value">
-                  {realDataUsed
-                    ? "Real observations"
-                    : "Prototype fallback"}
-                </strong>
-              </div>
+              <div><span>Origin queue</span><strong>{loadingQueue !== null ? `${Number(loadingQueue).toFixed(1)} days` : "—"}</strong></div>
+              <div><span>Destination queue</span><strong>{dischargeQueue !== null ? `${Number(dischargeQueue).toFixed(1)} days` : "—"}</strong></div>
+              <div><span>Total queue exposure</span><strong>{totalQueue !== null ? `${Number(totalQueue).toFixed(1)} days` : "—"}</strong></div>
+              <div><span>Data coverage</span><strong className="muted-value">{portDataState}</strong></div>
             </div>
 
-            {congestion?.discharge?.source_name && (
-              <div className="port-source-meta">
-                <span>
-                  DESTINATION SOURCE
-                </span>
-                <strong>
-                  {congestion.discharge.source_name}
-                </strong>
-                {congestion.discharge.observation_date && (
-                  <small>
-                    Observed {congestion.discharge.observation_date}
-                  </small>
-                )}
+            {congestion && (
+              <div className="port-source-grid">
+                <div className="port-source-item"><div><span>Origin</span><small>{congestion.loading?.source_name || "Queue source"}</small></div><strong className={loadingDataUsed ? "source-available" : "source-unavailable"}>{loadingDataUsed ? "Verified" : "Prototype"}</strong></div>
+                <div className="port-source-item"><div><span>Destination</span><small>{congestion.discharge?.source_name || "Queue source"}</small></div><strong className={dischargeDataUsed ? "source-available" : "source-unavailable"}>{dischargeDataUsed ? "Verified" : "Prototype"}</strong></div>
               </div>
             )}
 
-            {!realDataUsed && (
-              <div className="warning-box">
-                <Clock3 size={16} />
-
-                <p>
-                  Real port congestion observations are not
-                  connected yet. Current queue figures remain
-                  prototype assumptions.
-                </p>
-              </div>
+            {congestion?.discharge?.observation_date && (
+              <div className="port-source-meta"><span>DESTINATION OBSERVATION</span><strong>{congestion.discharge.source_name || "Verified source"}</strong><small>Observed {congestion.discharge.observation_date}</small></div>
             )}
+
+            {portWarningText && (<div className="warning-box"><Clock3 size={16} /><p>{portWarningText}</p></div>)}
           </div>
+
         </section>
 
         <section id="weather" className="panel weather-panel">
