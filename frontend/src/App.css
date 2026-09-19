@@ -5511,3 +5511,39 @@ html[data-theme="light"] .weather-route-point.waypoint strong {
     max-height: 540px;
   }
 }
+
+
+/* Micro spacing adjustment — keep the panel size unchanged,
+   but give the populated forecast footer a little more breathing room. */
+#forecast .chart-area:not(.is-empty) {
+  flex-basis: 308px;
+  height: 308px;
+  min-height: 308px;
+  margin-top: 10px;
+}
+
+#forecast .forecast-summary-strip {
+  margin-top: 9px;
+}
+
+#forecast .forecast-cards {
+  margin-top: 8px;
+  gap: 8px;
+}
+
+#forecast .forecast-item {
+  padding: 10px;
+}
+
+#forecast .forecast-confidence-note {
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+@media (max-width: 760px) {
+  #forecast .chart-area:not(.is-empty) {
+    flex-basis: 214px;
+    height: 214px;
+    min-height: 214px;
+  }
+}
